@@ -34,3 +34,38 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+# FEMICTEC - Front-end App 
+
+Portal dinâmico desenvolvido para a **FEMICTEC**, focado na exibição de projetos científicos e tecnológicos. Esta aplicação utiliza uma arquitetura desacoplada (Headless), consumindo dados via API de um CMS Strapi.
+
+## Tecnologias Utilizadas
+
+* **Framework:** [Next.js 14+](https://nextjs.org/)
+* **Linguagem:** TypeScript
+* **Estilização:** Tailwind CSS
+* **Gerenciamento de Conteúdo:** [Strapi CMS](https://strapi.io/)
+* **Infraestrutura Sugerida:** Oracle Cloud Infrastructure (OCI)
+
+## Arquitetura do Sistema
+
+O projeto funciona sob o modelo **Headless CMS**:
+1.  **Back-end:** `femictec-strapi` gerencia o banco de dados e fornece os endpoints REST.
+2.  **Front-end:** `femictec-app` realiza a busca de dados (Server-side) e renderiza a interface para o usuário final.
+
+## Como Executar o Projeto
+
+1.  Certifique-se de que o projeto `femictec-strapi` esteja rodando em `http://localhost:1337`.
+2.  Instale as dependências:
+    ```bash
+    npm install
+    ```
+3.  Inicie o servidor de desenvolvimento:
+    ```bash
+    npm run dev
+    ```
+4.  Acesse [http://localhost:3000](http://localhost:3000).
+
+## Licença
+
+Este projeto é de uso institucional para a FEMICTEC.
