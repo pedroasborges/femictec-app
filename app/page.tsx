@@ -7,8 +7,7 @@ async function getProjetos() {
 
 export default async function Page() {
   const response = await getProjetos();
-  const projetos = response.data;
-
+  const projetos = response.data; 
   return (
     <main>
       {/* Hero Section - Impacto Inicial */}
@@ -41,6 +40,7 @@ export default async function Page() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {projetos?.map((p: any) => (
+
             <article key={p.id} className="bg-white rounded-3xl overflow-hidden border border-slate-200 hover:shadow-2xl transition-all duration-500 group">
               {/* Espaço para Imagem (Mostratec foca muito no visual) */}
               <div className="h-52 bg-slate-200 relative overflow-hidden">
@@ -55,18 +55,24 @@ export default async function Page() {
                   {p.attributes?.Titulo || p.Titulo}
                 </h4>
                 <p className="text-slate-500 text-sm leading-relaxed line-clamp-3 mb-6">
-                  {p.attributes?.Descricao || "Este projeto investiga soluções tecnológicas e científicas para desafios do cotidiano escolar e municipal."}
+                  {/* {p.attributes?.Descricao || "Este projeto investiga soluções tecnológicas e científicas para desafios do cotidiano escolar e municipal."} */}
+                  {p.Descricao?.[0]?.children?.[0]?.text || "Descrição não disponível."}
                 </p>
                 
                 <div className="flex items-center justify-between pt-6 border-t border-slate-100">
                   <div className="flex flex-col">
                     <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Escola</span>
-                    <span className="text-sm font-semibold text-slate-700">Rede Municipal NH</span>
+                    <span className="text-sm font-semibold text-slate-700">
+                      {/* {p.attributes?.Escola || "Escola Municipal Exemplo"} */}
+                      {/* {p.Escola?.[0]?.children?.[0]?.text || "Descrição não disponível."} */}
+                      {typeof p.Escola === 'string' ? p.Escola : "Escola Municipal de Novo Hamburgo."} 
+                    </span>
                   </div>
                   <button className="text-blue-600 font-bold text-sm hover:underline">Ver Projeto →</button>
                 </div>
               </div>
             </article>
+            
           ))}
         </div>
       </section>
