@@ -1,4 +1,5 @@
-// 1. Função de busca de dados (Server-side)
+import Banner from "./components/banner";
+
 async function getProjetos() {
   const res = await fetch('http://127.0.0.1:1337/api/projetos?populate=*', { cache: 'no-store' });
   if (!res.ok) return { data: [] };
@@ -6,34 +7,37 @@ async function getProjetos() {
 }
 
 export default async function Page() {
-  const response = await getProjetos();
-  const projetos = response.data; 
+  const responseProjetos = await getProjetos();
+  const projetos = responseProjetos.data;
+
   return (
     <main>
       {/* Hero Section - Impacto Inicial */}
-      <section className="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-20 px-4">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-sm uppercase tracking-[0.3em] font-semibold mb-4 text-blue-200">Novo Hamburgo apresenta</h2>
-          <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
-            Ciência e Tecnologia <br /> na Palma da Mão.
-          </h1>
-          <p className="text-xl text-blue-100 max-w-2xl mx-auto mb-10 font-light">
-            Conheça os projetos inovadores desenvolvidos pelos alunos do Ensino Fundamental da nossa rede municipal.
-          </p>
-          <div className="flex justify-center gap-4">
-            <a href="#projetos" className="bg-white text-blue-900 px-8 py-4 rounded-xl font-bold hover:bg-blue-50 transition-all">
-              Explorar Projetos
-            </a>
+      <Banner />
+      
+      <section className="max-w-7xl mx-auto px-4 py-20">
+        <div className="flex justify-center">
+          <div>
+            <h1 className="text-3xl font-bold">Faça sua inscrição</h1>
+            <div className="h-1.5 w-20 bg-primary mt-2 rounded-full m-auto"></div>
           </div>
+          
         </div>
+        <div className="max-w-4xl mx-auto mt-8">
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis dolor nemo ea quos consectetur sunt similique quia. Officiis beatae voluptatum magnam aliquid, et earum nesciunt eligendi minima, minus nostrum voluptatibus.
+          </p>
+        </div>
+        
       </section>
+      
 
       {/* Seção de Projetos */}
       <section id="projetos" className="max-w-7xl mx-auto px-4 py-20">
         <div className="flex items-end justify-between mb-12">
           <div>
             <h3 className="text-3xl font-bold text-slate-900">Projetos em Destaque</h3>
-            <div className="h-1.5 w-20 bg-blue-600 mt-2 rounded-full"></div>
+            <div className="h-1.5 w-20 bg-primary mt-2 rounded-full"></div>
           </div>
           <span className="text-slate-500 font-medium">{projetos?.length || 0} Projetos Encontrados</span>
         </div>
