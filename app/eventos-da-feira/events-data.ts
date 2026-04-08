@@ -1,4 +1,5 @@
 type UnknownRecord = Record<string, unknown>;
+import { fetchStrapiJson, toStrapiUrl } from "../lib/strapi";
 
 export type EventoItem = {
   id: number;
@@ -11,8 +12,6 @@ export type EventoItem = {
   linkInscricao: string;
   linkRegulamento: string;
 };
-
-const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1337";
 
 const fallbackEventosDaFeira: EventoItem[] = [
   {
@@ -161,7 +160,7 @@ function resolveMediaUrl(media: unknown): string | null {
     null;
 
   if (!url) return null;
-  return url.startsWith("http") ? url : `${STRAPI_BASE_URL}${url}`;
+  return toStrapiUrl(url);
 }
 
 function extractEventos(node: unknown): UnknownRecord[] {
@@ -173,7 +172,12 @@ function extractEventos(node: unknown): UnknownRecord[] {
 
   const record = node as UnknownRecord;
   const hasEventoFields =
-    "nomeEvento" in record || "miniDescricao" in record || "descricao" in record || "dados" in record;
+    "nomeEvento" in record ||
+    "miniDescricao" in record ||
+    "descricao" in record ||
+    "dados" in record ||
+    "data" in record ||
+    "dataHorario" in record;
 
   const nestedValues = Object.values(record).flatMap(extractEventos);
   return hasEventoFields ? [record, ...nestedValues] : nestedValues;
@@ -217,13 +221,7 @@ function mapStrapiEvento(item: UnknownRecord, index: number): EventoItem | null 
 }
 
 async function fetchFromStrapi(path: string): Promise<unknown | null> {
-  try {
-    const response = await fetch(`${STRAPI_BASE_URL}${path}`, { cache: "no-store" });
-    if (!response.ok) return null;
-    return response.json();
-  } catch {
-    return null;
-  }
+  return fetchStrapiJson<unknown | null>(path, null);
 }
 
 async function fetchEventosPayload(): Promise<unknown | null> {

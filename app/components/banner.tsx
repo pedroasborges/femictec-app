@@ -1,6 +1,5 @@
 import BannerCarousel, { type BannerCarouselSize, type BannerImage } from "./banner-carousel";
-
-const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1337";
+import { fetchStrapiJson, toStrapiUrl } from "../lib/strapi";
 
 type BannerApiItem = {
   id: number;
@@ -21,9 +20,7 @@ type BannerApiItem = {
 };
 
 async function getBanner() {
-  const res = await fetch(`${STRAPI_BASE_URL}/api/banners?populate=*`, { cache: "no-store" });
-  if (!res.ok) return { data: [] as BannerApiItem[] };
-  return res.json();
+  return fetchStrapiJson<{ data: BannerApiItem[] }>("/api/banners?populate=*", { data: [] as BannerApiItem[] });
 }
 
 function normalizeBannerImages(items: BannerApiItem[]): BannerImage[] {
@@ -37,7 +34,7 @@ function normalizeBannerImages(items: BannerApiItem[]): BannerImage[] {
 
       if (!imageUrl) return null;
 
-      const src = imageUrl.startsWith("http") ? imageUrl : `${STRAPI_BASE_URL}${imageUrl}`;
+      const src = toStrapiUrl(imageUrl);
 
       return {
         id: item.id,

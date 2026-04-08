@@ -11,11 +11,10 @@ type ProjetoResponse = {
 };
 
 import Banner from "./components/banner";
+import { fetchStrapiJson } from "./lib/strapi";
 
 async function getProjetos(): Promise<ProjetoResponse> {
-  const res = await fetch("http://127.0.0.1:1337/api/projetos?populate=*", { cache: "no-store" });
-  if (!res.ok) return { data: [] };
-  return res.json();
+  return fetchStrapiJson<ProjetoResponse>("/api/projetos?populate=*", { data: [] });
 }
 
 function getProjetoTitulo(projeto: ProjetoItem): string {
