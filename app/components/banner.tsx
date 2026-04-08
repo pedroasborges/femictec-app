@@ -1,4 +1,6 @@
-import BannerCarousel, { type BannerImage } from "./banner-carousel";
+import BannerCarousel, { type BannerCarouselSize, type BannerImage } from "./banner-carousel";
+
+const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1337";
 
 type BannerApiItem = {
   id: number;
@@ -19,7 +21,7 @@ type BannerApiItem = {
 };
 
 async function getBanner() {
-  const res = await fetch("http://127.0.0.1:1337/api/banners?populate=*", { cache: "no-store" });
+  const res = await fetch(`${STRAPI_BASE_URL}/api/banners?populate=*`, { cache: "no-store" });
   if (!res.ok) return { data: [] as BannerApiItem[] };
   return res.json();
 }
@@ -35,7 +37,7 @@ function normalizeBannerImages(items: BannerApiItem[]): BannerImage[] {
 
       if (!imageUrl) return null;
 
-      const src = imageUrl.startsWith("http") ? imageUrl : `http://localhost:1337${imageUrl}`;
+      const src = imageUrl.startsWith("http") ? imageUrl : `${STRAPI_BASE_URL}${imageUrl}`;
 
       return {
         id: item.id,
@@ -46,7 +48,11 @@ function normalizeBannerImages(items: BannerApiItem[]): BannerImage[] {
     .filter((item): item is BannerImage => item !== null);
 }
 
-export default async function Banner() {
+type BannerProps = {
+  size?: BannerCarouselSize;
+};
+
+export default async function Banner({ size = "default" }: BannerProps) {
   const responseBanner = await getBanner();
   const images = normalizeBannerImages(responseBanner.data ?? []);
 
@@ -54,5 +60,5 @@ export default async function Banner() {
     return null;
   }
 
-  return <BannerCarousel images={images} />;
+  return <BannerCarousel images={images} size={size} />;
 }

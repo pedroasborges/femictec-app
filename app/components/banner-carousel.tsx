@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export type BannerImage = {
@@ -8,13 +9,20 @@ export type BannerImage = {
   alt: string;
 };
 
+export type BannerCarouselSize = "default" | "tall";
+
 type BannerCarouselProps = {
   images: BannerImage[];
+  size?: BannerCarouselSize;
 };
 
-export default function BannerCarousel({ images }: BannerCarouselProps) {
+export default function BannerCarousel({ images, size = "default" }: BannerCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const hasMultipleImages = images.length > 1;
+  const slideClassName =
+    size === "tall"
+      ? "relative aspect-[16/7] w-full shrink-0 min-h-[240px] max-h-[460px]"
+      : "relative aspect-[21/7] w-full shrink-0 min-h-[180px] max-h-[340px]";
 
   useEffect(() => {
     if (!hasMultipleImages) return;
@@ -44,9 +52,17 @@ export default function BannerCarousel({ images }: BannerCarouselProps) {
         className="flex transition-transform duration-700 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
-        {images.map((image) => (
-          <div key={image.id} className="w-full shrink-0">
-            <img src={image.src} alt={image.alt} className="h-[260px] w-full object-cover md:h-[420px]" />
+        {images.map((image, index) => (
+          <div key={image.id} className={slideClassName}>
+            <Image
+              src={image.src}
+              alt={image.alt}
+              fill
+              sizes="100vw"
+              priority={index === 0}
+              unoptimized
+              className="object-cover"
+            />
           </div>
         ))}
       </div>

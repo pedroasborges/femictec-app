@@ -1,167 +1,150 @@
-<<<<<<< HEAD
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FEMICTEC App
 
-## Getting Started
+Front-end institucional da FEMICTEC, construído em Next.js com integração ao Strapi (Headless CMS).
 
-First, run the development server:
+## Visão geral
+
+O projeto entrega:
+- página inicial com banner/carrossel e destaques;
+- página "A Feira" com conteúdo dinâmico;
+- módulo "Eventos da Feira" com lista, filtro e página de detalhe por evento.
+
+A aplicação segue arquitetura desacoplada:
+- Strapi fornece conteúdo via API REST;
+- Next.js renderiza interface e consome os dados no servidor.
+
+## Stack
+
+- Next.js 16 (App Router)
+- React 19
+- TypeScript
+- Tailwind CSS v4
+- Strapi CMS (API REST)
+
+## Estrutura principal
+
+- `app/layout.tsx`: layout global com `Navbar` e `Footer`.
+- `app/page.tsx`: home.
+- `app/feira/page.tsx`: página "A Feira".
+- `app/eventos-da-feira/page.tsx`: lista de eventos.
+- `app/eventos-da-feira/eventos-list-client.tsx`: filtro client-side da lista.
+- `app/eventos-da-feira/[slug]/page.tsx`: detalhe de evento.
+- `app/eventos-da-feira/events-data.ts`: camada de dados de eventos (normalização + fallback).
+- `app/components/banner.tsx`: busca e normalização de banners.
+- `app/components/banner-carousel.tsx`: carrossel e controles.
+
+## Integração com Strapi
+
+### Banner
+- Endpoint: `GET /api/banners?populate=*`
+- Renderização com `next/image` (`unoptimized`) para evitar bloqueios do otimizador local em ambiente de desenvolvimento.
+
+### A Feira
+- Endpoint: `GET /api/a-feira?populate=*`
+- Conteúdo renderizado com `@strapi/blocks-react-renderer`.
+
+### Eventos da Feira
+A camada atual prioriza a collection type nova e mantém fallback de compatibilidade.
+
+Ordem de tentativa:
+1. `GET /api/eventos-feiras?populate=*` (collection type `Eventos_Feira`)
+2. `GET /api/eventos-da-feira?populate=*` (legado)
+3. `GET /api/a-feira?populate=deep,5` (fallback técnico)
+
+Campos mapeados:
+- `nomeEvento`
+- `descricao`
+- `miniDescricao`
+- `imagemEvento`
+- data/hora: `dados` ou `data` ou `dataHorario`
+
+## Decisões e ajustes implementados
+
+- correção de rota de navegação para `/eventos-da-feira`;
+- criação do módulo completo de eventos:
+  - lista com filtro;
+  - rota dinâmica de detalhe por `slug`;
+- suporte a múltiplos formatos de mídia do Strapi (`objeto`, `array`, `data`, `attributes`);
+- normalização de data/hora para `pt-BR` com timezone `America/Sao_Paulo`;
+- uso da `imagemEvento` no detalhe:
+  - como banner superior (com overlay);
+  - como imagem da seção do evento;
+- padronização visual do banner da página `A Feira` para ficar igual ao da home;
+- correção de `className` no layout raiz.
+
+## Situação atual de qualidade
+
+- `npm run lint`: sem erros e sem warnings.
+
+## Pré-requisitos
+
+- Node.js 20+
+- npm
+- Strapi rodando localmente em `http://127.0.0.1:1337` (ou URL equivalente)
+
+## Como executar
+
+1. Instalar dependências:
+
+```bash
+npm install
+```
+
+2. Subir o front:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Acessar:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `http://localhost:3000`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scripts úteis
 
-## Learn More
+- `npm run dev`: desenvolvimento
+- `npm run build`: build de produção
+- `npm run start`: iniciar build de produção
+- `npm run lint`: análise estática
 
-To learn more about Next.js, take a look at the following resources:
+## Configuração de ambiente recomendada
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Hoje parte das URLs está no código. Recomenda-se centralizar em variável de ambiente.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Exemplo (`.env.local`):
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-# FEMICTEC - Front-end App 
-
-Portal dinÃ¢mico desenvolvido para a **FEMICTEC**, focado na exibiÃ§Ã£o de projetos cientÃ­ficos e tecnolÃ³gicos. Esta aplicaÃ§Ã£o utiliza uma arquitetura desacoplada (Headless), consumindo dados via API de um CMS Strapi.
-
-## Tecnologias Utilizadas
-
-* **Framework:** [Next.js 14+](https://nextjs.org/)
-* **Linguagem:** TypeScript
-* **EstilizaÃ§Ã£o:** Tailwind CSS
-* **Gerenciamento de ConteÃºdo:** [Strapi CMS](https://strapi.io/)
-* **Infraestrutura Sugerida:** Oracle Cloud Infrastructure (OCI)
-
-## Arquitetura do Sistema
-
-O projeto funciona sob o modelo **Headless CMS**:
-1.  **Back-end:** `femictec-strapi` gerencia o banco de dados e fornece os endpoints REST.
-2.  **Front-end:** `femictec-app` realiza a busca de dados (Server-side) e renderiza a interface para o usuÃ¡rio final.
-
-## Como Executar o Projeto
-
-1.  Certifique-se de que o projeto `femictec-strapi` esteja rodando em `http://localhost:1337`.
-2.  Instale as dependÃªncias:
-    ```bash
-    npm install
-    ```
-3.  Inicie o servidor de desenvolvimento:
-    ```bash
-    npm run dev
-    ```
-4.  Acesse [http://localhost:3000](http://localhost:3000).
-
-## LicenÃ§a
-
-Este projeto Ã© de uso institucional para a FEMICTEC.
-=======
-# Femictec
-
-
-
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://gitlab.novohamburgo.rs.gov.br/governo-digital/femictec.git
-git branch -M main
-git push -uf origin main
+```bash
+NEXT_PUBLIC_STRAPI_URL=http://127.0.0.1:1337
 ```
 
-## Integrate with your tools
+## Troubleshooting
 
-- [ ] [Set up project integrations](https://gitlab.novohamburgo.rs.gov.br/governo-digital/femictec/-/settings/integrations)
+### Eventos não aparecem após troca para collection type
 
-## Collaborate with your team
+Verifique permissões do Strapi:
+- `Settings -> Users & Permissions Plugin -> Roles -> Public`
+- habilitar `find` e `findOne` para `Eventos_Feira`
+- publicar os registros
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+Sem isso, a API pode responder `403` e a aplicação cair no fallback local.
 
-## Test and Deploy
+### Data/hora não aparece
 
-Use the built-in continuous integration in GitLab.
+A coleção pode estar usando `dataHorario` em vez de `data`.
+O parser já suporta `dados`, `data` e `dataHorario`.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+### Banner não carrega no ambiente local
 
-***
+- confirmar URL do Strapi acessível no browser;
+- confirmar `imagemEvento` ou `Imagem` publicada no Strapi;
+- reiniciar `npm run dev` após alterações de configuração.
 
-# Editing this README
+## Pendências técnicas mapeadas
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+- centralizar todas as URLs do Strapi em env;
+- substituir links placeholder de inscrição/regulamento (`#`) por campos reais do CMS;
+- remover o arquivo legado `app/layout_origin.tsx` se não houver uso futuro.
 
-## Suggestions for a good README
+## Licença
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
->>>>>>> 8e061471c12ea3d7144f592190db7602434934cb
+Uso institucional (FEMICTEC / Governo Digital).
