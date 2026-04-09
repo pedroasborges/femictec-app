@@ -1,17 +1,6 @@
 import { BlocksRenderer, type BlocksContent } from "@strapi/blocks-react-renderer";
 import Banner from "../components/banner";
-
-async function getAFeira() {
-  const res = await fetch("http://127.0.0.1:1337/api/a-feira?populate=*", {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    return { data: null };
-  }
-
-  return res.json();
-}
+import { fetchStrapiJson } from "../lib/strapi";
 
 type FeiraResponse = {
   data: {
@@ -19,8 +8,12 @@ type FeiraResponse = {
   } | null;
 };
 
+async function getAFeira(): Promise<FeiraResponse> {
+  return fetchStrapiJson<FeiraResponse>("/api/a-feira?populate=*", { data: null });
+}
+
 export default async function Page() {
-  const response = (await getAFeira()) as FeiraResponse;
+  const response = await getAFeira();
   const conteudo = response.data?.Texto;
 
   return (

@@ -43,24 +43,23 @@
   - prioriza a rota nova de collection type (`/api/eventos-feiras`);
   - mantem compatibilidade com rota antiga durante migracao;
   - aceita variacoes de estrutura de midia (objeto/array/data/attributes);
-  - aceita `data` e `dados` para data/hora;
+  - aceita `dataHorario`, `data` e `dados` para data/hora;
   - formata data em `pt-BR` com timezone `America/Sao_Paulo`.
 - Banner do detalhe do evento agora usa `imagemEvento` com overlay de contraste.
+- Criado helper compartilhado `app/lib/strapi.ts` para base URL e fetch com fallback.
 
 ## 5) Estado de qualidade (verificado)
 - Comando executado: `npm run lint`
 - Resultado atual: sem erros e sem warnings.
 
 ## 6) Riscos e debitos tecnicos identificados
-- `README.md` com conflito de merge nao resolvido (`<<<<<<<`, `=======`, `>>>>>>>`).
-- Endpoints Strapi ainda hardcoded em partes do projeto (`127.0.0.1:1337`).
+- Permissoes do Strapi podem bloquear leitura de eventos (`403` em `/api/eventos-feiras`).
 - Em `eventos-da-feira`, links de inscricao/regulamento ainda estao com `#` (placeholder).
 - No Strapi, se `/api/eventos-feiras` retornar `403`, revisar permissoes do role `Public` para `find`/`findOne`.
 
 ## 7) Convencoes recomendadas para proximas tarefas
-- Centralizar URL da API em variavel de ambiente unica (`NEXT_PUBLIC_STRAPI_URL` / `STRAPI_URL`).
-- Definir tipos compartilhados para respostas do Strapi.
-- Corrigir conflito no `README.md` e padronizar encoding UTF-8.
+- Manter URL da API via variavel de ambiente unica (`NEXT_PUBLIC_STRAPI_URL` / `STRAPI_URL`).
+- Evoluir tipagem compartilhada dos payloads do Strapi por dominio (banners, feira, eventos).
 - Substituir placeholders de links de eventos por campos reais do CMS.
 
 ## 8) Comandos uteis
@@ -69,9 +68,9 @@
 - Executar app de producao: `npm run start`
 - Qualidade: `npm run lint`
 
-## 9) Prioridade de saneamento (ordem sugerida)
-1. Resolver conflito de merge no `README.md`.
-2. Habilitar permissoes publicas de leitura para `/api/eventos-feiras` no Strapi.
-3. Publicar/validar no Strapi os links reais de inscricao e regulamento.
-4. Consolidar base URL do Strapi por env em todas as paginas/componentes.
-5. Revisar e padronizar tipagem dos payloads do CMS.
+## 9) Prioridade de saneamento (status atualizado)
+1. Conflito de merge no `README.md` resolvido.
+2. Consolidacao da base URL do Strapi por env concluida no front (`app/lib/strapi.ts`).
+3. Habilitar permissoes publicas de leitura para `/api/eventos-feiras` no Strapi (pendente no painel Strapi).
+4. Publicar/validar no Strapi os links reais de inscricao e regulamento (pendente de conteudo).
+5. Revisar e padronizar tipagem dos payloads do CMS (parcialmente concluido, evolucao continua).
