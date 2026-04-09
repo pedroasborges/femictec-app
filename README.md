@@ -1,16 +1,17 @@
-# FEMICTEC App
+ï»¿# FEMICTEC App
 
-Front-end institucional da FEMICTEC, construído em Next.js com integração ao Strapi (Headless CMS).
+Front-end institucional da FEMICTEC, construido em Next.js com integracao ao Strapi (Headless CMS).
 
-## Visão geral
+## Visao geral
 
 O projeto entrega:
-- página inicial com banner/carrossel e destaques;
-- página "A Feira" com conteúdo dinâmico;
-- módulo "Eventos da Feira" com lista, filtro e página de detalhe por evento.
+- pagina inicial com banner/carrossel e destaques;
+- pagina "A Feira" com conteudo dinamico;
+- modulo "Eventos da Feira" com lista, filtro e pagina de detalhe por evento;
+- modulo "Noticias" com lista, filtros, detalhe e navegacao entre noticias.
 
-A aplicação segue arquitetura desacoplada:
-- Strapi fornece conteúdo via API REST;
+A aplicacao segue arquitetura desacoplada:
+- Strapi fornece conteudo via API REST;
 - Next.js renderiza interface e consome os dados no servidor.
 
 ## Stack
@@ -25,31 +26,35 @@ A aplicação segue arquitetura desacoplada:
 
 - `app/layout.tsx`: layout global com `Navbar` e `Footer`.
 - `app/page.tsx`: home.
-- `app/feira/page.tsx`: página "A Feira".
+- `app/feira/page.tsx`: pagina "A Feira".
 - `app/eventos-da-feira/page.tsx`: lista de eventos.
 - `app/eventos-da-feira/eventos-list-client.tsx`: filtro client-side da lista.
 - `app/eventos-da-feira/[slug]/page.tsx`: detalhe de evento.
-- `app/eventos-da-feira/events-data.ts`: camada de dados de eventos (normalização + fallback).
-- `app/components/banner.tsx`: busca e normalização de banners.
+- `app/eventos-da-feira/events-data.ts`: camada de dados de eventos (normalizacao + fallback).
+- `app/noticias/page.tsx`: lista de noticias.
+- `app/noticias/noticias-list-client.tsx`: filtros client-side e grid responsiva das noticias.
+- `app/noticias/[id]/page.tsx`: detalhe da noticia com botoes anterior/proxima.
+- `app/noticias/noticias-data.ts`: camada de dados de noticias (normalizacao + parser resiliente de imagem).
+- `app/components/banner.tsx`: busca e normalizacao de banners.
 - `app/components/banner-carousel.tsx`: carrossel e controles.
 
-## Integração com Strapi
+## Integracao com Strapi
 
 ### Banner
 - Endpoint: `GET /api/banners?populate=*`
-- Renderização com `next/image` (`unoptimized`) para evitar bloqueios do otimizador local em ambiente de desenvolvimento.
+- Renderizacao com `next/image` (`unoptimized`) para evitar bloqueios do otimizador local em ambiente de desenvolvimento.
 
 ### A Feira
 - Endpoint: `GET /api/a-feira?populate=*`
-- Conteúdo renderizado com `@strapi/blocks-react-renderer`.
+- Conteudo renderizado com `@strapi/blocks-react-renderer`.
 
 ### Eventos da Feira
-A camada atual prioriza a collection type nova e mantém fallback de compatibilidade.
+A camada atual prioriza a collection type nova e mantem fallback de compatibilidade.
 
 Ordem de tentativa:
 1. `GET /api/eventos-feiras?populate=*` (collection type `Eventos_Feira`)
 2. `GET /api/eventos-da-feira?populate=*` (legado)
-3. `GET /api/a-feira?populate=deep,5` (fallback técnico)
+3. `GET /api/a-feira?populate=deep,5` (fallback tecnico)
 
 Campos mapeados:
 - `nomeEvento`
@@ -58,25 +63,47 @@ Campos mapeados:
 - `imagemEvento`
 - data/hora: `dados` ou `data` ou `dataHorario`
 
-## Decisões e ajustes implementados
+### Noticias
+- Endpoint: `GET /api/noticias?populate=imagem&sort[0]=publishedAt:desc&sort[1]=createdAt:desc&pagination[pageSize]=100`
+- Campos mapeados:
+  - `titulo`
+  - `imagem`
+  - `miniDescricao`
+  - `descricao`
+- Lista com:
+  - filtro por texto;
+  - filtro por intervalo de data;
+  - cards responsivos com destaque periodico.
+- Detalhe com:
+  - conteudo completo (`descricao`);
+  - navegacao para noticia anterior/proxima com base na ordenacao da API.
+- Parser de midia tolerante a variacoes de payload (`data`, `attributes`, `formats`, `large/medium/small/thumbnail`).
+- Renderizacao de imagem com `next/image` usando `unoptimized` para evitar falhas com URLs remotas dinamicas do Strapi.
 
-- correção de rota de navegação para `/eventos-da-feira`;
-- criação do módulo completo de eventos:
+## Decisoes e ajustes implementados
+
+- correcao de rota de navegacao para `/eventos-da-feira`;
+- correcao de rota de navegacao para `/noticias`;
+- criacao do modulo completo de eventos:
   - lista com filtro;
-  - rota dinâmica de detalhe por `slug`;
-- suporte a múltiplos formatos de mídia do Strapi (`objeto`, `array`, `data`, `attributes`);
-- normalização de data/hora para `pt-BR` com timezone `America/Sao_Paulo`;
+  - rota dinamica de detalhe por `slug`;
+- criacao do modulo completo de noticias:
+  - lista com filtros por texto e periodo;
+  - rota dinamica de detalhe por `id`;
+  - navegacao anterior/proxima no detalhe;
+- suporte a multiplos formatos de midia do Strapi (`objeto`, `array`, `data`, `attributes`);
+- normalizacao de data/hora para `pt-BR` com timezone `America/Sao_Paulo`;
 - uso da `imagemEvento` no detalhe:
   - como banner superior (com overlay);
-  - como imagem da seção do evento;
-- padronização visual do banner da página `A Feira` para ficar igual ao da home;
-- correção de `className` no layout raiz.
+  - como imagem da secao do evento;
+- padronizacao visual do banner da pagina `A Feira` para ficar igual ao da home;
+- correcao de `className` no layout raiz.
 
-## Situação atual de qualidade
+## Situacao atual de qualidade
 
-- `npm run lint`: sem erros e sem warnings.
+- `npm run lint`: sem erros, com 1 warning legado em `app/eventos-da-feira/events-data.ts` (`STRAPI_BASE_URL` nao utilizado).
 
-## Pré-requisitos
+## Pre-requisitos
 
 - Node.js 20+
 - npm
@@ -84,7 +111,7 @@ Campos mapeados:
 
 ## Como executar
 
-1. Instalar dependências:
+1. Instalar dependencias:
 
 ```bash
 npm install
@@ -100,16 +127,16 @@ npm run dev
 
 - `http://localhost:3000`
 
-## Scripts úteis
+## Scripts uteis
 
 - `npm run dev`: desenvolvimento
-- `npm run build`: build de produção
-- `npm run start`: iniciar build de produção
-- `npm run lint`: análise estática
+- `npm run build`: build de producao
+- `npm run start`: iniciar build de producao
+- `npm run lint`: analise estatica
 
-## Configuração de ambiente recomendada
+## Configuracao de ambiente recomendada
 
-Hoje parte das URLs está no código. Recomenda-se centralizar em variável de ambiente.
+Hoje parte das URLs esta no codigo. Recomenda-se centralizar em variavel de ambiente.
 
 Exemplo (`.env.local`):
 
@@ -119,32 +146,38 @@ NEXT_PUBLIC_STRAPI_URL=http://127.0.0.1:1337
 
 ## Troubleshooting
 
-### Eventos não aparecem após troca para collection type
+### Eventos nao aparecem apos troca para collection type
 
-Verifique permissões do Strapi:
+Verifique permissoes do Strapi:
 - `Settings -> Users & Permissions Plugin -> Roles -> Public`
 - habilitar `find` e `findOne` para `Eventos_Feira`
 - publicar os registros
 
-Sem isso, a API pode responder `403` e a aplicação cair no fallback local.
+Sem isso, a API pode responder `403` e a aplicacao cair no fallback local.
 
-### Data/hora não aparece
+### Data/hora nao aparece
 
-A coleção pode estar usando `dataHorario` em vez de `data`.
-O parser já suporta `dados`, `data` e `dataHorario`.
+A colecao pode estar usando `dataHorario` em vez de `data`.
+O parser ja suporta `dados`, `data` e `dataHorario`.
 
-### Banner não carrega no ambiente local
+### Banner nao carrega no ambiente local
 
-- confirmar URL do Strapi acessível no browser;
+- confirmar URL do Strapi acessivel no browser;
 - confirmar `imagemEvento` ou `Imagem` publicada no Strapi;
-- reiniciar `npm run dev` após alterações de configuração.
+- reiniciar `npm run dev` apos alteracoes de configuracao.
 
-## Pendências técnicas mapeadas
+### Imagens de noticias nao aparecem
+
+- confirmar se o campo `imagem` esta publicado no Strapi;
+- validar se a API de noticias retorna URL de imagem em algum nivel do payload (`data/attributes/formats`);
+- conferir `NEXT_PUBLIC_STRAPI_URL` para geracao correta das URLs absolutas.
+
+## Pendencias tecnicas mapeadas
 
 - centralizar todas as URLs do Strapi em env;
-- substituir links placeholder de inscrição/regulamento (`#`) por campos reais do CMS;
-- remover o arquivo legado `app/layout_origin.tsx` se não houver uso futuro.
+- substituir links placeholder de inscricao/regulamento (`#`) por campos reais do CMS;
+- remover o arquivo legado `app/layout_origin.tsx` se nao houver uso futuro.
 
-## Licença
+## Licenca
 
 Uso institucional (FEMICTEC / Governo Digital).

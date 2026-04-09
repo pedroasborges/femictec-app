@@ -7,7 +7,7 @@ const navLinks = [
   { label: "A FEMICTEC", href: "/" },
   { label: "A FEIRA", href: "/feira" },
   { label: "EVENTOS DA FEIRA", href: "/eventos-da-feira" },
-  { label: "NOTICIAS", href: "/#projetos" },
+  { label: "NOTICIAS", href: "/noticias" },
   { label: "LOCALIZACAO", href: "/#projetos" },
 ];
 
@@ -106,3 +106,4 @@ export default function Navbar() {
     </nav>
   );
 }
+
