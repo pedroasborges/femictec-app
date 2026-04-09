@@ -18,7 +18,7 @@ export default async function EventoDetalhePage({ params }: EventoDetalhePagePro
   }
 
   return (
-    <main className="bg-[#eeeeee] py-10 text-[#909090] md:py-14">
+    <>
       <div className="mx-auto w-full max-w-[1320px] px-4 md:px-6">
         <div className="mb-6">
           <Link
@@ -83,6 +83,6 @@ export default async function EventoDetalhePage({ params }: EventoDetalhePagePro
           </a>
         </section>
       </div>
-    </main>
+    </>
   );
 }

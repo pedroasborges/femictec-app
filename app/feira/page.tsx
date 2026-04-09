@@ -24,7 +24,7 @@ export default async function Page() {
   const conteudo = response.data?.Texto;
 
   return (
-    <main className="bg-[#eeeeee] py-8 text-[#909090] md:py-12">
+    <>
       <section className="bg-[#909090] px-0 py-16 text-center text-[#eeeeee] md:py-24 lg:py-0">
         <Banner />
       </section>
@@ -39,6 +39,6 @@ export default async function Page() {
           <p className="text-slate-500">Conteudo da feira nao disponivel no momento.</p>
         )}
       </div>     
-    </main>
+    </>
   );
 }

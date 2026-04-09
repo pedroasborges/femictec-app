@@ -9,10 +9,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-br">
       <body className={`${inter.className} bg-slate-50 text-slate-950`}>
+        
         {/* Navbar Estilo Mostratec */}
         <Navbar />
-
-        {children}
+        <main className="bg-[#eeeeee] text-[#909090]">
+          {children}
+        </main>
+        
 
         {/* Footer Institucional */}
         <Footer />

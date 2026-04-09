@@ -28,7 +28,7 @@ export default async function Page() {
   const noticias = projetos.slice(0, 3);
 
   return (
-    <main className="bg-[#eeeeee] py-8 text-[#909090] md:py-12">
+    <>
       <section className="bg-[#909090] px-0 py-16 text-center text-[#eeeeee] md:py-24 lg:py-0">
         <Banner />
       </section>
@@ -117,6 +117,6 @@ export default async function Page() {
           </div>
         </section>
       </div>
-    </main>
+    </>
   );
 }
