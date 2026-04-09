@@ -55,3 +55,30 @@
 - Preferir tipagem por dominio (eventos, noticias, banners)
 - Manter integracoes de rota sincronizadas com `Navbar`
 - Validar sempre com `npm run lint`; build quando nao houver lock de `.next`
+
+## 9) Padrao interno de funcoes TypeScript
+
+Aplicar este padrao para manter consistencia do site:
+
+- Funcoes de integracao com CMS devem receber `unknown` na entrada e retornar tipo explicito.
+- Evitar `any`; usar `type`/`interface` locais por dominio.
+- Toda funcao que toca rede deve ter fallback controlado.
+- Normalizacao comum fica em `app/lib/*`, nunca duplicada em paginas/componentes.
+- Nomes de funcao devem expressar acao/resultado (`fetch*`, `resolve*`, `extract*`, `format*`).
+
+### Referencias oficiais no projeto
+
+- `app/lib/strapi.ts`
+  - `toStrapiUrl(path)` para URL absoluta
+  - `fetchStrapiJson<T>(path, fallback)` para fetch seguro e tipado
+- `app/lib/content-utils.ts`
+  - `extractText(value)` para texto de blocos/CMS
+  - `resolveMediaUrl(value)` para midia em payload variavel
+  - `formatDateTimePtBr(value, fallback?)` para data/hora normalizada
+
+### Checklist rapido para novas funcoes utilitarias
+
+1. A assinatura tem tipos claros de entrada/saida?
+2. Existe fallback para erro/ausencia de dado?
+3. A funcao e reutilizavel e pura?
+4. Ja existe funcao equivalente em `app/lib`?
