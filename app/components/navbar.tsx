@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -8,7 +8,7 @@ const navLinks = [
   { label: "A FEIRA", href: "/feira" },
   { label: "EVENTOS DA FEIRA", href: "/eventos-da-feira" },
   { label: "NOTICIAS", href: "/noticias" },
-  { label: "LOCALIZACAO", href: "/#projetos" },
+  { label: "LOCALIZACAO", href: "/#contato" },
 ];
 
 const desktopNavLinkClass =
@@ -46,7 +46,7 @@ export default function Navbar() {
         </div>
 
         <Link
-          href="/#projetos"
+          href="/#inscricoes"
           className="hidden bg-[#eeeeee] px-5 py-3 text-xs font-semibold tracking-[0.12em] text-[#909090] transition-colors hover:bg-white lg:block"
         >
           Inscricoes
@@ -94,7 +94,7 @@ export default function Navbar() {
               </Link>
             ))}
             <Link
-              href="/#projetos"
+              href="/#inscricoes"
               className="mt-2 bg-[#eeeeee] px-6 py-3 text-center text-xs font-semibold tracking-[0.12em] text-[#909090] transition-colors hover:bg-white"
               onClick={() => setIsMenuOpen(false)}
             >
@@ -106,4 +106,6 @@ export default function Navbar() {
     </nav>
   );
 }
+
+
 

@@ -1,30 +1,11 @@
-﻿type ProjetoItem = {
-  id: number;
-  Titulo?: string;
-  attributes?: {
-    Titulo?: string;
-  };
-};
-
-type ProjetoResponse = {
-  data: ProjetoItem[];
-};
+﻿import Image from "next/image";
+import Link from "next/link";
 
 import Banner from "./components/banner";
-import { fetchStrapiJson } from "./lib/strapi";
-
-async function getProjetos(): Promise<ProjetoResponse> {
-  return fetchStrapiJson<ProjetoResponse>("/api/projetos?populate=*", { data: [] });
-}
-
-function getProjetoTitulo(projeto: ProjetoItem): string {
-  return projeto.attributes?.Titulo ?? projeto.Titulo ?? "Projeto FEMICTEC";
-}
+import { getNoticias } from "./noticias/noticias-data";
 
 export default async function Page() {
-  const responseProjetos = await getProjetos();
-  const projetos = responseProjetos.data ?? [];
-  const noticias = projetos.slice(0, 3);
+  const noticias = (await getNoticias()).slice(0, 3);
 
   return (
     <>
@@ -32,7 +13,7 @@ export default async function Page() {
         <Banner />
       </section>
       <div className="mx-auto w-full max-w-[1320px] px-4 md:px-6">
-        <section className="py-16 text-center md:py-20">
+        <section id="inscricoes" className="py-16 text-center md:py-20">
           <h2 className="text-3xl font-light tracking-tight sm:text-4xl md:text-5xl">FACA SUA INSCRICAO</h2>
 
           <div className="mx-auto mt-10 max-w-5xl bg-[#909090] p-6 md:p-10">
@@ -52,7 +33,7 @@ export default async function Page() {
             <h3 className="text-2xl font-normal md:text-4xl">RESUMO DA FEIRA</h3>
             <div className="mx-auto mt-8 flex h-56 max-w-3xl items-center justify-center border-4 border-[#909090] bg-white md:h-72">
               <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#909090] text-3xl text-[#eeeeee]">
-                ▶
+                PLAY
               </div>
             </div>
           </div>
@@ -80,32 +61,79 @@ export default async function Page() {
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-[2fr_1fr]">
             <article className="rounded-md border-4 border-[#eeeeee] bg-[#eeeeee] p-4">
-              <div className="flex h-44 items-center justify-center bg-[#b3a9ad] text-lg font-medium tracking-wide text-[#eeeeee]">
-                IMAGEM
-              </div>
-              <p className="mt-4 text-left text-sm leading-relaxed text-[#909090] md:text-base">
-                {noticias[0] ? getProjetoTitulo(noticias[0]) : "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum"}
-              </p>
+              {noticias[0] ? (
+                <Link href={`/noticias/${noticias[0].id}`} className="block">
+                  <div className="relative h-44 overflow-hidden bg-[#b3a9ad]">
+                    {noticias[0].imagemUrl ? (
+                      <Image src={noticias[0].imagemUrl} alt={noticias[0].titulo} fill unoptimized className="object-cover" />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-lg font-medium tracking-wide text-[#eeeeee]">IMAGEM</div>
+                    )}
+                  </div>
+                  <h4 className="mt-4 text-left text-lg font-medium text-[#909090]">{noticias[0].titulo}</h4>
+                  <p className="mt-2 text-left text-sm leading-relaxed text-[#909090] md:text-base">
+                    {noticias[0].miniDescricao || "Sem descricao disponivel."}
+                  </p>
+                </Link>
+              ) : (
+                <>
+                  <div className="flex h-44 items-center justify-center bg-[#b3a9ad] text-lg font-medium tracking-wide text-[#eeeeee]">
+                    IMAGEM
+                  </div>
+                  <p className="mt-4 text-left text-sm leading-relaxed text-[#909090] md:text-base">Nenhuma noticia publicada no momento.</p>
+                </>
+              )}
             </article>
 
             <div className="grid gap-6">
               <article className="rounded-md border-4 border-[#eeeeee] bg-[#eeeeee] p-4">
-                <div className="flex h-24 items-center justify-center bg-[#b3a9ad] text-sm font-medium tracking-wide text-[#eeeeee]">
-                  IMAGEM
-                </div>
-                <p className="mt-3 text-left text-sm text-[#909090]">
-                  {noticias[1] ? getProjetoTitulo(noticias[1]) : "lorem ipsum lorem ipsum lorem ipsum"}
-                </p>
+                {noticias[1] ? (
+                  <Link href={`/noticias/${noticias[1].id}`} className="block">
+                    <div className="relative h-24 overflow-hidden bg-[#b3a9ad]">
+                      {noticias[1].imagemUrl ? (
+                        <Image src={noticias[1].imagemUrl} alt={noticias[1].titulo} fill unoptimized className="object-cover" />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-sm font-medium tracking-wide text-[#eeeeee]">IMAGEM</div>
+                      )}
+                    </div>
+                    <p className="mt-3 text-left text-sm font-medium text-[#909090]">{noticias[1].titulo}</p>
+                  </Link>
+                ) : (
+                  <>
+                    <div className="flex h-24 items-center justify-center bg-[#b3a9ad] text-sm font-medium tracking-wide text-[#eeeeee]">IMAGEM</div>
+                    <p className="mt-3 text-left text-sm text-[#909090]">Sem noticia adicional.</p>
+                  </>
+                )}
               </article>
               <article className="rounded-md border-4 border-[#eeeeee] bg-[#eeeeee] p-4">
-                <div className="flex h-24 items-center justify-center bg-[#b3a9ad] text-sm font-medium tracking-wide text-[#eeeeee]">
-                  IMAGEM
-                </div>
-                <p className="mt-3 text-left text-sm text-[#909090]">
-                  {noticias[2] ? getProjetoTitulo(noticias[2]) : "lorem ipsum lorem ipsum lorem ipsum"}
-                </p>
+                {noticias[2] ? (
+                  <Link href={`/noticias/${noticias[2].id}`} className="block">
+                    <div className="relative h-24 overflow-hidden bg-[#b3a9ad]">
+                      {noticias[2].imagemUrl ? (
+                        <Image src={noticias[2].imagemUrl} alt={noticias[2].titulo} fill unoptimized className="object-cover" />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-sm font-medium tracking-wide text-[#eeeeee]">IMAGEM</div>
+                      )}
+                    </div>
+                    <p className="mt-3 text-left text-sm font-medium text-[#909090]">{noticias[2].titulo}</p>
+                  </Link>
+                ) : (
+                  <>
+                    <div className="flex h-24 items-center justify-center bg-[#b3a9ad] text-sm font-medium tracking-wide text-[#eeeeee]">IMAGEM</div>
+                    <p className="mt-3 text-left text-sm text-[#909090]">Sem noticia adicional.</p>
+                  </>
+                )}
               </article>
             </div>
+          </div>
+
+          <div className="mt-8 flex justify-center">
+            <Link
+              href="/noticias"
+              className="rounded-md border border-[#eeeeee] px-6 py-3 text-xs font-medium uppercase tracking-[0.12em] text-[#eeeeee] transition hover:bg-[#9d9d9d]"
+            >
+              Ver todas as noticias
+            </Link>
           </div>
 
           <div className="mt-8 grid grid-cols-1 gap-4 border-t border-[#d7d7d7] pt-6 text-xs tracking-wide text-[#eeeeee] sm:grid-cols-4">
@@ -119,3 +147,5 @@ export default async function Page() {
     </>
   );
 }
+
+
