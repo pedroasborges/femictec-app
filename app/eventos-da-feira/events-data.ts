@@ -1,5 +1,7 @@
+﻿import { fetchStrapiJson } from "../lib/strapi";
+import { extractText, formatDateTimePtBr, resolveMediaUrl } from "../lib/content-utils";
+
 type UnknownRecord = Record<string, unknown>;
-import { fetchStrapiJson, toStrapiUrl } from "../lib/strapi";
 
 export type EventoItem = {
   id: number;
@@ -13,8 +15,6 @@ export type EventoItem = {
   linkRegulamento: string;
 };
 
-const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1337";
-
 const fallbackEventosDaFeira: EventoItem[] = [];
 
 function slugify(text: string): string {
@@ -24,72 +24,6 @@ function slugify(text: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
-}
-
-function getStringValue(value: unknown): string {
-  if (typeof value === "string") return value;
-  if (typeof value === "number") return String(value);
-  return "";
-}
-
-function getTextValue(value: unknown): string {
-  const fromString = getStringValue(value).trim();
-  if (fromString) return fromString;
-  return blockTextToString(value);
-}
-
-function blockTextToString(value: unknown): string {
-  if (typeof value === "string") return value;
-  if (!Array.isArray(value)) return "";
-
-  return value
-    .flatMap((block) => {
-      if (!block || typeof block !== "object") return [];
-      const record = block as { children?: Array<{ text?: string }> };
-      return (record.children ?? []).map((child) => child.text ?? "");
-    })
-    .join(" ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function resolveMediaUrl(media: unknown): string | null {
-  if (Array.isArray(media)) {
-    for (const item of media) {
-      const url = resolveMediaUrl(item);
-      if (url) return url;
-    }
-    return null;
-  }
-
-  if (!media || typeof media !== "object") return null;
-
-  const rawMedia = media as {
-    url?: string;
-    data?:
-      | { url?: string; attributes?: { url?: string } }
-      | Array<{ url?: string; attributes?: { url?: string } }>
-      | null;
-    attributes?: { url?: string };
-  };
-
-  if (Array.isArray(rawMedia.data)) {
-    for (const item of rawMedia.data) {
-      const url = resolveMediaUrl(item);
-      if (url) return url;
-    }
-    return null;
-  }
-
-  const url =
-    rawMedia.url ??
-    rawMedia.attributes?.url ??
-    rawMedia.data?.url ??
-    rawMedia.data?.attributes?.url ??
-    null;
-
-  if (!url) return null;
-  return toStrapiUrl(url);
 }
 
 function extractEventos(node: unknown): UnknownRecord[] {
@@ -113,25 +47,13 @@ function extractEventos(node: unknown): UnknownRecord[] {
 }
 
 function mapStrapiEvento(item: UnknownRecord, index: number): EventoItem | null {
-  const nomeEvento = getStringValue(item.nomeEvento).trim();
+  const nomeEvento = extractText(item.nomeEvento).trim();
   if (!nomeEvento) return null;
 
-  const miniDescricao = blockTextToString(item.miniDescricao) || "Mini descricao nao informada.";
-  const descricao = blockTextToString(item.descricao) || miniDescricao;
+  const miniDescricao = extractText(item.miniDescricao) || "Mini descricao nao informada.";
+  const descricao = extractText(item.descricao) || miniDescricao;
   const dataRaw = item.dados ?? item.data ?? item.dataHorario;
-  const dataTexto = getTextValue(dataRaw).trim();
-  const parsedDate = dataTexto ? new Date(dataTexto) : null;
-  const dados =
-    parsedDate && !Number.isNaN(parsedDate.getTime())
-      ? new Intl.DateTimeFormat("pt-BR", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          timeZone: "America/Sao_Paulo",
-        }).format(parsedDate)
-      : dataTexto || "Data e horario a definir";
+  const dados = formatDateTimePtBr(dataRaw);
   const imagemEvento = resolveMediaUrl(item.imagemEvento);
   const id = typeof item.id === "number" ? item.id : index + 1;
   const slugBase = slugify(nomeEvento) || `evento-${id}`;
@@ -193,3 +115,4 @@ export async function findEventoBySlug(slug: string): Promise<EventoItem | undef
   const eventos = await getEventosDaFeira();
   return eventos.find((evento) => evento.slug === slug);
 }
+

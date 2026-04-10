@@ -1,76 +1,84 @@
-# AGENT.md - FEMICTEC_APP
+﻿# AGENT.md - FEMICTEC_APP
 
-## 1) Visao geral do projeto
-- Nome: `femictec-app`
-- Stack principal: `Next.js 16` + `React 19` + `TypeScript` + `Tailwind CSS v4`
-- Arquitetura: front-end com App Router consumindo conteudo de um Strapi (`http://127.0.0.1:1337` por padrao).
-- Objetivo atual: portal institucional com home, pagina "A Feira" e modulo "Eventos da Feira" (lista + detalhe).
+## 1) Visao geral
+- Projeto: `femictec-app`
+- Stack: `Next.js 16` + `React 19` + `TypeScript` + `Tailwind CSS v4`
+- Arquitetura: App Router consumindo Strapi (headless CMS)
+- URL base Strapi (padrao): `http://127.0.0.1:1337`
 
-## 2) Estrutura observada
-- `app/layout.tsx`: layout raiz ativo com `Navbar` + `Footer`.
-- `app/page.tsx`: home page; busca projetos via API do Strapi e renderiza cards.
-- `app/feira/page.tsx`: pagina "A Feira"; renderiza rich text com `@strapi/blocks-react-renderer`.
-- `app/eventos-da-feira/page.tsx`: pagina de lista de eventos.
-- `app/eventos-da-feira/eventos-list-client.tsx`: filtro client-side da lista de eventos.
-- `app/eventos-da-feira/[slug]/page.tsx`: pagina de detalhe do evento.
-- `app/eventos-da-feira/events-data.ts`: camada de dados dos eventos (Strapi + fallback local).
-- `app/components/banner.tsx`: busca e normaliza imagens de banner no Strapi.
-- `app/components/banner-carousel.tsx`: carrossel client-side com autoplay e controles.
-- `app/components/navbar.tsx`: navegacao desktop/mobile responsiva.
-- `app/components/footer.tsx`: rodape institucional.
-- `app/layout_origin.tsx`: layout legado (nao utilizado na rota principal).
+## 2) Modulos principais
+- Home (`app/page.tsx`): banner + secoes institucionais + destaque de noticias
+- A Feira (`app/feira/page.tsx`): conteudo rich text do CMS
+- Eventos (`app/eventos-da-feira/*`): lista com filtro e detalhe por `slug`
+- Noticias (`app/noticias/*`): lista com filtros, detalhe por `id` e navegacao anterior/proxima
+- Layout global (`app/layout.tsx`): `Navbar` + `Footer` + metadata SEO basica
 
-## 3) Fluxo de dados (atual)
-- Home:
-  - `GET /api/projetos?populate=*`
-- Banner:
-  - `GET /api/banners?populate=*`
-- Feira:
-  - `GET /api/a-feira?populate=*`
-- Eventos da Feira:
-  - Tentativa principal (collection type `Eventos_Feira`): `GET /api/eventos-feiras?populate=*`
-  - Compatibilidade temporaria: `GET /api/eventos-da-feira?populate=*`
-  - Fallback adicional: `GET /api/a-feira?populate=deep,5`
-  - Campos consumidos: `nomeEvento`, `descricao`, `miniDescricao`, `imagemEvento`, `data`/`dados`.
+## 3) Camada de dados
+- `app/lib/strapi.ts`
+  - `toStrapiUrl`: normaliza caminhos relativos/absolutos
+  - `fetchStrapiJson`: fetch seguro com fallback
+- `app/lib/content-utils.ts` (novo)
+  - `extractText`: extracao de texto para string (inclui blocos)
+  - `resolveMediaUrl`: resolve URL de midia para diferentes formatos de payload
+  - `formatDateTimePtBr`: normaliza data/hora para `pt-BR`
 
-## 4) Mudancas recentes aplicadas
-- Correcao do `className` no `app/layout.tsx`.
-- Ajuste de rota no menu para `/eventos-da-feira`.
-- Criacao do modulo completo de eventos em duas telas:
-  - lista de eventos com filtro;
-  - detalhe por slug.
-- Integracao robusta com Strapi para eventos:
-  - prioriza a rota nova de collection type (`/api/eventos-feiras`);
-  - mantem compatibilidade com rota antiga durante migracao;
-  - aceita variacoes de estrutura de midia (objeto/array/data/attributes);
-  - aceita `dataHorario`, `data` e `dados` para data/hora;
-  - formata data em `pt-BR` com timezone `America/Sao_Paulo`.
-- Banner do detalhe do evento agora usa `imagemEvento` com overlay de contraste.
-- Criado helper compartilhado `app/lib/strapi.ts` para base URL e fetch com fallback.
+## 4) Endpoints consumidos
+- Banner: `GET /api/banners?populate=*`
+- A Feira: `GET /api/a-feira?populate=*`
+- Eventos (ordem de tentativa):
+  1. `/api/eventos-feiras?populate=*`
+  2. `/api/eventos-da-feira?populate=*`
+  3. `/api/a-feira?populate=deep,5`
+- Noticias:
+  - `/api/noticias?populate=imagem&sort[0]=publishedAt:desc&sort[1]=createdAt:desc&pagination[pageSize]=100`
 
-## 5) Estado de qualidade (verificado)
-- Comando executado: `npm run lint`
-- Resultado atual: sem erros e sem warnings.
+## 5) Refactors recentes
+- Remocao de duplicacao de parsing entre eventos/noticias/banner via `content-utils`
+- Remocao de constante nao usada em `events-data.ts` (warning resolvido)
+- Home conectada a noticias reais do Strapi (cards clicaveis + link para `/noticias`)
+- Navegacao ajustada:
+  - `Inscricoes` -> `/#inscricoes`
+  - `Localizacao` -> `/#contato`
+  - Footer com `id="contato"`
+- `layout.tsx` com metadata institucional
 
-## 6) Riscos e debitos tecnicos identificados
-- Permissoes do Strapi podem bloquear leitura de eventos (`403` em `/api/eventos-feiras`).
-- Em `eventos-da-feira`, links de inscricao/regulamento ainda estao com `#` (placeholder).
-- No Strapi, se `/api/eventos-feiras` retornar `403`, revisar permissoes do role `Public` para `find`/`findOne`.
+## 6) Qualidade e validacao
+- `npm run lint`: sem erros e sem warnings
+- `npm run build`: pode falhar com `EPERM` em `.next` quando arquivos estao bloqueados por processo ativo (ex.: dev server)
 
-## 7) Convencoes recomendadas para proximas tarefas
-- Manter URL da API via variavel de ambiente unica (`NEXT_PUBLIC_STRAPI_URL` / `STRAPI_URL`).
-- Evoluir tipagem compartilhada dos payloads do Strapi por dominio (banners, feira, eventos).
-- Substituir placeholders de links de eventos por campos reais do CMS.
+## 7) Pendencias conhecidas
+- `linkInscricao` e `linkRegulamento` em eventos ainda em placeholder (`#`)
+- `app/layout_origin.tsx` permanece legado (nao usado em runtime)
 
-## 8) Comandos uteis
-- Desenvolvimento: `npm run dev`
-- Build de producao: `npm run build`
-- Executar app de producao: `npm run start`
-- Qualidade: `npm run lint`
+## 8) Convencoes para proximas tarefas
+- Reutilizar `content-utils` para todo novo parser de payload Strapi
+- Preferir tipagem por dominio (eventos, noticias, banners)
+- Manter integracoes de rota sincronizadas com `Navbar`
+- Validar sempre com `npm run lint`; build quando nao houver lock de `.next`
 
-## 9) Prioridade de saneamento (status atualizado)
-1. Conflito de merge no `README.md` resolvido.
-2. Consolidacao da base URL do Strapi por env concluida no front (`app/lib/strapi.ts`).
-3. Habilitar permissoes publicas de leitura para `/api/eventos-feiras` no Strapi (pendente no painel Strapi).
-4. Publicar/validar no Strapi os links reais de inscricao e regulamento (pendente de conteudo).
-5. Revisar e padronizar tipagem dos payloads do CMS (parcialmente concluido, evolucao continua).
+## 9) Padrao interno de funcoes TypeScript
+
+Aplicar este padrao para manter consistencia do site:
+
+- Funcoes de integracao com CMS devem receber `unknown` na entrada e retornar tipo explicito.
+- Evitar `any`; usar `type`/`interface` locais por dominio.
+- Toda funcao que toca rede deve ter fallback controlado.
+- Normalizacao comum fica em `app/lib/*`, nunca duplicada em paginas/componentes.
+- Nomes de funcao devem expressar acao/resultado (`fetch*`, `resolve*`, `extract*`, `format*`).
+
+### Referencias oficiais no projeto
+
+- `app/lib/strapi.ts`
+  - `toStrapiUrl(path)` para URL absoluta
+  - `fetchStrapiJson<T>(path, fallback)` para fetch seguro e tipado
+- `app/lib/content-utils.ts`
+  - `extractText(value)` para texto de blocos/CMS
+  - `resolveMediaUrl(value)` para midia em payload variavel
+  - `formatDateTimePtBr(value, fallback?)` para data/hora normalizada
+
+### Checklist rapido para novas funcoes utilitarias
+
+1. A assinatura tem tipos claros de entrada/saida?
+2. Existe fallback para erro/ausencia de dado?
+3. A funcao e reutilizavel e pura?
+4. Ja existe funcao equivalente em `app/lib`?

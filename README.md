@@ -37,6 +37,42 @@ A aplicacao segue arquitetura desacoplada:
 - `app/noticias/noticias-data.ts`: camada de dados de noticias (normalizacao + parser resiliente de imagem).
 - `app/components/banner.tsx`: busca e normalizacao de banners.
 - `app/components/banner-carousel.tsx`: carrossel e controles.
+- `app/lib/strapi.ts`: funcoes base para URL e fetch seguro do Strapi.
+- `app/lib/content-utils.ts`: funcoes utilitarias para normalizacao de texto, midia e data.
+
+## Padrao de funcoes TypeScript
+
+Para manter consistencia no projeto, as funcoes utilitarias devem seguir este padrao:
+
+- nome explicito e responsabilidade unica;
+- entrada `unknown` quando vier de CMS externo;
+- saida tipada e previsivel (evitar `any`);
+- fallback seguro para erro de rede, payload ausente ou campo invalido;
+- normalizacao centralizada em `app/lib/*` para evitar duplicacao em componentes.
+
+### `app/lib/strapi.ts`
+
+- `STRAPI_BASE_URL`: origem unica do Strapi.
+- `toStrapiUrl(path: string): string`
+  - converte caminho relativo em URL absoluta.
+- `fetchStrapiJson<T>(path: string, fallback: T): Promise<T>`
+  - faz fetch com fallback tipado em caso de erro.
+
+### `app/lib/content-utils.ts`
+
+- `extractText(value: unknown): string`
+  - converte texto simples ou blocos ricos em string limpa.
+- `resolveMediaUrl(value: unknown): string | null`
+  - resolve URL de midia para payloads variados (`data`, `attributes`, `formats`, etc.).
+- `formatDateTimePtBr(value: unknown, fallback?: string): string`
+  - padroniza data/hora para `pt-BR` com fallback controlado.
+
+### Regras para novos utilitarios
+
+- criar em `app/lib/` quando reutilizavel por mais de um modulo;
+- manter funcoes puras (sem efeitos colaterais);
+- documentar fallback esperado no proprio arquivo;
+- preferir compor funcoes existentes antes de criar novas variantes.
 
 ## Integracao com Strapi
 
@@ -118,7 +154,7 @@ Campos mapeados:
 
 ## Situacao atual de qualidade
 
-- `npm run lint`: sem erros, com 1 warning legado em `app/eventos-da-feira/events-data.ts` (`STRAPI_BASE_URL` nao utilizado).
+- `npm run lint`: sem erros e sem warnings.
 
 ## Pre-requisitos
 
