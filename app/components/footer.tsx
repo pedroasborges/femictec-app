@@ -1,45 +1,5 @@
-﻿import { fetchStrapiJson } from "../lib/strapi";
+import { fetchStrapiJson } from "../lib/strapi";
 
-<<<<<<< HEAD
-type FooterApiData = {
-  Email?: string | null;
-  Telefone?: string | null;
-  Instagram?: string | null;
-  attributes?: {
-    Email?: string | null;
-    Telefone?: string | null;
-    Instagram?: string | null;
-  };
-};
-
-type FooterApiResponse = {
-  data?: FooterApiData | null;
-};
-
-function normalizeFooter(data: FooterApiData | null | undefined) {
-  if (!data) {
-    return {
-      email: null,
-      telefone: null,
-      instagram: null,
-    };
-  }
-
-  return {
-    email: data.Email ?? data.attributes?.Email ?? null,
-    telefone: data.Telefone ?? data.attributes?.Telefone ?? null,
-    instagram: data.Instagram ?? data.attributes?.Instagram ?? null,
-  };
-}
-
-async function getFooter() {
-  return fetchStrapiJson<FooterApiResponse>("/api/footer", { data: null });
-}
-
-export async function Footer() {
-  const response = await getFooter();
-  const footer = normalizeFooter(response.data);
-=======
 type FooterAttributes = {
   Email?: string | null;
   Telefone?: string | null;
@@ -85,7 +45,6 @@ export async function Footer() {
   const footer = await getFooter();
   const instagramUrl = toInstagramUrl(footer.Instagram);
   const whatsappUrl = toWhatsappUrl(footer.Telefone);
->>>>>>> e3bf3f2df416e5978ffa0dbc882560f82f0cd189
 
   return (
     <footer id="contato" className="mt-20 bg-[#909090] py-10 text-[#eeeeee]">
@@ -98,38 +57,10 @@ export async function Footer() {
 
           <div>
             <p className="text-xs font-semibold tracking-[0.12em]">EMAIL E TELEFONE</p>
-<<<<<<< HEAD
-            <p className="mt-3 text-sm text-[#ececec]">
-              {footer.email || footer.telefone
-                ? [footer.email, footer.telefone].filter(Boolean).join(" | ")
-                : "Feira Municipal de Iniciacao Cientifica e Tecnologica"}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-xs font-semibold tracking-[0.12em]">REDES SOCIAIS</p>
-            {footer.instagram ? (
-              <a
-                href={footer.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 inline-block text-sm text-[#ececec] underline underline-offset-4"
-              >
-                Instagram oficial
-              </a>
-            ) : (
-              <div className="mt-3 flex justify-center gap-2 lg:justify-start">
-                <span className="h-8 w-8 bg-[#eeeeee]" />
-                <span className="h-8 w-8 bg-[#eeeeee]" />
-                <span className="h-8 w-8 bg-[#eeeeee]" />
-              </div>
-            )}
-=======
             <div className="mt-3 space-y-1 text-sm text-[#ececec]">
               <p>{footer.Email ?? ""}</p>
               <p>{footer.Telefone ?? ""}</p>
             </div>
->>>>>>> e3bf3f2df416e5978ffa0dbc882560f82f0cd189
           </div>
 
           <div>
@@ -150,9 +81,6 @@ export async function Footer() {
 
           <div>
             <p className="text-xs font-semibold tracking-[0.12em]">WHATSAPP</p>
-<<<<<<< HEAD
-            <p className="mt-3 text-sm text-[#ececec]">{footer.telefone ?? "Contato institucional"}</p>
-=======
             {whatsappUrl ? (
               <a
                 href={whatsappUrl}
@@ -165,7 +93,6 @@ export async function Footer() {
             ) : (
               <p className="mt-3 text-sm text-[#ececec]">Contato institucional</p>
             )}
->>>>>>> e3bf3f2df416e5978ffa0dbc882560f82f0cd189
           </div>
         </div>
 
@@ -174,4 +101,3 @@ export async function Footer() {
     </footer>
   );
 }
-
