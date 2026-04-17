@@ -5,8 +5,10 @@ import { resolveMediaUrl } from "../lib/content-utils";
 type BannerApiItem = {
   id: number;
   Imagem?: unknown;
+  imagem?: unknown;
   attributes?: {
     Imagem?: unknown;
+    imagem?: unknown;
   };
 };
 
@@ -17,7 +19,7 @@ async function getBanner() {
 function normalizeBannerImages(items: BannerApiItem[]): BannerImage[] {
   return items
     .map((item) => {
-      const media = item.Imagem ?? item.attributes?.Imagem;
+      const media = item.Imagem ?? item.imagem ?? item.attributes?.Imagem ?? item.attributes?.imagem;
       const src = resolveMediaUrl(media);
 
       if (!src) return null;

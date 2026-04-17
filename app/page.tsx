@@ -135,13 +135,6 @@ export default async function Page() {
               Ver todas as noticias
             </Link>
           </div>
-
-          <div className="mt-8 grid grid-cols-1 gap-4 border-t border-[#d7d7d7] pt-6 text-xs tracking-wide text-[#eeeeee] sm:grid-cols-4">
-            <span>ENDERECO</span>
-            <span>EMAIL E TELEFONE</span>
-            <span>REDES SOCIAIS</span>
-            <span>WHATSAPP</span>
-          </div>
         </section>
       </div>
     </>

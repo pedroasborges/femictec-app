@@ -79,6 +79,15 @@ Para manter consistencia no projeto, as funcoes utilitarias devem seguir este pa
 ### Banner
 - Endpoint: `GET /api/banners?populate=*`
 - Renderizacao com `next/image` (`unoptimized`) para evitar bloqueios do otimizador local em ambiente de desenvolvimento.
+- Compatibilidade de payload para midia: `Imagem` e `imagem` (inclusive dentro de `attributes`).
+
+### Footer
+- Endpoint: `GET /api/footer`
+- Renderizacao server-side no componente `app/components/footer.tsx`.
+- Campos mapeados:
+  - `Email`
+  - `Telefone`
+  - `Instagram`
 
 ### A Feira
 - Endpoint: `GET /api/a-feira?populate=*`
@@ -128,6 +137,8 @@ Campos mapeados:
   - rota dinamica de detalhe por `id`;
   - navegacao anterior/proxima no detalhe;
 - suporte a multiplos formatos de midia do Strapi (`objeto`, `array`, `data`, `attributes`);
+- compatibilidade extra no banner para variacao de nome de campo (`Imagem`/`imagem`);
+- migracao do footer de estatico para dinamico, consumindo `/api/footer`;
 - normalizacao de data/hora para `pt-BR` com timezone `America/Sao_Paulo`;
 - uso da `imagemEvento` no detalhe:
   - como banner superior (com overlay);
@@ -201,6 +212,15 @@ O parser ja suporta `dados`, `data` e `dataHorario`.
 - confirmar URL do Strapi acessivel no browser;
 - confirmar `imagemEvento` ou `Imagem` publicada no Strapi;
 - reiniciar `npm run dev` apos alteracoes de configuracao.
+
+### Footer nao aparece (403 em `/api/footer`)
+
+Verifique permissoes do Strapi:
+- `Settings -> Users & Permissions Plugin -> Roles -> Public`
+- habilitar `find` para `Footer` (e recomendado `findOne`)
+- publicar o registro do single type `Footer`
+
+Sem isso, a API responde `403` e o frontend cai no fallback local.
 
 ### Imagens de noticias nao aparecem
 
