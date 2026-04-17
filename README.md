@@ -6,6 +6,7 @@ Front-end institucional da FEMICTEC, construido em Next.js com integracao ao Str
 
 O projeto entrega:
 - pagina inicial com banner/carrossel e destaques;
+- modulo "A FEMICTEC" com 3 paginas institucionais;
 - pagina "A Feira" com conteudo dinamico;
 - modulo "Eventos da Feira" com lista, filtro e pagina de detalhe por evento;
 - modulo "Noticias" com lista, filtros, detalhe e navegacao entre noticias.
@@ -26,7 +27,16 @@ A aplicacao segue arquitetura desacoplada:
 
 - `app/layout.tsx`: layout global com `Navbar` e `Footer`.
 - `app/page.tsx`: home.
+- `app/femictec/layout.tsx`: layout interno do modulo "A FEMICTEC".
+- `app/femictec/page.tsx`: pagina de apresentacao institucional.
+- `app/femictec/quem-realiza/page.tsx`: pagina "Quem Realiza".
+- `app/femictec/historico/page.tsx`: pagina "Historico".
+- `app/femictec/femictec-data.ts`: camada de dados do modulo "A FEMICTEC" (Strapi + fallback).
 - `app/feira/page.tsx`: pagina "A Feira".
+- `app/feira/layout.tsx`: layout interno do modulo "A Feira".
+- `app/feira/cronograma/page.tsx`: pagina de cronograma da feira.
+- `app/feira/programacao/page.tsx`: pagina de programacao da feira.
+- `app/feira/feira-data.ts`: camada de dados da feira (modo hibrido).
 - `app/eventos-da-feira/page.tsx`: lista de eventos.
 - `app/eventos-da-feira/eventos-list-client.tsx`: filtro client-side da lista.
 - `app/eventos-da-feira/[slug]/page.tsx`: detalhe de evento.
@@ -107,8 +117,20 @@ Para manter consistencia no projeto, as funcoes utilitarias devem seguir este pa
   - `Instagram`
 
 ### A Feira
-- Endpoint: `GET /api/a-feira?populate=*`
-- Conteudo renderizado com `@strapi/blocks-react-renderer`.
+- Endpoint principal: `GET /api/feira?populate=*`
+- Fallbacks tecnicos: `GET /api/feira?populate=deep,5`, `GET /api/a-feira?populate=*`, `GET /api/a-feira?populate=deep,5`
+- Modo hibrido para cronograma/programacao:
+  - prioridade para campos estruturados em `feira` (`cronogramaItens`, `programacaoDias`);
+  - fallback automatico para dados de `eventos-feiras`.
+
+### A FEMICTEC
+- Endpoint principal: `GET /api/femictec?populate=deep,5`
+- Fallbacks tecnicos: `GET /api/femictec?populate=*`, `GET /api/a-femictec?populate=deep,5`, `GET /api/a-femictec?populate=*`
+- Rotas:
+  - `/femictec`
+  - `/femictec/quem-realiza`
+  - `/femictec/historico`
+- Quando o endpoint nao existe ou esta vazio, a interface exibe fallback local para preservar o layout.
 
 ### Eventos da Feira
 A camada atual prioriza a collection type nova e mantem fallback de compatibilidade.
@@ -146,6 +168,17 @@ Campos mapeados:
 
 - correcao de rota de navegacao para `/eventos-da-feira`;
 - correcao de rota de navegacao para `/noticias`;
+- atualizacao da navegacao para `A FEMICTEC -> /femictec`;
+- criacao do modulo completo "A FEMICTEC":
+  - pagina de apresentacao;
+  - pagina "Quem Realiza";
+  - pagina "Historico";
+  - integracao preparada com Strapi + fallback local;
+- reestruturacao da feira em 3 paginas:
+  - visao geral;
+  - cronograma;
+  - programacao completa;
+  - leitura em modo hibrido (single type + fallback por eventos);
 - criacao do modulo completo de eventos:
   - lista com filtro;
   - rota dinamica de detalhe por `slug`;
@@ -245,10 +278,18 @@ Sem isso, a API responde `403` e o frontend cai no fallback local.
 - validar se a API de noticias retorna URL de imagem em algum nivel do payload (`data/attributes/formats`);
 - conferir `NEXT_PUBLIC_STRAPI_URL` para geracao correta das URLs absolutas.
 
+### Modulo A FEMICTEC nao aparece com dados do CMS
+
+- confirmar existencia do single type `femictec`;
+- validar endpoint `GET /api/femictec?populate=*`;
+- verificar permissao `find` na role `Public`;
+- publicar o registro do single type `Femictec`.
+
 ## Pendencias tecnicas mapeadas
 
 - centralizar todas as URLs do Strapi em env;
 - substituir links placeholder de inscricao/regulamento (`#`) por campos reais do CMS;
+- substituir placeholders de galeria/links institucionais no modulo `femictec`;
 - remover o arquivo legado `app/layout_origin.tsx` se nao houver uso futuro.
 
 ## Licenca

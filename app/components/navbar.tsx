@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 const navLinks = [
-  { label: "A FEMICTEC", href: "/" },
+  { label: "A FEMICTEC", href: "/femictec" },
   { label: "A FEIRA", href: "/feira" },
   { label: "EVENTOS DA FEIRA", href: "/eventos-da-feira" },
   { label: "NOTICIAS", href: "/noticias" },
