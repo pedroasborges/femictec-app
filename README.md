@@ -76,6 +76,23 @@ Para manter consistencia no projeto, as funcoes utilitarias devem seguir este pa
 
 ## Integracao com Strapi
 
+### Utilitarios compartilhados (`app/lib/strapi.ts`)
+
+- `STRAPI_BASE_URL`:
+  - base da URL do Strapi usada em toda a aplicacao;
+  - prioridade para `NEXT_PUBLIC_STRAPI_URL`;
+  - fallback padrao: `http://127.0.0.1:1337`.
+
+- `toStrapiUrl(path: string): string`:
+  - recebe um caminho de recurso do Strapi e devolve URL absoluta;
+  - se o valor ja vier com `http://` ou `https://`, retorna sem alterar;
+  - normaliza caminhos relativos para sempre comecarem com `/` antes de concatenar com `STRAPI_BASE_URL`.
+
+- `fetchStrapiJson<T>(path: string, fallback: T): Promise<T>`:
+  - helper generico para buscar JSON no Strapi com tipagem em TypeScript;
+  - executa `fetch` com `cache: "no-store"` para evitar dados stale em renderizacao server-side;
+  - quando houver erro de rede, excecao, ou resposta nao-`ok`, retorna `fallback` em vez de quebrar o fluxo da pagina.
+
 ### Banner
 - Endpoint: `GET /api/banners?populate=*`
 - Renderizacao com `next/image` (`unoptimized`) para evitar bloqueios do otimizador local em ambiente de desenvolvimento.
