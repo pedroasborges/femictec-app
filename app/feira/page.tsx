@@ -1,37 +1,39 @@
-import { BlocksRenderer, type BlocksContent } from "@strapi/blocks-react-renderer";
-import Banner from "../components/banner";
-import { fetchStrapiJson } from "../lib/strapi";
+import Link from "next/link";
 
-type FeiraResponse = {
-  data: {
-    Texto?: BlocksContent;
-  } | null;
-};
+import { getFeiraContent } from "./feira-data";
 
-async function getAFeira(): Promise<FeiraResponse> {
-  return fetchStrapiJson<FeiraResponse>("/api/a-feira?populate=*", { data: null });
-}
-
-export default async function Page() {
-  const response = await getAFeira();
-  const conteudo = response.data?.Texto;
+export default async function FeiraPage() {
+  const content = await getFeiraContent();
 
   return (
     <>
-      <section className="bg-[#909090] px-0 py-16 text-center text-[#eeeeee] md:py-24 lg:py-0">
-        <Banner />
+      <section className="px-4 py-8 md:px-8 md:py-10">
+        <h1 className="text-center text-3xl font-light uppercase tracking-wide text-[#8c8288] md:text-4xl">{content.edicaoTitulo}</h1>
+        <p className="mx-auto mt-6 max-w-3xl text-center text-sm leading-7 text-[#8f868b] md:text-base">{content.edicaoDescricao}</p>
       </section>
-      <div className="mx-auto w-full max-w-[1320px] px-4 md:px-6">
-        <h1 className="mb-8 text-3xl font-bold">A Feira</h1>
-      
-        {conteudo?.length ? (
-          <div className="space-y-4 leading-7 text-slate-700">
-            <BlocksRenderer content={conteudo} />
-          </div>
+
+      <section className="bg-[#9b9297] px-4 py-16 text-center text-[#eeeeee] md:px-8 md:py-20">
+        {content.tematicaImagemUrl ? (
+          <img src={content.tematicaImagemUrl} alt={content.tematicaImagemAlt} className="mx-auto w-full max-w-4xl rounded-sm object-cover" />
         ) : (
-          <p className="text-slate-500">Conteudo da feira nao disponivel no momento.</p>
+          <div className="mx-auto max-w-3xl text-xl font-light uppercase tracking-[0.08em] md:text-3xl">Imagem da Tematica da Edicao</div>
         )}
-      </div>     
+      </section>
+
+      <section className="px-4 py-8 md:px-8 md:py-10">
+        <h2 className="text-center text-2xl font-light uppercase tracking-wide text-[#8c8288] md:text-3xl">{content.objetivosTitulo}</h2>
+        <p className="mx-auto mt-6 max-w-3xl text-center text-sm leading-7 text-[#8f868b] md:text-base">{content.objetivosDescricao}</p>
+      </section>
+
+      <section className="px-4 pb-12 pt-4 text-center md:px-8 md:pb-14">
+        <h2 className="text-2xl font-light uppercase tracking-wide text-[#8c8288] md:text-3xl">{content.regulamentoTitulo}</h2>
+        <Link
+          href={content.regulamentoUrl}
+          className="mx-auto mt-6 inline-flex rounded-sm bg-[#9a9095] px-8 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-[#eeeeee] transition hover:bg-[#878087]"
+        >
+          {content.regulamentoLabel}
+        </Link>
+      </section>
     </>
   );
 }

@@ -1,4 +1,4 @@
-﻿import { toStrapiUrl } from "../lib/strapi";
+import { toStrapiUrl } from "../lib/strapi";
 import { extractText, resolveMediaUrl } from "../lib/content-utils";
 
 export type Noticia = {
@@ -32,11 +32,14 @@ type StrapiNoticia = {
 };
 
 type NoticiasResponse = {
-  data?: StrapiNoticia[] | null;
+  data?: StrapiNoticia[] | StrapiNoticia | null;
 };
 
-const NOTICIAS_ENDPOINT =
-  "/api/noticias?populate=imagem&sort[0]=publishedAt:desc&sort[1]=createdAt:desc&pagination[pageSize]=100";
+const NOTICIAS_ENDPOINTS = [
+  "/api/noticias?populate=imagem&sort[0]=publishedAt:desc&sort[1]=createdAt:desc&pagination[pageSize]=100",
+  "/api/noticias?populate=*&sort[0]=publishedAt:desc&sort[1]=createdAt:desc&pagination[pageSize]=100",
+  "/api/noticias?populate=*",
+];
 
 function normalizeNoticia(item: StrapiNoticia, index: number): Noticia {
   const source = item.attributes ?? item;
@@ -60,18 +63,33 @@ function normalizeNoticia(item: StrapiNoticia, index: number): Noticia {
   };
 }
 
+function normalizeResponse(payload: NoticiasResponse): StrapiNoticia[] {
+  if (Array.isArray(payload.data)) return payload.data;
+  if (payload.data && typeof payload.data === "object") return [payload.data];
+  return [];
+}
+
+async function fetchNoticiasFromEndpoint(path: string): Promise<Noticia[]> {
+  const response = await fetch(toStrapiUrl(path), {
+    cache: "no-store",
+  });
+
+  if (!response.ok) return [];
+
+  const payload = (await response.json()) as NoticiasResponse;
+  const itens = normalizeResponse(payload);
+
+  return itens.map(normalizeNoticia);
+}
+
 export async function getNoticias(): Promise<Noticia[]> {
   try {
-    const response = await fetch(toStrapiUrl(NOTICIAS_ENDPOINT), {
-      next: { revalidate: 120 },
-    });
+    for (const endpoint of NOTICIAS_ENDPOINTS) {
+      const noticias = await fetchNoticiasFromEndpoint(endpoint);
+      if (noticias.length > 0) return noticias;
+    }
 
-    if (!response.ok) return [];
-
-    const payload = (await response.json()) as NoticiasResponse;
-    const itens = Array.isArray(payload.data) ? payload.data : [];
-
-    return itens.map(normalizeNoticia);
+    return [];
   } catch {
     return [];
   }
@@ -95,4 +113,3 @@ export async function getNoticiaWithNeighbors(id: string): Promise<NoticiaWithNe
     proxima: noticias[currentIndex + 1] ?? null,
   };
 }
-
