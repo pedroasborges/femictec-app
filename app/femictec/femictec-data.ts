@@ -21,6 +21,10 @@ type TabelaHistorico = {
 };
 
 export type FemictecContent = {
+  menuItemInicioLabel: string;
+  menuItemQuemRealizaLabel: string;
+  menuItemHistoricoLabel: string;
+
   bannerTitulo: string;
   bannerDestaque: string;
 
@@ -62,6 +66,10 @@ export type FemictecContent = {
 };
 
 const fallbackContent: FemictecContent = {
+  menuItemInicioLabel: "Apresentacao",
+  menuItemQuemRealizaLabel: "Quem Realiza",
+  menuItemHistoricoLabel: "Historico",
+
   bannerTitulo: "Banner",
   bannerDestaque: "Comunicacao",
 
@@ -224,6 +232,10 @@ export async function getFemictecContent(): Promise<FemictecContent> {
   if (!source) return fallbackContent;
 
   return {
+    menuItemInicioLabel: extractText(source.menuItemInicioLabel) || fallbackContent.menuItemInicioLabel,
+    menuItemQuemRealizaLabel: extractText(source.menuItemQuemRealizaLabel) || fallbackContent.menuItemQuemRealizaLabel,
+    menuItemHistoricoLabel: extractText(source.menuItemHistoricoLabel) || fallbackContent.menuItemHistoricoLabel,
+
     bannerTitulo: extractText(source.bannerTitulo) || fallbackContent.bannerTitulo,
     bannerDestaque: extractText(source.bannerDestaque) || fallbackContent.bannerDestaque,
 
