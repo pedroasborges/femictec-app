@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import type { EventoItem } from "./events-data";
@@ -79,7 +80,15 @@ export default function EventosListClient({ eventos }: EventosListClientProps) {
               className="grid grid-cols-1 gap-3 md:grid-cols-[0.55fr_0.45fr]"
             >
               <article className="flex min-h-[110px] items-center gap-5 rounded bg-[#9c8f95] px-4 py-5 transition hover:bg-[#8f8388] md:px-6">
-                <span className="h-14 w-14 rounded bg-[#ece8ea]" />
+                <div className="relative h-14 w-14 overflow-hidden rounded bg-[#ece8ea]">
+                  {evento.imagemEvento ? (
+                    <Image src={evento.imagemEvento} alt={evento.nomeEvento} fill className="object-cover" unoptimized />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-[10px] font-medium uppercase tracking-wide text-[#8f8388]">
+                      Imagem
+                    </div>
+                  )}
+                </div>
                 <div>
                   <h2 className="text-2xl font-medium text-[#eeeeee] md:text-3xl">{evento.nomeEvento.toUpperCase()}</h2>
                   <p className="mt-1 text-sm text-[#ece8ea]">{evento.dados}</p>

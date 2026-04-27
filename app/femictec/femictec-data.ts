@@ -27,6 +27,7 @@ export type FemictecContent = {
 
   bannerTitulo: string;
   bannerDestaque: string;
+  bannerImagemUrl: string | null;
 
   oQueTitulo: string;
   oQueDescricao: string;
@@ -72,6 +73,7 @@ const fallbackContent: FemictecContent = {
 
   bannerTitulo: "Banner",
   bannerDestaque: "Comunicacao",
+  bannerImagemUrl: null,
 
   oQueTitulo: "O que e a FEMICTEC",
   oQueDescricao:
@@ -170,6 +172,21 @@ function toList(value: unknown): UnknownRecord[] {
   return single ? [single] : [];
 }
 
+function pickFirstDefined(...values: unknown[]): unknown {
+  for (const value of values) {
+    if (value !== undefined && value !== null) return value;
+  }
+  return undefined;
+}
+
+function pickSection(source: UnknownRecord, keys: string[]): UnknownRecord {
+  for (const key of keys) {
+    const section = normalizeItem(source[key]);
+    if (section) return section;
+  }
+  return source;
+}
+
 function mapParceiros(items: UnknownRecord[]): Parceiro[] {
   const mapped = items
     .map((item, index) => {
@@ -231,49 +248,64 @@ export async function getFemictecContent(): Promise<FemictecContent> {
 
   if (!source) return fallbackContent;
 
+  const menu = pickSection(source, ["menuInterno", "menu"]);
+  const apresentacao = pickSection(source, ["apresentacao", "secaoApresentacao", "paginaApresentacao"]);
+  const quemRealiza = pickSection(source, ["quemRealiza", "secaoQuemRealiza", "paginaQuemRealiza"]);
+  const historico = pickSection(source, ["historico", "secaoHistorico", "paginaHistorico"]);
+
   return {
-    menuItemInicioLabel: extractText(source.menuItemInicioLabel) || fallbackContent.menuItemInicioLabel,
-    menuItemQuemRealizaLabel: extractText(source.menuItemQuemRealizaLabel) || fallbackContent.menuItemQuemRealizaLabel,
-    menuItemHistoricoLabel: extractText(source.menuItemHistoricoLabel) || fallbackContent.menuItemHistoricoLabel,
+    menuItemInicioLabel: extractText(pickFirstDefined(menu.menuItemInicioLabel, source.menuItemInicioLabel)) || fallbackContent.menuItemInicioLabel,
+    menuItemQuemRealizaLabel:
+      extractText(pickFirstDefined(menu.menuItemQuemRealizaLabel, source.menuItemQuemRealizaLabel)) || fallbackContent.menuItemQuemRealizaLabel,
+    menuItemHistoricoLabel:
+      extractText(pickFirstDefined(menu.menuItemHistoricoLabel, source.menuItemHistoricoLabel)) || fallbackContent.menuItemHistoricoLabel,
 
-    bannerTitulo: extractText(source.bannerTitulo) || fallbackContent.bannerTitulo,
-    bannerDestaque: extractText(source.bannerDestaque) || fallbackContent.bannerDestaque,
+    bannerTitulo: extractText(pickFirstDefined(apresentacao.bannerTitulo, source.bannerTitulo)) || fallbackContent.bannerTitulo,
+    bannerDestaque: extractText(pickFirstDefined(apresentacao.bannerDestaque, source.bannerDestaque)) || fallbackContent.bannerDestaque,
+    bannerImagemUrl: resolveMediaUrl(pickFirstDefined(apresentacao.bannerImagem, source.bannerImagem)),
 
-    oQueTitulo: extractText(source.oQueTitulo) || fallbackContent.oQueTitulo,
-    oQueDescricao: extractText(source.oQueDescricao) || fallbackContent.oQueDescricao,
-    missaoTitulo: extractText(source.missaoTitulo) || fallbackContent.missaoTitulo,
-    missaoDescricao: extractText(source.missaoDescricao) || fallbackContent.missaoDescricao,
-    missaoDestaque: extractText(source.missaoDestaque) || fallbackContent.missaoDestaque,
-    impactoTitulo: extractText(source.impactoTitulo) || fallbackContent.impactoTitulo,
-    impactoDescricao: extractText(source.impactoDescricao) || fallbackContent.impactoDescricao,
+    oQueTitulo: extractText(pickFirstDefined(apresentacao.oQueTitulo, source.oQueTitulo)) || fallbackContent.oQueTitulo,
+    oQueDescricao: extractText(pickFirstDefined(apresentacao.oQueDescricao, source.oQueDescricao)) || fallbackContent.oQueDescricao,
+    missaoTitulo: extractText(pickFirstDefined(apresentacao.missaoTitulo, source.missaoTitulo)) || fallbackContent.missaoTitulo,
+    missaoDescricao: extractText(pickFirstDefined(apresentacao.missaoDescricao, source.missaoDescricao)) || fallbackContent.missaoDescricao,
+    missaoDestaque: extractText(pickFirstDefined(apresentacao.missaoDestaque, source.missaoDestaque)) || fallbackContent.missaoDestaque,
+    impactoTitulo: extractText(pickFirstDefined(apresentacao.impactoTitulo, source.impactoTitulo)) || fallbackContent.impactoTitulo,
+    impactoDescricao: extractText(pickFirstDefined(apresentacao.impactoDescricao, source.impactoDescricao)) || fallbackContent.impactoDescricao,
 
-    estandesTitulo: extractText(source.estandesTitulo) || fallbackContent.estandesTitulo,
-    estandesSubtitulo: extractText(source.estandesSubtitulo) || fallbackContent.estandesSubtitulo,
-    estandesImagemUrl: resolveMediaUrl(source.estandesImagem),
-    estandesImagemAlt: extractText(source.estandesImagemAlt) || fallbackContent.estandesImagemAlt,
+    estandesTitulo: extractText(pickFirstDefined(apresentacao.estandesTitulo, source.estandesTitulo)) || fallbackContent.estandesTitulo,
+    estandesSubtitulo: extractText(pickFirstDefined(apresentacao.estandesSubtitulo, source.estandesSubtitulo)) || fallbackContent.estandesSubtitulo,
+    estandesImagemUrl: resolveMediaUrl(pickFirstDefined(apresentacao.estandesImagem, source.estandesImagem)),
+    estandesImagemAlt:
+      extractText(pickFirstDefined(apresentacao.estandesImagemAlt, source.estandesImagemAlt)) || fallbackContent.estandesImagemAlt,
 
-    quemRealizaTitulo: extractText(source.quemRealizaTitulo) || fallbackContent.quemRealizaTitulo,
-    organizacaoTitulo: extractText(source.organizacaoTitulo) || fallbackContent.organizacaoTitulo,
-    organizacaoDescricao: extractText(source.organizacaoDescricao) || fallbackContent.organizacaoDescricao,
-    comissaoTitulo: extractText(source.comissaoTitulo) || fallbackContent.comissaoTitulo,
-    comissaoDescricao: extractText(source.comissaoDescricao) || fallbackContent.comissaoDescricao,
-    imagemEntradaUrl: resolveMediaUrl(source.imagemEntrada),
-    imagemEntradaAlt: extractText(source.imagemEntradaAlt) || fallbackContent.imagemEntradaAlt,
-    imagemEntradaLabel: extractText(source.imagemEntradaLabel) || fallbackContent.imagemEntradaLabel,
-    parceirosTitulo: extractText(source.parceirosTitulo) || fallbackContent.parceirosTitulo,
-    parceiros: mapParceiros(toList(source.parceiros)),
+    quemRealizaTitulo: extractText(pickFirstDefined(quemRealiza.quemRealizaTitulo, source.quemRealizaTitulo)) || fallbackContent.quemRealizaTitulo,
+    organizacaoTitulo: extractText(pickFirstDefined(quemRealiza.organizacaoTitulo, source.organizacaoTitulo)) || fallbackContent.organizacaoTitulo,
+    organizacaoDescricao:
+      extractText(pickFirstDefined(quemRealiza.organizacaoDescricao, source.organizacaoDescricao)) || fallbackContent.organizacaoDescricao,
+    comissaoTitulo: extractText(pickFirstDefined(quemRealiza.comissaoTitulo, source.comissaoTitulo)) || fallbackContent.comissaoTitulo,
+    comissaoDescricao: extractText(pickFirstDefined(quemRealiza.comissaoDescricao, source.comissaoDescricao)) || fallbackContent.comissaoDescricao,
+    imagemEntradaUrl: resolveMediaUrl(pickFirstDefined(quemRealiza.imagemEntrada, source.imagemEntrada)),
+    imagemEntradaAlt:
+      extractText(pickFirstDefined(quemRealiza.imagemEntradaAlt, source.imagemEntradaAlt)) || fallbackContent.imagemEntradaAlt,
+    imagemEntradaLabel:
+      extractText(pickFirstDefined(quemRealiza.imagemEntradaLabel, source.imagemEntradaLabel)) || fallbackContent.imagemEntradaLabel,
+    parceirosTitulo: extractText(pickFirstDefined(quemRealiza.parceirosTitulo, source.parceirosTitulo)) || fallbackContent.parceirosTitulo,
+    parceiros: mapParceiros(toList(pickFirstDefined(quemRealiza.parceiros, source.parceiros))),
 
-    historicoTitulo: extractText(source.historicoTitulo) || fallbackContent.historicoTitulo,
-    historicoDescricao: extractText(source.historicoDescricao) || fallbackContent.historicoDescricao,
-    trajetoriaTitulo: extractText(source.trajetoriaTitulo) || fallbackContent.trajetoriaTitulo,
-    trajetoriaSubtitulo: extractText(source.trajetoriaSubtitulo) || fallbackContent.trajetoriaSubtitulo,
-    trajetoriaImagemUrl: resolveMediaUrl(source.trajetoriaImagem),
-    trajetoriaImagemAlt: extractText(source.trajetoriaImagemAlt) || fallbackContent.trajetoriaImagemAlt,
-    edicoesCards: mapEdicoes(toList(source.edicoesCards)),
-    galeriaLabel: extractText(source.galeriaLabel) || fallbackContent.galeriaLabel,
-    galeriaUrl: extractText(source.galeriaUrl) || fallbackContent.galeriaUrl,
-    historicoTabelaTitulo: extractText(source.historicoTabelaTitulo) || fallbackContent.historicoTabelaTitulo,
-    historicoTabelaLinhas: mapTabela(toList(source.historicoTabelaLinhas)),
+    historicoTitulo: extractText(pickFirstDefined(historico.historicoTitulo, source.historicoTitulo)) || fallbackContent.historicoTitulo,
+    historicoDescricao: extractText(pickFirstDefined(historico.historicoDescricao, source.historicoDescricao)) || fallbackContent.historicoDescricao,
+    trajetoriaTitulo: extractText(pickFirstDefined(historico.trajetoriaTitulo, source.trajetoriaTitulo)) || fallbackContent.trajetoriaTitulo,
+    trajetoriaSubtitulo:
+      extractText(pickFirstDefined(historico.trajetoriaSubtitulo, source.trajetoriaSubtitulo)) || fallbackContent.trajetoriaSubtitulo,
+    trajetoriaImagemUrl: resolveMediaUrl(pickFirstDefined(historico.trajetoriaImagem, source.trajetoriaImagem)),
+    trajetoriaImagemAlt:
+      extractText(pickFirstDefined(historico.trajetoriaImagemAlt, source.trajetoriaImagemAlt)) || fallbackContent.trajetoriaImagemAlt,
+    edicoesCards: mapEdicoes(toList(pickFirstDefined(historico.edicoesCards, source.edicoesCards))),
+    galeriaLabel: extractText(pickFirstDefined(historico.galeriaLabel, source.galeriaLabel)) || fallbackContent.galeriaLabel,
+    galeriaUrl: extractText(pickFirstDefined(historico.galeriaUrl, source.galeriaUrl)) || fallbackContent.galeriaUrl,
+    historicoTabelaTitulo:
+      extractText(pickFirstDefined(historico.historicoTabelaTitulo, source.historicoTabelaTitulo)) || fallbackContent.historicoTabelaTitulo,
+    historicoTabelaLinhas: mapTabela(toList(pickFirstDefined(historico.historicoTabelaLinhas, source.historicoTabelaLinhas))),
   };
 }
 

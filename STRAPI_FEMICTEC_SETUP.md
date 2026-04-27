@@ -27,47 +27,110 @@ No Strapi Admin:
 
 Crie com os nomes exatamente iguais:
 
+### Modelo recomendado (mais intuitivo)
+
+Para facilitar a alimentacao do CMS, recomendamos separar o single type em componentes por secao:
+
+1. `menuInterno` (Component - single: `femictec.menu-interno`)
+2. `apresentacao` (Component - single: `femictec.apresentacao`)
+3. `quemRealiza` (Component - single: `femictec.quem-realiza`)
+4. `historico` (Component - single: `femictec.historico`)
+
+Observacao: o frontend aceita tanto este modelo novo por secao quanto o modelo antigo com campos na raiz.
+
+### Navegacao interna do modulo
+1. `menuItemInicioLabel` (Text)
+2. `menuItemQuemRealizaLabel` (Text)
+3. `menuItemHistoricoLabel` (Text)
+
 ### Pagina 1: Apresentacao
 1. `bannerTitulo` (Text)
 2. `bannerDestaque` (Text)
-3. `oQueTitulo` (Text)
-4. `oQueDescricao` (Long text ou Rich text)
-5. `missaoTitulo` (Text)
-6. `missaoDescricao` (Long text ou Rich text)
-7. `missaoDestaque` (Text)
-8. `impactoTitulo` (Text)
-9. `impactoDescricao` (Long text ou Rich text)
-10. `estandesTitulo` (Text)
-11. `estandesSubtitulo` (Text)
-12. `estandesImagem` (Media - single image)
-13. `estandesImagemAlt` (Text)
+3. `bannerImagem` (Media - single image)
+4. `oQueTitulo` (Text)
+5. `oQueDescricao` (Long text ou Rich text)
+6. `missaoTitulo` (Text)
+7. `missaoDescricao` (Long text ou Rich text)
+8. `missaoDestaque` (Text)
+9. `impactoTitulo` (Text)
+10. `impactoDescricao` (Long text ou Rich text)
+11. `estandesTitulo` (Text)
+12. `estandesSubtitulo` (Text)
+13. `estandesImagem` (Media - single image)
+14. `estandesImagemAlt` (Text)
 
 ### Pagina 2: Quem realiza
-14. `quemRealizaTitulo` (Text)
-15. `organizacaoTitulo` (Text)
-16. `organizacaoDescricao` (Long text ou Rich text)
-17. `comissaoTitulo` (Text)
-18. `comissaoDescricao` (Long text ou Rich text)
-19. `imagemEntrada` (Media - single image)
-20. `imagemEntradaAlt` (Text)
-21. `imagemEntradaLabel` (Text)
-22. `parceirosTitulo` (Text)
-23. `parceiros` (Repeatable Component `femictec.parceiro-item`)
+1. `quemRealizaTitulo` (Text)
+2. `organizacaoTitulo` (Text)
+3. `organizacaoDescricao` (Long text ou Rich text)
+4. `comissaoTitulo` (Text)
+5. `comissaoDescricao` (Long text ou Rich text)
+6. `imagemEntrada` (Media - single image)
+7. `imagemEntradaAlt` (Text)
+8. `imagemEntradaLabel` (Text)
+9. `parceirosTitulo` (Text)
+10. `parceiros` (Repeatable Component `femictec.parceiro-item`)
 
 ### Pagina 3: Historico
-24. `historicoTitulo` (Text)
-25. `historicoDescricao` (Long text ou Rich text)
-26. `trajetoriaTitulo` (Text)
-27. `trajetoriaSubtitulo` (Text)
-28. `trajetoriaImagem` (Media - single image)
-29. `trajetoriaImagemAlt` (Text)
-30. `edicoesCards` (Repeatable Component `femictec.edicao-card`)
-31. `galeriaLabel` (Text)
-32. `galeriaUrl` (Text)
-33. `historicoTabelaTitulo` (Text)
-34. `historicoTabelaLinhas` (Repeatable Component `femictec.historico-linha`)
+1. `historicoTitulo` (Text)
+2. `historicoDescricao` (Long text ou Rich text)
+3. `trajetoriaTitulo` (Text)
+4. `trajetoriaSubtitulo` (Text)
+5. `trajetoriaImagem` (Media - single image)
+6. `trajetoriaImagemAlt` (Text)
+7. `edicoesCards` (Repeatable Component `femictec.edicao-card`)
+8. `galeriaLabel` (Text)
+9. `galeriaUrl` (Text)
+10. `historicoTabelaTitulo` (Text)
+11. `historicoTabelaLinhas` (Repeatable Component `femictec.historico-linha`)
 
 ## 3) Componentes necessarios
+
+### Componente `femictec.menu-interno`
+1. `menuItemInicioLabel` (Text)
+2. `menuItemQuemRealizaLabel` (Text)
+3. `menuItemHistoricoLabel` (Text)
+
+### Componente `femictec.apresentacao`
+1. `bannerTitulo` (Text)
+2. `bannerDestaque` (Text)
+3. `bannerImagem` (Media - single image)
+4. `oQueTitulo` (Text)
+5. `oQueDescricao` (Long text ou Rich text)
+6. `missaoTitulo` (Text)
+7. `missaoDescricao` (Long text ou Rich text)
+8. `missaoDestaque` (Text)
+9. `impactoTitulo` (Text)
+10. `impactoDescricao` (Long text ou Rich text)
+11. `estandesTitulo` (Text)
+12. `estandesSubtitulo` (Text)
+13. `estandesImagem` (Media - single image)
+14. `estandesImagemAlt` (Text)
+
+### Componente `femictec.quem-realiza`
+1. `quemRealizaTitulo` (Text)
+2. `organizacaoTitulo` (Text)
+3. `organizacaoDescricao` (Long text ou Rich text)
+4. `comissaoTitulo` (Text)
+5. `comissaoDescricao` (Long text ou Rich text)
+6. `imagemEntrada` (Media - single image)
+7. `imagemEntradaAlt` (Text)
+8. `imagemEntradaLabel` (Text)
+9. `parceirosTitulo` (Text)
+10. `parceiros` (Repeatable Component `femictec.parceiro-item`)
+
+### Componente `femictec.historico`
+1. `historicoTitulo` (Text)
+2. `historicoDescricao` (Long text ou Rich text)
+3. `trajetoriaTitulo` (Text)
+4. `trajetoriaSubtitulo` (Text)
+5. `trajetoriaImagem` (Media - single image)
+6. `trajetoriaImagemAlt` (Text)
+7. `edicoesCards` (Repeatable Component `femictec.edicao-card`)
+8. `galeriaLabel` (Text)
+9. `galeriaUrl` (Text)
+10. `historicoTabelaTitulo` (Text)
+11. `historicoTabelaLinhas` (Repeatable Component `femictec.historico-linha`)
 
 ### Componente `femictec.parceiro-item`
 1. `nome` (Text)
@@ -98,6 +161,16 @@ Em `Settings -> Users & Permissions -> Roles -> Public`:
    - `/femictec`
    - `/femictec/quem-realiza`
    - `/femictec/historico`
+
+### Checklist rapido do `bannerImagem` (Apresentacao)
+1. Em `Content-Type Builder -> Femictec`, criar `bannerImagem` como `Media (single image)` caso ainda nao exista.
+2. Em `Content Manager -> Femictec`, selecionar a imagem no campo `bannerImagem`.
+3. Clicar em `Publish` no registro.
+4. Validar no endpoint:
+   - `http://127.0.0.1:1337/api/femictec?populate=*`
+   - confirmar que o JSON retorna `bannerImagem` (ou `apresentacao.bannerImagem` no modelo por secao).
+5. Validar no front:
+   - abrir `/femictec` e conferir o banner superior com imagem de fundo.
 
 ## 6) Observacao importante
 

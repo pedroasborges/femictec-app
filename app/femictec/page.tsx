@@ -1,13 +1,23 @@
-﻿import { getFemictecContent } from "./femictec-data";
+﻿import Image from "next/image";
+import { getFemictecContent } from "./femictec-data";
 
 export default async function FemictecPage() {
   const content = await getFemictecContent();
 
   return (
     <>
-      <section className="bg-[#8f878b] px-4 py-16 text-center text-[#eeeeee] md:px-8 md:py-20">
-        <p className="text-4xl font-light uppercase tracking-wide md:text-5xl">{content.bannerTitulo}</p>
-        <p className="mt-2 text-4xl font-light uppercase tracking-wide text-[#73f3c7] md:text-5xl">{content.bannerDestaque}</p>
+      <section className="relative overflow-hidden bg-[#8f878b] px-4 py-16 text-center text-[#eeeeee] md:px-8 md:py-20">
+        {content.bannerImagemUrl ? (
+          <>
+            <Image src={content.bannerImagemUrl} alt={content.bannerTitulo} fill className="object-cover" unoptimized />
+            <div className="absolute inset-0 bg-[#6d6368]/65" />
+          </>
+        ) : null}
+
+        <div className="relative z-10">
+          <p className="text-4xl font-light uppercase tracking-wide md:text-5xl">{content.bannerTitulo}</p>
+          <p className="mt-2 text-4xl font-light uppercase tracking-wide text-[#73f3c7] md:text-5xl">{content.bannerDestaque}</p>
+        </div>
       </section>
 
       <section className="px-4 py-8 md:px-8 md:py-10">
@@ -40,4 +50,3 @@ export default async function FemictecPage() {
     </>
   );
 }
-

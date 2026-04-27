@@ -17,8 +17,8 @@ A aplicacao segue arquitetura desacoplada:
 
 ## Stack
 
-- Next.js 16 (App Router)
-- React 19
+- Next.js 16.1.7 (App Router)
+- React 19.2.3
 - TypeScript
 - Tailwind CSS v4
 - Strapi CMS (API REST)
@@ -38,7 +38,7 @@ A aplicacao segue arquitetura desacoplada:
 - `app/feira/programacao/page.tsx`: pagina de programacao da feira.
 - `app/feira/feira-data.ts`: camada de dados da feira (modo hibrido).
 - `app/eventos-da-feira/page.tsx`: lista de eventos.
-- `app/eventos-da-feira/eventos-list-client.tsx`: filtro client-side da lista.
+- `app/eventos-da-feira/eventos-list-client.tsx`: filtro client-side da lista e thumbnail da imagem do evento no quadro pequeno.
 - `app/eventos-da-feira/[slug]/page.tsx`: detalhe de evento.
 - `app/eventos-da-feira/events-data.ts`: camada de dados de eventos (normalizacao + fallback).
 - `app/noticias/page.tsx`: lista de noticias.
@@ -130,6 +130,16 @@ Para manter consistencia no projeto, as funcoes utilitarias devem seguir este pa
   - `/femictec`
   - `/femictec/quem-realiza`
   - `/femictec/historico`
+- Modelo de conteudo suportado no Strapi:
+  - legado (campos na raiz do single type);
+  - recomendado (componentes por secao): `menuInterno`, `apresentacao`, `quemRealiza`, `historico`.
+- Rotulos de menu internos (quando publicados no CMS):
+  - `menuItemInicioLabel`
+  - `menuItemQuemRealizaLabel`
+  - `menuItemHistoricoLabel`
+- Banner da pagina de apresentacao:
+  - `bannerTitulo` e `bannerDestaque` (texto);
+  - `bannerImagem` (imagem de fundo opcional no topo de `/femictec`).
 - Quando o endpoint nao existe ou esta vazio, a interface exibe fallback local para preservar o layout.
 
 ### Eventos da Feira
@@ -146,6 +156,10 @@ Campos mapeados:
 - `miniDescricao`
 - `imagemEvento`
 - data/hora: `dados` ou `data` ou `dataHorario`
+
+Renderizacao na UI:
+- lista (`/eventos-da-feira`): usa `imagemEvento` no quadro pequeno de cada card, com fallback visual quando nao houver imagem;
+- detalhe (`/eventos-da-feira/[slug]`): usa `imagemEvento` no banner superior e no bloco lateral da secao de conteudo.
 
 ### Noticias
 - Endpoint: `GET /api/noticias?populate=imagem&sort[0]=publishedAt:desc&sort[1]=createdAt:desc&pagination[pageSize]=100`
@@ -193,12 +207,23 @@ Campos mapeados:
 - uso da `imagemEvento` no detalhe:
   - como banner superior (com overlay);
   - como imagem da secao do evento;
+- uso da `imagemEvento` na lista de eventos:
+  - como thumbnail no quadro pequeno de cada item;
+  - com fallback de placeholder quando a imagem nao estiver publicada;
 - padronizacao visual do banner da pagina `A Feira` para ficar igual ao da home;
 - correcao de `className` no layout raiz.
 
 ## Situacao atual de qualidade
 
-- `npm run lint`: sem erros e sem warnings.
+- Ultima validacao local: `27/04/2026`.
+- `npm run build`: sucesso, sem erros.
+- `npm run lint`: sem erros, com 7 warnings de `@next/next/no-img-element`.
+- Arquivos com warning de `<img>`:
+  - `app/feira/page.tsx`
+  - `app/feira/cronograma/page.tsx`
+  - `app/femictec/page.tsx`
+  - `app/femictec/quem-realiza/page.tsx`
+  - `app/femictec/historico/page.tsx`
 
 ## Pre-requisitos
 
@@ -284,6 +309,32 @@ Sem isso, a API responde `403` e o frontend cai no fallback local.
 - validar endpoint `GET /api/femictec?populate=*`;
 - verificar permissao `find` na role `Public`;
 - publicar o registro do single type `Femictec`.
+
+### Banner da Apresentacao (`/femictec`) sem imagem
+
+- confirmar que o campo `bannerImagem` existe no tipo `Femictec` (ou em `apresentacao.bannerImagem` no modelo por secao);
+- confirmar que a imagem foi selecionada e o registro foi publicado;
+- validar retorno no endpoint `GET /api/femictec?populate=*`;
+- se o JSON nao tiver `bannerImagem`, o frontend exibira apenas `bannerTitulo` e `bannerDestaque` (texto);
+- reiniciar `npm run dev` apos alteracoes estruturais no Strapi.
+
+### Mini guia visual: configurar `bannerImagem` no Strapi
+
+1. Abrir `Content-Type Builder`.
+2. Clicar em `Femictec` (single type).
+3. Clicar em `Add another field`.
+4. Selecionar `Media`.
+5. Definir:
+   - `Name`: `bannerImagem`
+   - `Type`: `Single media`
+6. Clicar em `Finish` e depois em `Save`.
+7. Abrir `Content Manager -> Femictec`.
+8. No campo `bannerImagem`, clicar em `Add media` e selecionar a imagem.
+9. Clicar em `Save` e depois `Publish`.
+10. Validar no browser:
+    - `http://127.0.0.1:1337/api/femictec?populate=*`
+    - confirmar retorno de `bannerImagem` (ou `apresentacao.bannerImagem` no modelo por secao).
+11. Abrir `http://localhost:3000/femictec` e confirmar o banner com imagem.
 
 ## Pendencias tecnicas mapeadas
 

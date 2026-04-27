@@ -22,7 +22,9 @@ Portal institucional da FEMICTEC para divulgacao da feira, eventos e conteudos i
   - filtros por texto e periodo;
   - detalhe por noticia (rota dinamica);
   - navegacao entre noticia anterior/proxima.
-- Integracao de imagem do evento em destaque (banner do detalhe) e bloco de imagem.
+- Integracao de imagem do evento:
+  - thumbnail na listagem de eventos (quadro pequeno por item);
+  - destaque no detalhe (banner superior e bloco de imagem).
 
 ## 3) Arquitetura (alto nivel)
 - Front-end: Next.js 16 + React 19 + TypeScript + Tailwind.
@@ -43,9 +45,15 @@ Portal institucional da FEMICTEC para divulgacao da feira, eventos e conteudos i
 ## 5) Estado Atual
 - Aplicacao funcional para os fluxos principais.
 - Modulo `femictec` implementado com layout completo e fallback local.
+- Integracao do modulo `femictec` preparada para dois formatos de CMS:
+  - campos na raiz (legado);
+  - componentes por secao (`apresentacao`, `quemRealiza`, `historico`) para alimentacao mais intuitiva.
 - Layout padronizado entre home e paginas institucionais para visualizacao de banner.
 - Parser de eventos ajustado para campos reais do CMS (`nomeEvento`, `miniDescricao`, `descricao`, `imagemEvento`, `dataHorario`).
 - Parser de noticias ajustado para variacoes de midia (`data`, `attributes`, `formats`, `large/medium/small/thumbnail`) e renderizacao com `unoptimized` nas imagens.
+- Lista de eventos atualizada para usar thumbnail da `imagemEvento` no quadro pequeno de cada item.
+- Build de producao validado com sucesso em 27/04/2026 (`npm run build`).
+- Lint validado sem erros e com 7 warnings de uso de `<img>` (`@next/next/no-img-element`), concentrados nos modulos `feira` e `femictec`.
 
 ## 6) Riscos/Dependencias
 - Permissoes no Strapi (role Public) impactam leitura de eventos e noticias (`find`/`findOne`).
