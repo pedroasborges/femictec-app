@@ -1,4 +1,4 @@
-export const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://127.0.0.1:1337";
+export const STRAPI_BASE_URL = process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://cms-femictec.novohamburgo.rs.gov.br";
 
 export function toStrapiUrl(path: string): string {
   if (path.startsWith("http://") || path.startsWith("https://")) return path;
