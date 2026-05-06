@@ -33,6 +33,7 @@ const envPattern = getEnvRemotePattern();
 const remotePatterns = envPattern ? [envPattern, ...defaultPatterns] : defaultPatterns;
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
   images: {
     remotePatterns,
   },
