@@ -1,11 +1,13 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 
 import Banner from "./components/banner";
 import { getNoticias } from "./noticias/noticias-data";
+import { getProjetos } from "./projetos/projetos-data";
 
 export default async function Page() {
   const noticias = (await getNoticias()).slice(0, 3);
+  const projetos = (await getProjetos()).slice(0, 6);
 
   return (
     <>
@@ -57,6 +59,33 @@ export default async function Page() {
         </section>
 
         <section id="projetos" className="bg-[#909090] px-4 py-12 md:px-8 md:py-16">
+          <h3 className="pb-8 text-center text-3xl font-light tracking-tight md:text-5xl">PROJETOS</h3>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {projetos.length > 0 ? (
+              projetos.map((projeto) => (
+                <article key={projeto.id} className="rounded-md border-4 border-[#eeeeee] bg-[#eeeeee] p-5">
+                  <h4 className="text-left text-lg font-medium text-[#909090]">{projeto.titulo}</h4>
+                  <p className="mt-3 text-sm text-[#909090]">
+                    <span className="font-semibold">Escola:</span> {projeto.escola}
+                  </p>
+                  <p className="mt-1 text-sm text-[#909090]">
+                    <span className="font-semibold">Area:</span> {projeto.area}
+                  </p>
+                  <p className="mt-1 text-sm text-[#909090]">
+                    <span className="font-semibold">Participantes:</span> {projeto.participantes}
+                  </p>
+                </article>
+              ))
+            ) : (
+              <article className="rounded-md border-4 border-[#eeeeee] bg-[#eeeeee] p-5 md:col-span-2 lg:col-span-3">
+                <p className="text-sm leading-relaxed text-[#909090]">Nenhum projeto publicado no momento.</p>
+              </article>
+            )}
+          </div>
+        </section>
+
+        <section className="bg-[#909090] px-4 py-12 md:px-8 md:py-16">
           <h3 className="pb-8 text-center text-3xl font-light tracking-tight md:text-5xl">NOTICIAS</h3>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-[2fr_1fr]">
@@ -140,5 +169,3 @@ export default async function Page() {
     </>
   );
 }
-
-

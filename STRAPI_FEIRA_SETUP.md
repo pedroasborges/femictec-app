@@ -1,5 +1,8 @@
 # Strapi: Feira (modo hibrido)
 
+Atualizado em: 06/05/2026.
+Escopo relacionado: `README.md`, `RESUMO_EXECUTIVO.md`, `STRAPI_FEMICTEC_SETUP.md`, `STRAPI_REGULAMENTOS_CONTATO_SETUP.md`.
+
 Este frontend agora funciona em modo hibrido:
 
 1. **Visao geral da feira**: vem do Single Type `feira`

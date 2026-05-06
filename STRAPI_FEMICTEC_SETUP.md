@@ -1,4 +1,7 @@
-﻿# Strapi: FEMICTEC (3 paginas)
+# Strapi: FEMICTEC (3 paginas)
+
+Atualizado em: 06/05/2026.
+Escopo relacionado: `README.md`, `RESUMO_EXECUTIVO.md`, `STRAPI_FEIRA_SETUP.md`, `STRAPI_REGULAMENTOS_CONTATO_SETUP.md`.
 
 Este modulo do frontend usa 3 rotas:
 
@@ -176,4 +179,5 @@ Em `Settings -> Users & Permissions -> Roles -> Public`:
 
 Enquanto o endpoint `femictec` nao existir ou estiver vazio, o frontend mostra fallback local com layout pronto.
 Assim que os campos forem criados e publicados, os dados entram automaticamente.
+
 

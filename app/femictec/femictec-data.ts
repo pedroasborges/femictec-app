@@ -20,6 +20,13 @@ type TabelaHistorico = {
   valor: string;
 };
 
+type FemictecStats = {
+  totalProjects: number;
+  totalSchools: number;
+  totalParticipants: number;
+  totalAreas: number;
+};
+
 export type FemictecContent = {
   menuItemInicioLabel: string;
   menuItemQuemRealizaLabel: string;
@@ -242,8 +249,37 @@ async function fetchFemictecPayload(): Promise<unknown | null> {
   return null;
 }
 
+async function fetchFemictecStats(): Promise<FemictecStats | null> {
+  const payload = await fetchStrapiJson<unknown | null>("/api/public/femictec/stats", null);
+  const root = asRecord(payload);
+  const data = asRecord(root?.data);
+  if (!data) return null;
+
+  const totalProjects = Number(data.totalProjects);
+  const totalSchools = Number(data.totalSchools);
+  const totalParticipants = Number(data.totalParticipants);
+  const totalAreas = Number(data.totalAreas);
+
+  if (
+    !Number.isFinite(totalProjects) ||
+    !Number.isFinite(totalSchools) ||
+    !Number.isFinite(totalParticipants) ||
+    !Number.isFinite(totalAreas)
+  ) {
+    return null;
+  }
+
+  return {
+    totalProjects: Math.max(0, totalProjects),
+    totalSchools: Math.max(0, totalSchools),
+    totalParticipants: Math.max(0, totalParticipants),
+    totalAreas: Math.max(0, totalAreas),
+  };
+}
+
 export async function getFemictecContent(): Promise<FemictecContent> {
   const payload = await fetchFemictecPayload();
+  const stats = await fetchFemictecStats();
   const source = normalizeRoot(payload);
 
   if (!source) return fallbackContent;
@@ -305,7 +341,15 @@ export async function getFemictecContent(): Promise<FemictecContent> {
     galeriaUrl: extractText(pickFirstDefined(historico.galeriaUrl, source.galeriaUrl)) || fallbackContent.galeriaUrl,
     historicoTabelaTitulo:
       extractText(pickFirstDefined(historico.historicoTabelaTitulo, source.historicoTabelaTitulo)) || fallbackContent.historicoTabelaTitulo,
-    historicoTabelaLinhas: mapTabela(toList(pickFirstDefined(historico.historicoTabelaLinhas, source.historicoTabelaLinhas))),
+    historicoTabelaLinhas:
+      stats != null
+        ? [
+            { label: "Projetos apresentados", valor: String(stats.totalProjects) },
+            { label: "Escolas participantes", valor: String(stats.totalSchools) },
+            { label: "Participantes", valor: String(stats.totalParticipants) },
+            { label: "Areas", valor: String(stats.totalAreas) },
+          ]
+        : mapTabela(toList(pickFirstDefined(historico.historicoTabelaLinhas, source.historicoTabelaLinhas))),
   };
 }
 

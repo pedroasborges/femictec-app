@@ -7,8 +7,9 @@ const navLinks = [
   { label: "A FEMICTEC", href: "/femictec" },
   { label: "A FEIRA", href: "/feira" },
   { label: "EVENTOS DA FEIRA", href: "/eventos-da-feira" },
+  { label: "REGULAMENTOS", href: "/regulamentos" },
   { label: "NOTICIAS", href: "/noticias" },
-  { label: "LOCALIZACAO", href: "/#contato" },
+  { label: "CONTATO", href: "/contato" },
 ];
 
 const desktopNavLinkClass =

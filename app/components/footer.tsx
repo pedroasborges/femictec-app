@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { fetchStrapiJson } from "../lib/strapi";
 
 type FooterAttributes = {
@@ -94,6 +96,15 @@ export async function Footer() {
               <p className="mt-3 text-sm text-[#ececec]">Contato institucional</p>
             )}
           </div>
+        </div>
+
+        <div className="flex flex-wrap justify-center gap-5 pt-6 text-xs font-semibold tracking-[0.12em] lg:justify-start">
+          <Link href="/regulamentos" className="underline-offset-2 hover:underline">
+            REGULAMENTOS
+          </Link>
+          <Link href="/contato" className="underline-offset-2 hover:underline">
+            CONTATO
+          </Link>
         </div>
 
         <p className="pt-6 text-center text-xs text-[#ececec]">© 2026 - Desenvolvido pelo Governo Digital</p>
