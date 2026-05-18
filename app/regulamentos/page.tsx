@@ -15,7 +15,7 @@ export default async function RegulamentosPage() {
 
   return (
     <section className="mx-auto w-full max-w-[1320px] px-4 py-10 md:px-6 md:py-14">
-      <div className="rounded-xl bg-[#909090] p-5 text-[#eeeeee] shadow-sm md:p-10">
+      <div className="rounded-xl bg-[#223d67] p-5 text-[#eeeeee] shadow-sm md:p-10">
         <h1 className="text-center text-3xl font-light tracking-tight md:text-5xl">{regulamento.titulo}</h1>
         <p className="mt-3 text-center text-sm uppercase tracking-[0.12em] text-[#f0f0f0] md:text-base">{regulamento.subtitulo}</p>
 

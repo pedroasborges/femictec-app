@@ -81,7 +81,7 @@ export default function Navbar() {
       </div>
 
       {isMenuOpen && (
-        <div className="border-t border-[#7f7f7f] bg-[#909090] px-4 py-4 lg:hidden">
+        <div className="border-t border-[#95c11f] bg-[#223d67] px-4 py-4 lg:hidden">
           <div className="flex flex-col gap-4">
             {navLinks.map((link) => (
               <Link

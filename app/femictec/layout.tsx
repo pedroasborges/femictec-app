@@ -25,7 +25,7 @@ export default async function FemictecLayout({ children }: { children: React.Rea
               <Link
                 key={itemMenu.rotaDaPagina}
                 href={itemMenu.rotaDaPagina}
-                className="rounded-sm bg-[#9a9095] px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#eeeeee] transition hover:bg-[#878087]"
+                className="rounded-sm bg-[#223d67] px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#eeeeee] transition hover:bg-[#878087]"
               >
                 {itemMenu.tituloNoMenu}
               </Link>

@@ -59,10 +59,10 @@ export default function NoticiasListClient({ noticias }: NoticiasListClientProps
 
   return (
     <section className="mx-auto w-full max-w-[1320px] px-4 py-10 md:px-6 md:py-14">
-      <div className="rounded-xl bg-[#909090] px-5 py-8 text-[#eeeeee] shadow-sm md:px-10">
+      <div className="rounded-xl bg-[#223d67] px-5 py-8 text-[#eeeeee] shadow-sm md:px-10">
         <h1 className="text-center text-3xl font-light tracking-tight md:text-5xl">LISTA DE NOTICIAS</h1>
 
-        <div className="mt-8 grid gap-3 rounded-lg bg-[#8a8a8a] p-4 md:grid-cols-[2fr_1fr_1fr]">
+        <div className="mt-8 grid gap-3 rounded-lg bg-[#4085c6] p-4 md:grid-cols-[2fr_1fr_1fr]">
           <input
             type="text"
             placeholder="Selecionar filtros"
@@ -115,7 +115,7 @@ export default function NoticiasListClient({ noticias }: NoticiasListClientProps
               return (
                 <article
                   key={noticia.id}
-                  className={`overflow-hidden rounded-lg border border-[#d6d6d6] bg-[#8d8d8d] ${
+                  className={`overflow-hidden rounded-lg border border-[#d6d6d6] bg-[#4085c6] ${
                     isDestacada ? "md:col-span-2" : ""
                   }`}
                 >
