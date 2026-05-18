@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import Image from "next/image";
+import logoImg from "../../public/femictec.png";
 
 const navLinks = [
   { label: "A FEMICTEC", href: "/femictec" },
@@ -21,13 +23,10 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-[#7f7f7f] bg-[#909090] text-[#eeeeee]">
+    <nav className="sticky top-0 z-50 bg-[#223d67] text-[#eeeeee]">
       <div className="mx-auto flex min-h-20 w-full max-w-[1320px] items-center justify-between px-3 py-2 sm:px-4 md:min-h-24">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-10 min-w-20 items-center justify-center bg-[#eeeeee] px-3 text-sm font-semibold text-[#909090] sm:h-12 sm:min-w-28 sm:text-base">
-            LOGO
-          </div>
-          <span className="hidden text-lg font-medium tracking-wide text-[#eeeeee] sm:block">FEMICTEC</span>
+        <Link href="/" className="flex items-center gap-3 w-32">
+          <Image src={logoImg} alt="logo" />
         </Link>
 
         <div className="hidden items-center gap-7 lg:flex">
