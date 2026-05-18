@@ -21,8 +21,8 @@ export default function BannerCarousel({ images, size = "default" }: BannerCarou
   const hasMultipleImages = images.length > 1;
   const slideClassName =
     size === "tall"
-      ? "relative aspect-[16/7] w-full shrink-0 min-h-[240px] max-h-[460px]"
-      : "relative aspect-[21/7] w-full shrink-0 min-h-[180px] max-h-[340px]";
+      ? "relative aspect-[16/7] w-full shrink-0 min-h-[240px] max-w-[1920px]"
+      : "relative aspect-[21/7] w-full shrink-0 min-h-[180px] max-w-[1920px]";
 
   useEffect(() => {
     if (!hasMultipleImages) return;
