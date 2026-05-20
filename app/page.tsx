@@ -160,6 +160,7 @@ export default async function Page() {
                           src={noticia.imagemUrl}
                           alt={noticia.titulo}
                           fill
+                          priority
                           unoptimized
                           className="object-cover transition duration-500 hover:scale-105"
                           sizes="(max-width:768px) 100vw, 33vw"
