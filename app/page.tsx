@@ -4,6 +4,7 @@ import Link from "next/link";
 import Banner from "./components/banner";
 import { getNoticias } from "./noticias/noticias-data";
 import { getProjetos } from "./projetos/projetos-data";
+import PointsIcon from "../public/points.svg"
 
 export default async function Page() {
   const noticias = (await getNoticias()).slice(0, 3);
@@ -44,18 +45,22 @@ export default async function Page() {
         <section className="py-16 text-center md:py-20">
           <h3 className="text-3xl font-normal tracking-tight md:text-5xl">CONFIRA AS DATAS</h3>
 
-          <div className="mx-auto mt-10 grid max-w-5xl grid-cols-1 overflow-hidden border-[6px] border-[#223d67] md:grid-cols-[0.75fr_1.25fr]">
-            <div className="bg-[#eeeeee]">
-              <div className="border-b-[6px] border-[#223d67] px-6 py-8 text-xl md:text-3xl">DATA</div>
-              <div className="border-b-[6px] border-[#223d67] px-6 py-8 text-xl md:text-3xl">DATA</div>
-              <div className="px-6 py-8 text-xl md:text-3xl">DATA</div>
+          <div className="flex justify-center">
+            <div className="mr-8 text-white mt-10 grid max-w-5xl grid-cols-1 overflow-hidden md:grid-cols-[0.75fr_1.25fr] w-full">
+              <div className="bg-[#eeeeee]">
+                <div className="bg-[#95c11f] mb-14 px-6 py-8 text-xl md:text-3xl  scale-101 [clip-path:polygon(25%_0%,_100%_0%,_100%_100%,_25%_100%,_10%_50%)]">INSCRIÇÃO</div>
+                <div className="bg-[#4085c6] mb-14 px-6 py-8 text-xl md:text-3xl scale-101 [clip-path:polygon(25%_0%,_100%_0%,_100%_100%,_25%_100%,_10%_50%)]">SUBMISSÃO</div>
+                <div className="bg-[#223d67] px-6 py-8 text-xl md:text-3xl scale-101 [clip-path:polygon(25%_0%,_100%_0%,_100%_100%,_25%_100%,_10%_50%)]">AVALIAÇÃO</div>
+              </div>
+              <div className="bg-[#eeeeee]">
+                <div className="bg-[#95c11f] mb-14 px-12 py-8 text-xl text-right md:text-3xl [clip-path:polygon(100%_50%,_90%_90%,_80%_90%,_77%_100%,_0%_100%,_0%_0%,_77%_0%,_80%_10%,_90%_10%)]">XX/XX</div>
+                <div className="bg-[#4085c6] mb-14 px-12 py-8 text-xl text-right md:text-3xl [clip-path:polygon(100%_50%,_90%_90%,_80%_90%,_77%_100%,_0%_100%,_0%_0%,_77%_0%,_80%_10%,_90%_10%)]">XX/XX</div>
+                <div className="bg-[#223d67] px-12 py-8 text-xl text-right md:text-3xl [clip-path:polygon(100%_50%,_90%_90%,_80%_90%,_77%_100%,_0%_100%,_0%_0%,_77%_0%,_80%_10%,_90%_10%)]">XX/XX</div>
+              </div>
             </div>
-            <div className="bg-[#eeeeee]">
-              <div className="border-b-[6px] border-[#223d67] px-6 py-8 text-xl md:text-3xl">INSCRICAO</div>
-              <div className="border-b-[6px] border-[#223d67] px-6 py-8 text-xl md:text-3xl">SUBMISSAO</div>
-              <div className="px-6 py-8 text-xl md:text-3xl">AVALIACAO</div>
-            </div>
+            <Image className="mt-12" alt="icone" src={ PointsIcon } width={45} height={100}/>
           </div>
+
         </section>
 
         <section id="projetos" className="bg-[#223d67] text-white px-4 py-12 md:px-8 md:py-16">
