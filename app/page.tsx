@@ -11,11 +11,14 @@ export default async function Page() {
 
   return (
     <>
-      <section className="bg-[#909090] px-0 py-16 text-center text-[#eeeeee] md:py-24 lg:py-0">
+      {/* BANNER */}
+      <section className="w-full bg-[#909090] px-0 py-16 text-center text-[#eeeeee] md:py-24 lg:py-0">
         <Banner />
       </section>
-      <div className="mx-auto w-full max-w-[1320px] px-4 md:px-6">
-        <section id="inscricoes" className="py-16 text-center md:py-20">
+
+      {/* INSCRIÇÕES */}
+      <section id="inscricoes" className="w-full py-16 text-center md:py-20">
+        <div className="mx-auto w-full max-w-[1320px] px-4 md:px-6">
           <h2 className="text-3xl font-light tracking-tight sm:text-4xl md:text-5xl">FAÇA SUA INSCRICAO</h2>
 
           <div className="mx-auto mt-10 max-w-5xl bg-[#223d67] p-6 md:p-10">
@@ -28,9 +31,12 @@ export default async function Page() {
           </div>
 
           <p className="mt-8 text-2xl font-normal">[DATA LIMITE]</p>
-        </section>
+        </div>
+      </section>
 
-        <section className="bg-[#223d67] px-4 py-10 md:px-8 md:py-14">
+      {/* RESUMO DA FEIRA */}
+      <section className="w-full bg-[#223d67] px-4 py-10 md:px-8 md:py-14">
+        <div className="mx-auto w-full max-w-[1320px] px-4 md:px-6">
           <div className="mx-auto max-w-5xl bg-[#eeeeee] p-8 text-center md:p-14">
             <h3 className="text-2xl font-normal md:text-4xl">RESUMO DA FEIRA</h3>
             <div className="mx-auto mt-8 flex h-56 max-w-3xl items-center justify-center border-4 border-[#909090] bg-white md:h-72">
@@ -39,9 +45,12 @@ export default async function Page() {
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="py-16 text-center md:py-20">
+      {/* DATAS */}
+      <section className="w-full py-16 text-center md:py-20">
+        <div className="mx-auto w-full max-w-[1320px] px-4 md:px-6">
           <h3 className="text-3xl font-normal tracking-tight md:text-5xl">CONFIRA AS DATAS</h3>
 
           <div className="mx-auto mt-10 grid max-w-5xl grid-cols-1 overflow-hidden border-[6px] border-[#223d67] md:grid-cols-[0.75fr_1.25fr]">
@@ -56,9 +65,12 @@ export default async function Page() {
               <div className="px-6 py-8 text-xl md:text-3xl">AVALIACAO</div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section id="projetos" className="bg-[#223d67] text-white px-4 py-12 md:px-8 md:py-16">
+      {/* PROJETOS */}
+      <section id="projetos" className="w-full bg-[#223d67] text-white px-4 py-12 md:px-8 md:py-16">
+        <div className="mx-auto w-full max-w-[1320px] px-4 md:px-6">
           <h3 className="pb-8 text-center text-3xl font-light tracking-tight md:text-5xl">PROJETOS</h3>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -83,89 +95,154 @@ export default async function Page() {
               </article>
             )}
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="bg-[#223d67] text-white px-4 py-12 md:px-8 md:py-16">
-          <h3 className="pb-8 text-center text-3xl font-light tracking-tight md:text-5xl">NOTICIAS</h3>
+      {/* NOTÍCIAS */}
+      <section className="relative w-full overflow-hidden py-20">
+        {/* SVG FUNDO */}
+        <div className="absolute inset-0 z-0">
+          <svg
+            viewBox="0 0 1921 900"
+            preserveAspectRatio="none"
+            className="h-full w-full"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            {/* FUNDO AZUL */}
+            <rect width="1921" height="900" fill="#223d67" />
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-[2fr_1fr]">
-            <article className="rounded-md border-4 border-[#eeeeee] bg-[#eeeeee] p-4">
-              {noticias[0] ? (
-                <Link href={`/noticias/${noticias[0].id}`} className="block">
-                  <div className="relative h-44 overflow-hidden bg-[#b3a9ad]">
-                    {noticias[0].imagemUrl ? (
-                      <Image src={noticias[0].imagemUrl} alt={noticias[0].titulo} fill unoptimized className="object-cover" />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-lg font-medium tracking-wide text-[#eeeeee]">IMAGEM</div>
-                    )}
-                  </div>
-                  <h4 className="mt-4 text-left text-lg font-medium text-[#909090]">{noticias[0].titulo}</h4>
-                  <p className="mt-2 text-left text-sm leading-relaxed text-[#909090] md:text-base">
-                    {noticias[0].miniDescricao || "Sem descricao disponivel."}
-                  </p>
+            {/* FORMA VERDE */}
+            <path
+              d="
+                M0,900
+                L0,620
+                C220,470 450,520 720,450
+                C1040,360 1350,430 1600,220
+                C1740,110 1840,40 1921,0
+                L1921,900
+                Z
+              "
+              fill="#9ac21c"
+            />
+          </svg>
+        </div>
+
+        {/* CONTEÚDO */}
+        <div className="relative z-10 mx-auto w-full max-w-[1320px] px-4 md:px-6">
+          <h3 className="mb-14 text-center text-4xl font-black uppercase tracking-wide text-[#f2e8e8] md:text-5xl">
+            Notícias
+          </h3>
+
+          {noticias.length > 0 ? (
+            <>
+              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                {noticias.map((noticia) => (
+                  <article
+                    key={noticia.id}
+                    className="
+                      overflow-hidden
+                      rounded-[22px]
+                      bg-[#4a8de6]
+                      shadow-[0_15px_35px_rgba(0,0,0,0.35)]
+                      transition-all
+                      duration-300
+                      hover:-translate-y-2
+                    "
+                  >
+                    {/* IMAGEM */}
+                    <div className="relative h-[360px] overflow-hidden">
+                      {noticia.imagemUrl ? (
+                        <Image
+                          src={noticia.imagemUrl}
+                          alt={noticia.titulo}
+                          fill
+                          unoptimized
+                          className="object-cover transition duration-500 hover:scale-105"
+                          sizes="(max-width:768px) 100vw, 33vw"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center bg-[#cfcfcf] text-2xl font-bold text-[#777]">
+                          IMAGEM
+                        </div>
+                      )}
+
+                      {/* OVERLAY */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                    </div>
+
+                    {/* TEXTO */}
+                    <div className="p-6">
+                      <h4 className="mb-4 text-3xl font-black uppercase leading-none text-[#f7eaea]">
+                        {noticia.titulo}
+                      </h4>
+
+                      <p className="line-clamp-5 text-sm leading-6 text-white">
+                        {noticia.miniDescricao || "Sem descrição disponível."}
+                      </p>
+
+                      <Link
+                        href={`/noticias/${noticia.id}`}
+                        className="
+                          mt-6
+                          inline-flex
+                          w-full
+                          items-center
+                          justify-center
+                          rounded-xl
+                          bg-[#38467c]
+                          px-5
+                          py-4
+                          text-sm
+                          font-bold
+                          uppercase
+                          tracking-[0.15em]
+                          text-white
+                          transition
+                          hover:bg-[#2a355f]
+                        "
+                      >
+                        Ver mais
+                      </Link>
+                    </div>
+                  </article>
+                ))}
+              </div>
+
+              {/* BOTÃO */}
+              <div className="mt-14 flex justify-center">
+                <Link
+                  href="/noticias"
+                  className="
+                    inline-flex
+                    items-center
+                    justify-center
+                    rounded-2xl
+                    border
+                    border-white
+                    bg-[#38467c]
+                    px-10
+                    py-4
+                    text-sm
+                    font-bold
+                    uppercase
+                    tracking-[0.2em]
+                    text-white
+                    transition
+                    hover:bg-white
+                    hover:text-[#223d67]
+                  "
+                >
+                  Ver todas as notícias
                 </Link>
-              ) : (
-                <>
-                  <div className="flex h-44 items-center justify-center bg-[#b3a9ad] text-lg font-medium tracking-wide text-[#eeeeee]">
-                    IMAGEM
-                  </div>
-                  <p className="mt-4 text-left text-sm leading-relaxed text-[#909090] md:text-base">Nenhuma noticia publicada no momento.</p>
-                </>
-              )}
-            </article>
-
-            <div className="grid gap-6">
-              <article className="rounded-md border-4 border-[#eeeeee] bg-[#eeeeee] p-4">
-                {noticias[1] ? (
-                  <Link href={`/noticias/${noticias[1].id}`} className="block">
-                    <div className="relative h-24 overflow-hidden bg-[#b3a9ad]">
-                      {noticias[1].imagemUrl ? (
-                        <Image src={noticias[1].imagemUrl} alt={noticias[1].titulo} fill unoptimized className="object-cover" />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-sm font-medium tracking-wide text-[#eeeeee]">IMAGEM</div>
-                      )}
-                    </div>
-                    <p className="mt-3 text-left text-sm font-medium text-[#909090]">{noticias[1].titulo}</p>
-                  </Link>
-                ) : (
-                  <>
-                    <div className="flex h-24 items-center justify-center bg-[#b3a9ad] text-sm font-medium tracking-wide text-[#eeeeee]">IMAGEM</div>
-                    <p className="mt-3 text-left text-sm text-[#909090]">Sem noticia adicional.</p>
-                  </>
-                )}
-              </article>
-              <article className="rounded-md border-4 border-[#eeeeee] bg-[#eeeeee] p-4">
-                {noticias[2] ? (
-                  <Link href={`/noticias/${noticias[2].id}`} className="block">
-                    <div className="relative h-24 overflow-hidden bg-[#b3a9ad]">
-                      {noticias[2].imagemUrl ? (
-                        <Image src={noticias[2].imagemUrl} alt={noticias[2].titulo} fill unoptimized className="object-cover" />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-sm font-medium tracking-wide text-[#eeeeee]">IMAGEM</div>
-                      )}
-                    </div>
-                    <p className="mt-3 text-left text-sm font-medium text-[#909090]">{noticias[2].titulo}</p>
-                  </Link>
-                ) : (
-                  <>
-                    <div className="flex h-24 items-center justify-center bg-[#b3a9ad] text-sm font-medium tracking-wide text-[#eeeeee]">IMAGEM</div>
-                    <p className="mt-3 text-left text-sm text-[#909090]">Sem noticia adicional.</p>
-                  </>
-                )}
-              </article>
+              </div>
+            </>
+          ) : (
+            <div className="text-center text-white">
+              Nenhuma notícia publicada no momento.
             </div>
-          </div>
-
-          <div className="mt-8 flex justify-center">
-            <Link
-              href="/noticias"
-              className="rounded-md border border-[#eeeeee] px-6 py-3 text-xs font-medium uppercase tracking-[0.12em] text-[#eeeeee] transition hover:bg-[#9d9d9d]"
-            >
-              Ver todas as noticias
-            </Link>
-          </div>
-        </section>
-      </div>
+          )}
+        </div>
+      </section>
     </>
   );
 }
