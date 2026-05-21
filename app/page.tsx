@@ -7,8 +7,8 @@ import { getProjetos } from "./projetos/projetos-data";
 import PointsIcon from "../public/points.svg";
 
 // Importações dos backgrounds orgânicos fornecidos
-import BackgroundOndaSuperior from "../public/Path.svg";
-import BackgroundOndaInferior from "../public/Path (1).svg";
+import BackgroundOndaSuperior from "../public/bgwavetop.svg";
+import BackgroundOndaInferior from "../public/bgwavebottom.svg";
 
 // 1. Definição da estrutura de campos para o Strapi
 interface InscricaoFeiraData {
@@ -60,7 +60,7 @@ export default async function Page() {
         <div className="relative w-full overflow-hidden bg-[#223d67]">
           
           {/* VETORES DE FUNDO ORGÂNICOS (SVGs) */}
-          <div className="absolute inset-x-0 top-0 z-0 pointer-events-none w-full">
+          <div className="absolute inset-x-0 top-84 z-0 pointer-events-none w-full">
             <Image 
               src={BackgroundOndaSuperior} 
               alt="" 
