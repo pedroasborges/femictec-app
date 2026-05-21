@@ -9,6 +9,7 @@ import PointsIcon from "../public/points.svg";
 // Importações dos backgrounds orgânicos fornecidos
 import BackgroundOndaSuperior from "../public/bgwavetop.svg";
 import BackgroundOndaInferior from "../public/bgwavebottom.svg";
+import BackgroundOnda from "../public/bgwave.svg";
 
 // 1. Definição da estrutura de campos para o Strapi
 interface InscricaoFeiraData {
@@ -57,31 +58,18 @@ export default async function Page() {
       <div className="w-full h-16 bg-white md:h-24" />
 
       {/* SEÇÃO INTEGRADA: INSCRIÇÕES E SOBRE A FEIRA */}
-        <div className="relative w-full overflow-hidden bg-[#223d67]">
+      <div className="bg-[#223d67] w-full">
+
+      
+        <div className="relative w-full bg-[#223d67]">
           
           {/* VETORES DE FUNDO ORGÂNICOS (SVGs) */}
-          <div className="absolute inset-x-0 top-84 z-0 pointer-events-none w-full">
-            <Image 
-              src={BackgroundOndaSuperior} 
-              alt="" 
-              className="w-full object-cover origin-top"
-              priority 
-            />
-          </div>
-          
-          <div className="absolute inset-x-0 bottom-0 z-0 pointer-events-none w-full">
-            <Image 
-              src={BackgroundOndaInferior} 
-              alt="" 
-              className="w-full object-cover origin-bottom"
-            />
-          </div>
 
           {/* CONTEÚDO DA SEÇÃO: CAMADA SUPERIOR */}
-          <div className="relative z-10 mx-auto max-w-[1200px] px-4 py-12 sm:px-6 lg:px-8">
+          <div className="relative z-10">
             
             {/* BLOCO SUPERIOR: FAÇA SUA INSCRIÇÃO */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start pt-8 pb-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start pt-8 pb-16 bg-[url('/bgwavetop.svg')] bg-cover">
               
               {/* Lado Esquerdo: Imagem do Estudante (Vinda do Strapi) */}
               <div className="relative w-full aspect-[4/3] rounded-tl-[40px] rounded-br-[40px] overflow-hidden shadow-xl border-4 border-white/10">
@@ -102,7 +90,7 @@ export default async function Page() {
               </div>
 
               {/* Lado Direito: Conteúdo da Inscrição */}
-              <div className="flex flex-col justify-center text-white pt-4 md:pt-0">
+              <div className="flex flex-col justify-center text-white pt-4 md:pt-0 ">
                 <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl text-left leading-tight text-[#95c11f] uppercase">
                   Faça sua inscrição<br />
                   <span className="text-white">através da nossa<br />plataforma digital</span>
@@ -135,7 +123,7 @@ export default async function Page() {
             </div>
 
           {/* BLOCO INFERIOR: SOBRE A NOSSA FEIRA */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center pt-16 pb-20">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center pt-12 bg-[url('/bgwavebottom.svg')] bg-cover">
               
               {/* Título Lateral Dinâmico */}
               <div className="md:col-span-5 flex items-center justify-between md:justify-start gap-4">
@@ -188,6 +176,7 @@ export default async function Page() {
             </div>
 
           </div>
+        </div>
         </div>
       {/* DATAS */}
       <section className="w-full py-16 text-center md:py-20">
