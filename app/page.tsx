@@ -244,9 +244,9 @@ export default async function Page() {
       </section>
       */}  
       {/* NOTÍCIAS */}
-      <section className="relative w-full overflow-hidden py-20">
+      <section className="relative w-full overflow-hidden py-20 bg-[#223d67]">
         {/* SVG FUNDO */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 pointer-events-none">
           <svg
             viewBox="0 0 1921 900"
             preserveAspectRatio="none"
@@ -274,28 +274,28 @@ export default async function Page() {
 
         {/* CONTEÚDO */}
         <div className="relative z-10 mx-auto w-full max-w-[1320px] px-4 md:px-6">
-          <h3 className="mb-14 text-center text-4xl font-black uppercase tracking-wide text-[#f2e8e8] md:text-5xl">
+          <h3 className="mb-16 text-center text-4xl font-black uppercase tracking-wider text-white md:text-5xl">
             Notícias
           </h3>
 
           {noticias.length > 0 ? (
-            <>
-              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                {noticias.map((noticia) => (
-                  <article
-                    key={noticia.id}
-                    className="
-                      overflow-hidden
-                      rounded-[22px]
-                      bg-[#4a8de6]
-                      shadow-[0_15px_35px_rgba(0,0,0,0.35)]
-                      transition-all
-                      duration-300
-                      hover:-translate-y-2
-                    "
-                  >
-                    {/* IMAGEM */}
-                    <div className="relative h-[360px] overflow-hidden">
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {noticias.map((noticia) => (
+                <Link 
+                  key={noticia.id} 
+                  href={`/noticias/${noticia.id}`}
+                  className="group relative flex flex-col pt-4 transition-all duration-300 hover:-translate-y-2"
+                >
+                  <article className="relative w-full bg-[#4a8de6] rounded-[30px] pt-6 px-6 pb-8 shadow-[0_15px_35px_rgba(0,0,0,0.35)] flex flex-col flex-grow">
+                    
+                    {/* CONTAINER DA IMAGEM COM O RECORTE EM "BICO" */}
+                    <div 
+                      className="relative w-full aspect-[4/3] rounded-t-[20px] rounded-bl-[20px] overflow-hidden z-20 shadow-md"
+                      style={{
+                        // Cria o recorte diagonal preciso no canto inferior direito (o bico)
+                        clipPath: "polygon(0% 0%, 100% 0%, 100% 75%, 100% 75%, 84% 100%, 65% 75%, 0% 75%);)"
+                      }}
+                    >
                       {noticia.imagemUrl ? (
                         <Image
                           src={noticia.imagemUrl}
@@ -303,87 +303,37 @@ export default async function Page() {
                           fill
                           priority
                           unoptimized
-                          className="object-cover transition duration-500 hover:scale-105"
+                          className="object-cover transition duration-500 group-hover:scale-105"
                           sizes="(max-width:768px) 100vw, 33vw"
                         />
                       ) : (
-                        <div className="flex h-full items-center justify-center bg-[#cfcfcf] text-2xl font-bold text-[#777]">
-                          IMAGEM
+                        <div className="flex h-full items-center justify-center bg-slate-600 text-slate-400 font-bold">
+                          SEM IMAGEM
                         </div>
                       )}
-
-                      {/* OVERLAY */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                     </div>
 
-                    {/* TEXTO */}
-                    <div className="p-6">
-                      <h4 className="mb-4 text-3xl font-black uppercase leading-none text-[#f7eaea]">
-                        {noticia.titulo}
-                      </h4>
+                    {/* CONTEÚDO DO TEXTO (Fica logo abaixo e abraça o design) */}
+                    <div className="mt-6 flex flex-col flex-grow justify-between text-left">
+                      <div>
+                        {/* Título */}
+                        <h4 className="mb-2 text-2xl font-black uppercase tracking-wide leading-tight text-white font-sans">
+                          {noticia.titulo}
+                        </h4>
 
-                      <p className="line-clamp-5 text-sm leading-6 text-white">
-                        {noticia.miniDescricao || "Sem descrição disponível."}
-                      </p>
-
-                      <Link
-                        href={`/noticias/${noticia.id}`}
-                        className="
-                          mt-6
-                          inline-flex
-                          w-full
-                          items-center
-                          justify-center
-                          rounded-xl
-                          bg-[#38467c]
-                          px-5
-                          py-4
-                          text-sm
-                          font-bold
-                          uppercase
-                          tracking-[0.15em]
-                          text-white
-                          transition
-                          hover:bg-[#2a355f]
-                        "
-                      >
-                        Ver mais
-                      </Link>
+                        {/* Descrição */}
+                        <p className="line-clamp-6 text-xs font-normal leading-relaxed text-blue-50 text-justify opacity-90">
+                          {noticia.miniDescricao || "Lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet."}
+                        </p>
+                      </div>
                     </div>
+
                   </article>
-                ))}
-              </div>
-
-              {/* BOTÃO */}
-              <div className="mt-14 flex justify-center">
-                <Link
-                  href="/noticias"
-                  className="
-                    inline-flex
-                    items-center
-                    justify-center
-                    rounded-2xl
-                    border
-                    border-white
-                    bg-[#38467c]
-                    px-10
-                    py-4
-                    text-sm
-                    font-bold
-                    uppercase
-                    tracking-[0.2em]
-                    text-white
-                    transition
-                    hover:bg-white
-                    hover:text-[#223d67]
-                  "
-                >
-                  Ver todas as notícias
                 </Link>
-              </div>
-            </>
+              ))}
+            </div>
           ) : (
-            <div className="text-center text-white">
+            <div className="text-center text-white text-lg font-medium py-12">
               Nenhuma notícia publicada no momento.
             </div>
           )}
