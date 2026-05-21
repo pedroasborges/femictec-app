@@ -233,7 +233,7 @@ export default async function Page() {
       </section>
       */}  
       {/* NOTÍCIAS */}
-      <section className="relative w-full overflow-hidden py-20 bg-[#223d67]">
+      <section className="relative w-full overflow-hidden py-24 bg-[#223d67]">
         {/* SVG FUNDO */}
         <div className="absolute inset-0 z-0 pointer-events-none">
           <svg
@@ -263,7 +263,7 @@ export default async function Page() {
 
         {/* CONTEÚDO */}
         <div className="relative z-10 mx-auto w-full max-w-[1320px] px-4 md:px-6">
-          <h3 className="mb-16 text-center text-4xl font-black uppercase tracking-wider text-white md:text-5xl">
+          <h3 className="mb-36 text-center text-4xl font-black uppercase tracking-wider text-white md:text-5xl">
             Notícias
           </h3>
 
@@ -273,16 +273,17 @@ export default async function Page() {
                 <Link 
                   key={noticia.id} 
                   href={`/noticias/${noticia.id}`}
-                  className="group relative flex flex-col pt-4 transition-all duration-300 hover:-translate-y-2"
+                  className="group relative flex flex-col pt-12 transition-all duration-300 hover:-translate-y-2"
                 >
-                  <article className="relative w-full bg-[#4a8de6] rounded-[30px] pt-6 px-6 pb-8 shadow-[0_15px_35px_rgba(0,0,0,0.35)] flex flex-col flex-grow">
+                  {/* O CARD AZUL (pt-14 expande o topo para acomodar a imagem que estrapolou) */}
+                  <article className="relative w-full bg-[#4a8de6] rounded-[32px] pt-60 px-6 pb-8 shadow-[0_15px_35px_rgba(0,0,0,0.35)] flex flex-col flex-grow">
                     
-                    {/* CONTAINER DA IMAGEM COM O RECORTE EM "BICO" */}
+                    {/* CONTAINER DA IMAGEM ESTRAPOLANDO COM QUINAS ARREDONDADAS */}
                     <div 
-                      className="relative w-full aspect-[4/3] rounded-t-[20px] rounded-bl-[20px] overflow-hidden z-20 shadow-md"
+                      className="absolute top-0 left-6 right-6 -mt-32 aspect-[4/5] rounded-t-[24px] overflow-hidden z-20 shadow-md bg-slate-700"
                       style={{
-                        // Cria o recorte diagonal preciso no canto inferior direito (o bico)
-                        clipPath: "polygon(0% 0%, 100% 0%, 100% 75%, 100% 75%, 84% 100%, 65% 75%, 0% 75%);)"
+                        // Adicionamos pontos extras no início e no fim para simular o arredondamento de 24px (~6%) na quina inferior esquerda
+                        clipPath: "polygon(0% 0%, 100% 0%, 100% 88%, 100% 88%, 90% 100%, 80% 88%, 6% 88%, 1.8% 86.8%, 0% 84%)"
                       }}
                     >
                       {noticia.imagemUrl ? (
@@ -302,16 +303,16 @@ export default async function Page() {
                       )}
                     </div>
 
-                    {/* CONTEÚDO DO TEXTO (Fica logo abaixo e abraça o design) */}
-                    <div className="mt-6 flex flex-col flex-grow justify-between text-left">
+                    {/* CONTEÚDO DO TEXTO */}
+                    <div className="mt-10 flex flex-col flex-grow justify-between text-left">
                       <div>
                         {/* Título */}
-                        <h4 className="mb-2 text-2xl font-black uppercase tracking-wide leading-tight text-white font-sans">
+                        <h4 className="mb-5 text-2xl font-black uppercase tracking-wide leading-tight text-white font-sans  w-5/6">
                           {noticia.titulo}
                         </h4>
 
                         {/* Descrição */}
-                        <p className="line-clamp-6 text-xs font-normal leading-relaxed text-blue-50 text-justify opacity-90">
+                        <p className="line-clamp-6 text-sm font-normal leading-relaxed text-blue-50 text-justify opacity-90">
                           {noticia.miniDescricao || "Lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet."}
                         </p>
                       </div>
