@@ -69,7 +69,9 @@ export default async function Page() {
           <div className="relative z-10">
             
             {/* BLOCO SUPERIOR: FAÇA SUA INSCRIÇÃO */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start pt-8 pb-16 bg-[url('/bgwavetop.svg')] bg-cover">
+            <div className="bg-[url('/bgwavetop.svg')] bg-cover">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start pt-8 pb-16 mx-auto max-w-[1200px] px-4 py-12 sm:px-6 lg:px-8">
+
               
               {/* Lado Esquerdo: Imagem do Estudante (Vinda do Strapi) */}
               <div className="relative w-full aspect-[4/3] rounded-tl-[40px] rounded-br-[40px] overflow-hidden shadow-xl border-4 border-white/10">
@@ -121,9 +123,14 @@ export default async function Page() {
                 </div>
               </div>
             </div>
+            </div>
 
           {/* BLOCO INFERIOR: SOBRE A NOSSA FEIRA */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center pt-12 bg-[url('/bgwavebottom.svg')] bg-cover">
+            <div className="bg-[url('/bgwavebottom.svg')] bg-cover">
+
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center pt-12 mx-auto max-w-[1200px] px-4 py-12 sm:px-6 lg:px-8">
+
+            
               
               {/* Título Lateral Dinâmico */}
               <div className="md:col-span-5 flex items-center justify-between md:justify-start gap-4">
@@ -173,6 +180,7 @@ export default async function Page() {
                 </div>
               </div>
 
+            </div>
             </div>
 
           </div>
