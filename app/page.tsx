@@ -69,8 +69,8 @@ export default async function Page() {
           <div className="relative z-10">
             
             {/* BLOCO SUPERIOR: FAÇA SUA INSCRIÇÃO */}
-            <div className="bg-[url('/bgwavetop.svg')] bg-cover">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start pt-8 pb-16 mx-auto max-w-[1200px] px-4 py-12 sm:px-6 lg:px-8">
+            <div className="bg-[url('/bgwavetop.svg')] bg-no-repeat bg-bottom bg-[length:100%_auto]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start pt-8 pb-36 mx-auto max-w-[1200px] px-4 py-12 sm:px-6 lg:px-8">
 
               
               {/* Lado Esquerdo: Imagem do Estudante (Vinda do Strapi) */}
@@ -126,7 +126,7 @@ export default async function Page() {
             </div>
 
           {/* BLOCO INFERIOR: SOBRE A NOSSA FEIRA */}
-            <div className="bg-[url('/bgwavebottom.svg')] bg-cover">
+            <div className="bg-[url('/bgwavebottom.svg')] bg-no-repeat bg-bottom bg-[length:100%_auto]">
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center pt-12 mx-auto max-w-[1200px] px-4 py-12 sm:px-6 lg:px-8">
 
