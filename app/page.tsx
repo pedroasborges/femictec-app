@@ -13,31 +13,67 @@ import BackgroundOnda from "../public/bgwave.svg";
 
 // 1. Definição da estrutura de campos para o Strapi
 interface InscricaoFeiraData {
-  // Campos da Seção de Inscrição
-  imagemEstudanteUrl: string; // URL da imagem (Media no Strapi)
-  textoInscricao: string;     // Texto descritivo (Rich Text ou Text no Strapi)
-  linkPlataforma: string;     // URL do botão (Text no Strapi)
-  dataLimite: string;         // Data limite (Date ou Text no Strapi)
-
-  // Campos da Seção Resumo da Feira
-  tituloResumo: string;       // Título customizado (Text no Strapi)
-  textoResumo: string;        // Texto descritivo do resumo (Rich Text ou Text no Strapi)
-  urlVideo: string;           // URL do vídeo/embed (Text no Strapi)
+  imagemEstudanteUrl: string; 
+  textoInscricao: string;     
+  linkPlataforma: string;     
+  dataLimite: string;         
+  tituloResumo: string;       
+  textoResumo: string;        
+  urlVideo: string;           
 }
 
-// Função simulada para buscar os dados do Strapi (substitua pela sua chamada real da API)
-async function getDadoInstitucional(): Promise<InscricaoFeiraData> {
-  // Retorno temporário (Mock) com dados idênticos aos do layout enviado
-  return {
-    imagemEstudanteUrl: "/estudante-microscopio.png", // Altere para a rota correta enquanto testa localmente
-    textoInscricao: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.",
-    linkPlataforma: "https://plataforma.suafeira.com.br",
-    dataLimite: "Inscrições até 15 de Outubro",
+// 2. Função REAL para buscar os dados do Strapi tratando a resposta do CMS
+async function getDadoInstitucional(): Promise<InscricaoFeiraData | null> {
+  const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://127.0.0.1:1337";
+  
+  try {
+    const res = await fetch(`${STRAPI_URL}/api/dado-institucional?populate=*`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) throw new Error("Falha ao buscar dados institucionais");
+
+    const json = await res.json();
     
-    tituloResumo: "Conheça mais sobre o evento",
-    textoResumo: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    urlVideo: "https://www.youtube.com/embed/exemplo" // Exemplo de URL para o iframe/player
-  };
+    // Suporta tanto a estrutura v4 quanto a v5 do Strapi
+    const dados = json.data?.attributes || json.data;
+    if (!dados) return null;
+
+    // Varredura para capturar a URL da imagem em qualquer versão do Strapi
+    let urlRelativaImagem = "";
+    
+    if (dados.imagemEstudanteUrl?.data) {
+      // Padrão Strapi v4 (data.attributes) ou v5 simplificado
+      const mediaData = dados.imagemEstudanteUrl.data;
+      urlRelativaImagem = mediaData.attributes?.url || mediaData.url || "";
+    } else if (dados.imagemEstudanteUrl?.url) {
+      // Caso o campo venha direto como objeto mapeado
+      urlRelativaImagem = dados.imagemEstudanteUrl.url;
+    }
+
+    // Se a URL obtida já for um link completo (externo), mantém. Se for local, concatena o domínio.
+    const imagemEstudanteUrl = urlRelativaImagem
+      ? urlRelativaImagem.startsWith("http")
+        ? urlRelativaImagem
+        : `${STRAPI_URL}${urlRelativaImagem}`
+      : "";
+
+    // Log temporário no terminal do Next para você inspecionar o link gerado
+    console.log("URL Final da Imagem Gerada:", imagemEstudanteUrl);
+
+    return {
+      imagemEstudanteUrl,
+      textoInscricao: dados.textoInscricao || "",
+      linkPlataforma: dados.linkPlataforma || "",
+      dataLimite: dados.dataLimite || "",
+      tituloResumo: dados.tituloResumo || "",
+      textoResumo: dados.textoResumo || "",
+      urlVideo: dados.urlVideo || "",
+    };
+  } catch (error) {
+    console.error("Erro na requisição do Strapi:", error);
+    return null;
+  }
 }
 
 export default async function Page() {
@@ -54,26 +90,22 @@ export default async function Page() {
         <Banner />
       </section>
 
-      {/* FAIXA BRANCA DE TRANSIÇÃO (Igual ao espaçamento antes do footer) */}
+      {/* FAIXA BRANCA DE TRANSIÇÃO */}
       <div className="w-full h-16 bg-white md:h-24" />
 
       {/* SEÇÃO INTEGRADA: INSCRIÇÕES E SOBRE A FEIRA */}
       <div className="bg-[#223d67] w-full">
-
-      
-        <div className="relative w-full bg-[#223d67]">
+        <div className="relative w-full bg-[#223d67] mx-auto w-full px-4 md:px-6 relative">
           
-          {/* VETORES DE FUNDO ORGÂNICOS (SVGs) */}
-
           {/* CONTEÚDO DA SEÇÃO: CAMADA SUPERIOR */}
           <div className="relative z-10">
             
             {/* BLOCO SUPERIOR: FAÇA SUA INSCRIÇÃO */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start pt-8 pb-16 bg-[url('/bgwavetop.svg')] bg-cover">
               
-              {/* Lado Esquerdo: Imagem do Estudante (Vinda do Strapi) */}
+              {/* Lado Esquerdo: Imagem da feira */}
               <div className="relative w-full aspect-[4/3] rounded-tl-[40px] rounded-br-[40px] overflow-hidden shadow-xl border-4 border-white/10">
-                {dadosCms.imagemEstudanteUrl ? (
+                {dadosCms?.imagemEstudanteUrl ? (
                   <Image
                     src={dadosCms.imagemEstudanteUrl}
                     alt="Estudante em atividade laboratorial"
@@ -81,10 +113,11 @@ export default async function Page() {
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, 50vw"
                     priority
+                    unoptimized // Evita erros de configuração de domínios externos no next.config.js temporariamente
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-slate-700 text-slate-400">
-                    Carregando imagem do Strapi...
+                  <div className="flex h-full w-full items-center justify-center bg-slate-700 text-slate-400 text-sm">
+                    Nenhuma imagem cadastrada no Strapi
                   </div>
                 )}
               </div>
@@ -96,22 +129,19 @@ export default async function Page() {
                   <span className="text-white">através da nossa<br />plataforma digital</span>
                 </h2>
                 
-                {/* Texto descritivo do Strapi */}
                 <p className="mt-4 text-sm leading-relaxed text-slate-200 text-justify max-w-md whitespace-pre-line">
-                  {dadosCms.textoInscricao}
+                  {dadosCms?.textoInscricao || "Nenhum texto de inscrição cadastrado."}
                 </p>
 
-                {/* Data Limite do Strapi */}
-                {dadosCms.dataLimite && (
-                  <p className="mt-3 text-sm font-semibold tracking-wide text-[#95c11f]">
+                {dadosCms?.dataLimite && (
+                  <p className="mt-3 text-sm font-semibold tracking-wide">
                     {dadosCms.dataLimite}
                   </p>
                 )}
 
-                {/* Botão com link do Strapi */}
                 <div className="mt-6 text-left">
                   <Link
-                    href={dadosCms.linkPlataforma || "#"}
+                    href={dadosCms?.linkPlataforma || "#"}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block bg-[#223d67] border-2 border-white/20 hover:border-white text-white text-xs font-bold tracking-widest uppercase px-8 py-4 rounded-md shadow-lg transition duration-300 transform hover:-translate-y-0.5"
@@ -122,13 +152,12 @@ export default async function Page() {
               </div>
             </div>
 
-          {/* BLOCO INFERIOR: SOBRE A NOSSA FEIRA */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center pt-12 bg-[url('/bgwavebottom.svg')] bg-cover">
+            {/* BLOCO INFERIOR: SOBRE A NOSSA FEIRA */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start pt-12 bg-[url('/bgwavebottom.svg')] bg-cover">
               
-              {/* Título Lateral Dinâmico */}
               <div className="md:col-span-5 flex items-center justify-between md:justify-start gap-4">
                 <h3 className="text-3xl font-black tracking-wide text-white uppercase border-b-4 border-white pb-2 whitespace-pre-line">
-                  {dadosCms.tituloResumo}
+                  {dadosCms?.tituloResumo || "Sobre o evento"}
                 </h3>
                 <svg 
                   className="w-12 h-12 text-white animate-bounce mt-4 hidden sm:block flex-shrink-0" 
@@ -141,35 +170,65 @@ export default async function Page() {
                 </svg>
               </div>
 
-              {/* Resumo da Feira Dinâmico */}
               <div className="md:col-span-7 text-white text-sm leading-relaxed text-justify space-y-2">
                 <p className="font-semibold text-[#95c11f] text-base">SOBRE A NOSSA FEIRA</p>
                 <p className="text-slate-200 whitespace-pre-line">
-                  {dadosCms.textoResumo}
+                  {dadosCms?.textoResumo || "Conteúdo resumido institucional pendente de publicação no painel."}
                 </p>
               </div>
 
               {/* Player de Vídeo Dinâmico */}
               <div className="col-span-1 md:col-span-12 mt-8">
-                <div className="relative mx-auto w-full max-w-4xl aspect-video rounded-2xl overflow-hidden bg-[#1a1a1a] shadow-2xl border-4 border-slate-800">
-                  {dadosCms.urlVideo ? (
-                    /* Iframe preparado para receber embeds (YouTube/Vimeo) de forma responsiva */
-                    <iframe
-                      className="w-full h-full"
-                      src={dadosCms.urlVideo}
-                      title="Vídeo de apresentação da feira"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    ></iframe>
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                      <div className="w-20 h-20 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm border-2 border-white/60 text-white">
-                        <svg className="w-10 h-10 ml-1" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M8 5v14l11-7z" />
-                        </svg>
-                      </div>
+                <div className="relative mx-auto w-full max-w-4xl aspect-video rounded-2xl overflow-hidden bg-[#1a1a1a] shadow-2xl border-0 border-slate-800">
+                  {/* Necessário este tratamento para mostrar o vídeo do youtube */}
+                  {/* Player de Vídeo Dinâmico com Conversão Avançada e Segura */}
+                  <div className="col-span-1 md:col-span-12 mt-8">
+                    <div className="relative mx-auto w-full max-w-4x1 aspect-video rounded-2xl overflow-hidden bg-[#1a1a1a] shadow-2xl border-0 border-slate-800">
+                      {dadosCms?.urlVideo ? (
+                        (() => {
+                          let embedUrl = "";
+                          const urlOriginal = dadosCms.urlVideo.trim();
+
+                          try {
+                            // Expressão regular para extrair o ID do vídeo de qualquer formato comum do YouTube
+                            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+                            const match = urlOriginal.match(regExp);
+
+                            if (match && match[2].length === 11) {
+                              const videoId = match[2];
+                              embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                            } else if (urlOriginal.includes("embed/")) {
+                              // Se já for uma URL de embed válida cadastrada diretamente
+                              embedUrl = urlOriginal;
+                            } else {
+                              // Caso não consiga mapear, mantém a original como fallback
+                              embedUrl = urlOriginal;
+                            }
+                          } catch (e) {
+                            embedUrl = urlOriginal;
+                          }
+
+                          return (
+                            <iframe
+                              className="w-full h-full absolute inset-0 border-0"
+                              src={embedUrl}
+                              title="Vídeo de apresentação da feira"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                            ></iframe>
+                          );
+                        })()
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                          <div className="w-20 h-20 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm border-2 border-white/60 text-white">
+                            <svg className="w-10 h-10 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
 
@@ -177,16 +236,16 @@ export default async function Page() {
 
           </div>
         </div>
-        </div>
+      </div>
+
       {/* DATAS */}
       <section className="w-full py-16 text-center md:py-20">
         <div className="mx-auto w-full max-w-[1320px] px-4 md:px-6">
           <h3 className="text-3xl font-normal tracking-tight md:text-5xl">CONFIRA AS DATAS</h3>
-
           <div className="flex justify-center">
             <div className="mr-8 text-white mt-10 grid max-w-5xl grid-cols-1 overflow-hidden md:grid-cols-[0.75fr_1.25fr] w-full grid-flow-col">
               <div className="bg-[#eeeeee]">
-                <div className="bg-[#95c11f] mb-14 px-6 py-8 text-xl md:text-3xl  scale-101 [clip-path:polygon(25%_0%,_100%_0%,_100%_100%,_25%_100%,_10%_50%)]">INSCRIÇÃO</div>
+                <div className="bg-[#95c11f] mb-14 px-6 py-8 text-xl md:text-3xl scale-101 [clip-path:polygon(25%_0%,_100%_0%,_100%_100%,_25%_100%,_10%_50%)]">INSCRIÇÃO</div>
                 <div className="bg-[#4085c6] mb-14 px-6 py-8 text-xl md:text-3xl scale-101 [clip-path:polygon(25%_0%,_100%_0%,_100%_100%,_25%_100%,_10%_50%)]">SUBMISSÃO</div>
                 <div className="bg-[#223d67] px-6 py-8 text-xl md:text-3xl scale-101 [clip-path:polygon(25%_0%,_100%_0%,_100%_100%,_25%_100%,_10%_50%)]">AVALIAÇÃO</div>
               </div>
@@ -196,72 +255,20 @@ export default async function Page() {
                 <div className="bg-[#223d67] px-12 py-8 text-xl text-right md:text-3xl [clip-path:polygon(100%_50%,_90%_90%,_80%_90%,_77%_100%,_0%_100%,_0%_0%,_77%_0%,_80%_10%,_90%_10%)]">XX/XX</div>
               </div>
             </div>
-            <Image className="mt-12" alt="icone" src={ PointsIcon } width={45} height={100}/>
+            <Image className="mt-12" alt="icone" src={PointsIcon} width={45} height={100}/>
           </div>
         </div>
       </section>
 
-      {/* PROJETOS */}
-      {/* Comentado porque não aparece no layout atual, mas está funcional
-      <section id="projetos" className="w-full bg-[#223d67] text-white px-4 py-12 md:px-8 md:py-16">
-        <div className="mx-auto w-full max-w-[1320px] px-4 md:px-6">
-          <h3 className="pb-8 text-center text-3xl font-light tracking-tight md:text-5xl">PROJETOS</h3>
-
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {projetos.length > 0 ? (
-              projetos.map((projeto) => (
-                <article key={projeto.id} className="rounded-md border-4 border-[#eeeeee] bg-[#eeeeee] p-5">
-                  <h4 className="text-left text-lg font-medium text-[#909090]">{projeto.titulo}</h4>
-                  <p className="mt-3 text-sm text-[#909090]">
-                    <span className="font-semibold">Escola:</span> {projeto.escola}
-                  </p>
-                  <p className="mt-1 text-sm text-[#909090]">
-                    <span className="font-semibold">Area:</span> {projeto.area}
-                  </p>
-                  <p className="mt-1 text-sm text-[#909090]">
-                    <span className="font-semibold">Participantes:</span> {projeto.participantes}
-                  </p>
-                </article>
-              ))
-            ) : (
-              <article className="rounded-md border-4 border-[#eeeeee] bg-[#eeeeee] p-5 md:col-span-2 lg:col-span-3">
-                <p className="text-sm leading-relaxed text-[#909090]">Nenhum projeto publicado no momento.</p>
-              </article>
-            )}
-          </div>
-        </div>
-      </section>
-      */}  
       {/* NOTÍCIAS */}
       <section className="relative w-full overflow-hidden py-24 bg-[#223d67]">
-        {/* SVG FUNDO */}
         <div className="absolute inset-0 z-0 pointer-events-none">
-          <svg
-            viewBox="0 0 1921 900"
-            preserveAspectRatio="none"
-            className="h-full w-full"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {/* FUNDO AZUL */}
+          <svg viewBox="0 0 1921 900" preserveAspectRatio="none" className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
             <rect width="1921" height="900" fill="#223d67" />
-
-            {/* FORMA VERDE */}
-            <path
-              d="
-                M0,900
-                L0,620
-                C220,470 450,520 720,450
-                C1040,360 1350,430 1600,220
-                C1740,110 1840,40 1921,0
-                L1921,900
-                Z
-              "
-              fill="#9ac21c"
-            />
+            <path d="M0,900 L0,620 C220,470 450,520 720,450 C1040,360 1350,430 1600,220 C1740,110 1840,40 1921,0 L1921,900 Z" fill="#9ac21c" />
           </svg>
         </div>
 
-        {/* CONTEÚDO */}
         <div className="relative z-10 mx-auto w-full max-w-[1320px] px-4 md:px-6">
           <h3 className="mb-36 text-center text-4xl font-black uppercase tracking-wider text-white md:text-5xl">
             Notícias
@@ -275,14 +282,11 @@ export default async function Page() {
                   href={`/noticias/${noticia.id}`}
                   className="group relative flex flex-col pt-12 transition-all duration-300 hover:-translate-y-2"
                 >
-                  {/* O CARD AZUL (pt-14 expande o topo para acomodar a imagem que estrapolou) */}
                   <article className="relative w-full bg-[#4a8de6] rounded-[32px] pt-60 px-6 pb-8 shadow-[0_15px_35px_rgba(0,0,0,0.35)] flex flex-col flex-grow">
                     
-                    {/* CONTAINER DA IMAGEM ESTRAPOLANDO COM QUINAS ARREDONDADAS */}
                     <div 
                       className="absolute top-0 left-6 right-6 -mt-32 aspect-[4/5] rounded-t-[24px] overflow-hidden z-20 shadow-md bg-slate-700"
                       style={{
-                        // Adicionamos pontos extras no início e no fim para simular o arredondamento de 24px (~6%) na quina inferior esquerda
                         clipPath: "polygon(0% 0%, 100% 0%, 100% 88%, 100% 88%, 90% 100%, 80% 88%, 6% 88%, 1.8% 86.8%, 0% 84%)"
                       }}
                     >
@@ -303,15 +307,11 @@ export default async function Page() {
                       )}
                     </div>
 
-                    {/* CONTEÚDO DO TEXTO */}
                     <div className="mt-10 flex flex-col flex-grow justify-between text-left">
                       <div>
-                        {/* Título */}
-                        <h4 className="mb-5 text-2xl font-black uppercase tracking-wide leading-tight text-white font-sans  w-5/6">
+                        <h4 className="mb-5 text-2xl font-black uppercase tracking-wide leading-tight text-white font-sans w-5/6">
                           {noticia.titulo}
                         </h4>
-
-                        {/* Descrição */}
                         <p className="line-clamp-6 text-sm font-normal leading-relaxed text-blue-50 text-justify opacity-90">
                           {noticia.miniDescricao || "Lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet."}
                         </p>
