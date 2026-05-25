@@ -292,7 +292,7 @@ export default async function Page() {
                     <div 
                       className="absolute top-0 left-6 right-6 -mt-32 aspect-[4/5] rounded-t-[24px] overflow-hidden z-20 shadow-md bg-slate-700"
                       style={{
-                        clipPath: "polygon(0% 0%, 100% 0%, 100% 88%, 100% 88%, 90% 100%, 80% 88%, 6% 88%, 1.8% 86.8%, 0% 84%)"
+                        clipPath: "polygon(0% 0%, 100% 0%, 100% 88%, 100% 88%, 90% 100%, 80% 88%, 6% 88%, 1.8% 87%, 0% 84%)"
                       }}
                     >
                       {noticia.imagemUrl ? (
