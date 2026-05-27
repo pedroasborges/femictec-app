@@ -10,6 +10,10 @@ type NoticiaDetalhePageProps = {
   }>;
 };
 
+const bodyFontStyle = {
+  fontFamily: "'Saira', sans-serif",
+};
+
 function splitParagraphs(text: string): string[] {
   return text
     .split(/\n+/)
@@ -17,7 +21,9 @@ function splitParagraphs(text: string): string[] {
     .filter(Boolean);
 }
 
-export default async function NoticiaDetalhePage({ params }: NoticiaDetalhePageProps) {
+export default async function NoticiaDetalhePage({
+  params,
+}: NoticiaDetalhePageProps) {
   const { id } = await params;
   const noticiaContext = await getNoticiaWithNeighbors(id);
 
@@ -29,61 +35,71 @@ export default async function NoticiaDetalhePage({ params }: NoticiaDetalhePageP
   const paragrafos = splitParagraphs(noticia.descricao || noticia.miniDescricao);
 
   return (
-    <section className="mx-auto w-full max-w-[1320px] px-4 py-10 md:px-6 md:py-14">
-      <div className="rounded-xl bg-[#909090] p-5 text-[#eeeeee] shadow-sm md:p-10">
-        <h1 className="mx-auto max-w-4xl text-center text-3xl font-light tracking-tight md:text-5xl">{noticia.titulo}</h1>
+    <section className="relative min-h-screen overflow-hidden bg-slate-50 px-4 py-10 text-[#223d67] md:py-14">
+      <article className="relative z-10 mx-auto w-full max-w-[1080px]">
+        <h1 className="mx-auto max-w-3xl text-center text-2xl font-black uppercase leading-tight tracking-wide text-[#223d67] md:text-4xl">
+          {noticia.titulo}
+        </h1>
 
-        <div className="relative mt-8 min-h-[280px] overflow-hidden rounded-lg border border-[#d4d4d4] bg-[#ececec] md:min-h-[420px]">
+        <div className="relative mt-8 h-[260px] overflow-hidden bg-[#909090] md:mt-10 md:h-[420px]">
           {noticia.imagemUrl ? (
             <Image
               src={noticia.imagemUrl}
               alt={noticia.titulo}
               fill
               unoptimized
+              priority
               className="object-cover"
-              sizes="(max-width: 768px) 100vw, 1200px"
+              sizes="(max-width: 768px) 100vw, 1080px"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-2xl text-[#8d8d8d]">IMAGEM</div>
+            <div className="flex h-full items-center justify-center text-sm uppercase tracking-[0.2em] text-[#f8eef1]">
+              Imagem
+            </div>
           )}
         </div>
 
-        <div className="mx-auto mt-8 max-w-4xl space-y-5 text-base leading-8 text-[#eeeeee] md:text-lg">
+        <div
+          className="mx-auto mt-8 max-w-[980px] space-y-4 text-justify text-sm leading-7 text-[#8f747c] md:mt-10 md:text-base md:leading-8"
+          style={bodyFontStyle}
+        >
           {paragrafos.length ? (
-            paragrafos.map((paragrafo) => <p key={paragrafo.slice(0, 24)}>{paragrafo}</p>)
+            paragrafos.map((paragrafo) => (
+              <p key={paragrafo.slice(0, 48)}>{paragrafo}</p>
+            ))
           ) : (
-            <p>Conteudo indisponivel no momento.</p>
+            <p>Conte&uacute;do indispon&iacute;vel no momento.</p>
           )}
         </div>
 
-        <div className="mt-10 flex justify-between gap-4">
+        <nav className="mx-auto mt-10 flex w-full max-w-[760px] flex-col justify-center gap-4 sm:flex-row">
           {anterior ? (
             <Link
               href={`/noticias/${anterior.id}`}
-              className="rounded-md border border-[#e2e2e2] px-4 py-2 text-xs font-medium uppercase tracking-[0.1em] text-[#eeeeee] transition hover:bg-[#9d9d9d]"
+              className="inline-flex min-h-12 flex-1 items-center justify-center rounded-[6px] bg-[#223d67] px-6 py-3 text-center text-[10px] font-bold uppercase tracking-[0.18em] text-[#f8eef1] transition hover:bg-[#304a80]"
             >
-              Noticia anterior
+              &lt; Not&iacute;cia anterior
             </Link>
           ) : (
-            <span className="cursor-not-allowed rounded-md border border-[#b9b9b9] px-4 py-2 text-xs font-medium uppercase tracking-[0.1em] text-[#c9c9c9]">
-              Noticia anterior
+            <span className="inline-flex min-h-12 flex-1 cursor-not-allowed items-center justify-center rounded-[6px] bg-[#223d67]/55 px-6 py-3 text-center text-[10px] font-bold uppercase tracking-[0.18em] text-[#f8eef1]/70">
+              &lt; Not&iacute;cia anterior
             </span>
           )}
 
           {proxima ? (
             <Link
               href={`/noticias/${proxima.id}`}
-              className="rounded-md border border-[#e2e2e2] px-4 py-2 text-xs font-medium uppercase tracking-[0.1em] text-[#eeeeee] transition hover:bg-[#9d9d9d]"
+              className="inline-flex min-h-12 flex-1 items-center justify-center rounded-[6px] bg-[#223d67] px-6 py-3 text-center text-[10px] font-bold uppercase tracking-[0.18em] text-[#f8eef1] transition hover:bg-[#304a80]"
             >
-              Proxima noticia
+              Pr&oacute;xima not&iacute;cia &gt;
             </Link>
           ) : (
-            <span className="cursor-not-allowed rounded-md border border-[#b9b9b9] px-4 py-2 text-xs font-medium uppercase tracking-[0.1em] text-[#c9c9c9]">
-              Proxima noticia
+            <span className="inline-flex min-h-12 flex-1 cursor-not-allowed items-center justify-center rounded-[6px] bg-[#223d67]/55 px-6 py-3 text-center text-[10px] font-bold uppercase tracking-[0.18em] text-[#f8eef1]/70">
+              Pr&oacute;xima not&iacute;cia &gt;
             </span>
           )}
-        </div>
-      </div>
+        </nav>
+      </article>
     </section>
   );
 }

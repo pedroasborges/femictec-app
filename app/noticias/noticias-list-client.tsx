@@ -10,6 +10,49 @@ type NoticiasListClientProps = {
   noticias: Noticia[];
 };
 
+const bodyFontStyle = {
+  fontFamily: "'Saira', sans-serif",
+};
+
+const cardLayouts = [
+  {
+    shell: "md:col-span-2 md:row-span-2 md:grid-cols-[50%_50%]",
+    media: "h-48 md:h-full",
+    body: "md:justify-center",
+    text: "line-clamp-6",
+  },
+  {
+    shell: "md:row-span-2 md:grid-cols-[46%_54%]",
+    media: "h-44 md:h-full",
+    body: "md:justify-center",
+    text: "line-clamp-5",
+  },
+  {
+    shell: "md:row-span-3",
+    media: "h-52 md:h-[58%]",
+    body: "",
+    text: "line-clamp-6",
+  },
+  {
+    shell: "md:row-span-2 md:grid-cols-[48%_52%]",
+    media: "h-44 md:h-full",
+    body: "md:justify-center",
+    text: "line-clamp-5",
+  },
+  {
+    shell: "md:row-span-3",
+    media: "h-56 md:h-[50%]",
+    body: "",
+    text: "line-clamp-7",
+  },
+  {
+    shell: "md:row-span-2 md:grid-cols-[54%_46%]",
+    media: "h-44 md:h-full",
+    body: "md:justify-center",
+    text: "line-clamp-5",
+  },
+];
+
 function formatDate(dateString: string | null): string {
   if (!dateString) return "Sem data";
 
@@ -64,149 +107,143 @@ export default function NoticiasListClient({
   };
 
   return (
-    <section className="relative overflow-hidden bg-[#223d67] py-16">
-      
-      {/* SVG FUNDO DA NOTÍCIA*/}
-      <div className="absolute inset-0 z-0">
-        <svg
-          viewBox="0 0 1921 900"
-          preserveAspectRatio="none"
-          className="h-full w-full"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {/* FUNDO AZUL */}
-          <rect width="1921" height="900" fill="#223d67" />
-
-          {/* FORMA VERDE */}
-          <path
-            d="
-              M0,900
-              L0,620
-              C220,470 450,520 720,450
-              C1040,360 1350,430 1600,220
-              C1740,110 1840,40 1921,0
-              L1921,900
-              Z
-            "
-            fill="#9ac21c"
-          />
-        </svg>
-      </div>
-      
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-4">
-        {/* TITULO */}
-        <h1 className="mb-10 text-center text-4xl font-black uppercase tracking-wide text-[#f2e8e8] md:text-5xl">
-          Notícias
+    <section className="relative min-h-screen overflow-hidden bg-slate-50 px-4 py-10 text-[#f8eef1] md:py-14">
+      <div className="relative z-10 mx-auto w-full max-w-[1080px] rounded-[8px] bg-[#223d67] px-4 py-8 shadow-[0_16px_36px_rgba(34,61,103,0.18)] md:px-8 md:py-10">
+        <h1 className="text-center text-3xl font-black uppercase leading-tight tracking-wide text-[#f8eef1] md:text-4xl">
+          Lista de not&iacute;cias
         </h1>
 
-        {/* FILTROS */}
-        <div className="mx-auto mb-10 grid max-w-5xl gap-4 rounded-2xl bg-[#3f78c9]/90 p-5 shadow-2xl md:grid-cols-4">
-          <input
-            type="text"
-            placeholder="Buscar notícia"
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            className="h-12 rounded-lg border border-white/20 bg-white px-4 text-sm text-[#333] outline-none"
-          />
+        <form
+          className="mx-auto mt-8 w-full max-w-[980px]"
+          onSubmit={(event) => event.preventDefault()}
+        >
+          <div className="grid gap-3 md:grid-cols-[1fr_auto_auto] md:items-stretch">
+            <label className="flex min-h-12 items-center rounded-[6px] bg-[#95c11f] p-2">
+              <span className="sr-only">Buscar not&iacute;cia</span>
+              <input
+                type="search"
+                placeholder="Qual not&iacute;cia procura?"
+                value={busca}
+                onChange={(event) => setBusca(event.target.value)}
+                className="h-8 w-full rounded-[4px] border-0 bg-[#fff5f7] px-4 text-sm text-[#223d67] outline-none placeholder:text-[#95a553]"
+                style={bodyFontStyle}
+              />
+            </label>
 
-          <input
-            type="date"
-            value={inicio}
-            onChange={(e) => setInicio(e.target.value)}
-            className="h-12 rounded-lg border border-white/20 bg-white px-4 text-sm text-[#333] outline-none"
-          />
+            <button
+              type="submit"
+              className="min-h-12 rounded-[6px] bg-[#2a3b68] px-8 text-[11px] font-bold uppercase tracking-[0.18em] text-white transition hover:bg-[#304a80]"
+            >
+              Pesquisar
+            </button>
 
-          <input
-            type="date"
-            value={fim}
-            onChange={(e) => setFim(e.target.value)}
-            className="h-12 rounded-lg border border-white/20 bg-white px-4 text-sm text-[#333] outline-none"
-          />
+            <button
+              type="button"
+              onClick={limparFiltros}
+              className="min-h-12 rounded-[6px] bg-[#95c11f] px-8 text-[11px] font-bold uppercase tracking-[0.18em] text-white transition hover:bg-[#86ad1c]"
+            >
+              Limpar filtro
+            </button>
+          </div>
 
-          <button
-            type="button"
-            onClick={limparFiltros}
-            className="h-12 rounded-lg border border-white bg-transparent text-sm font-bold uppercase tracking-wide text-white transition hover:bg-white hover:text-[#223d67]"
-          >
-            Limpar
-          </button>
-        </div>
+          <div className="mt-4 grid gap-3 text-[#223d67] md:grid-cols-[1fr_1fr_auto]">
+            <label className="grid gap-1">
+              <span className="rounded-t-[4px] bg-[#f8eef1] px-3 py-2 text-[10px] font-bold uppercase tracking-[0.14em]">
+                Publicado de
+              </span>
+              <input
+                type="date"
+                value={inicio}
+                onChange={(event) => setInicio(event.target.value)}
+                className="h-11 rounded-b-[4px] border-0 bg-[#fff9fb] px-3 text-sm outline-none"
+                style={bodyFontStyle}
+              />
+            </label>
 
-        {/* GRID DE NOTÍCIAS */}
+            <label className="grid gap-1">
+              <span className="rounded-t-[4px] bg-[#f8eef1] px-3 py-2 text-[10px] font-bold uppercase tracking-[0.14em]">
+                Publicado at&eacute;
+              </span>
+              <input
+                type="date"
+                value={fim}
+                onChange={(event) => setFim(event.target.value)}
+                className="h-11 rounded-b-[4px] border-0 bg-[#fff9fb] px-3 text-sm outline-none"
+                style={bodyFontStyle}
+              />
+            </label>
+
+            <div className="flex items-end">
+              <div className="w-full rounded-[4px] bg-[#f8eef1] px-5 py-3 text-center text-[10px] font-bold uppercase tracking-[0.14em] md:min-w-56">
+                {noticiasFiltradas.length} not&iacute;cias
+              </div>
+            </div>
+          </div>
+        </form>
+
         {noticiasFiltradas.length === 0 ? (
-          <div className="text-center text-white">
-            Nenhuma notícia encontrada.
+          <div className="mt-10 rounded-[6px] border border-[#f8eef1]/70 bg-[#223d67]/75 px-6 py-12 text-center text-sm uppercase tracking-[0.14em] text-[#f8eef1]">
+            Nenhuma not&iacute;cia encontrada.
           </div>
         ) : (
-          <>
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {noticiasFiltradas.map((noticia) => (
-                <article
+          <div className="mt-8 grid auto-rows-auto gap-4 md:grid-cols-2 md:auto-rows-[92px]">
+            {noticiasFiltradas.map((noticia, index) => {
+              const layout = cardLayouts[index % cardLayouts.length];
+              const resumo =
+                noticia.miniDescricao ||
+                noticia.descricao ||
+                "Conte\u00fado indispon\u00edvel no momento.";
+
+              return (
+                <Link
                   key={noticia.id}
-                  className="overflow-hidden rounded-2xl bg-[#4a8de6] shadow-[0_12px_25px_rgba(0,0,0,0.25)] transition duration-300 hover:-translate-y-2"
+                  href={`/noticias/${noticia.id}`}
+                  className={`group grid overflow-hidden rounded-[6px] border border-[#f8eef1]/80 bg-[#223d67] shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition duration-300 hover:-translate-y-1 hover:border-[#95c11f] hover:shadow-[0_16px_28px_rgba(0,0,0,0.24)] ${layout.shell}`}
                 >
-                  {/* IMAGEM */}
-                  <div className="relative h-[340px] overflow-hidden">
+                  <div
+                    className={`relative min-h-44 overflow-hidden bg-[#f8eef1] ${layout.media}`}
+                  >
                     {noticia.imagemUrl ? (
                       <Image
                         src={noticia.imagemUrl}
                         alt={noticia.titulo}
                         fill
                         unoptimized
-                        className="object-cover"
-                        sizes="(max-width:768px) 100vw, 33vw"
+                        className="object-cover transition duration-500 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, 540px"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center bg-[#cfcfcf] text-2xl font-bold text-[#777]">
-                        IMAGEM
-                      </div>
+                      <div className="absolute inset-0" aria-hidden="true" />
                     )}
-
-                    {/* OVERLAY */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                   </div>
 
-                  {/* CONTEUDO */}
-                  <div className="p-5">
-                    <p className="mb-2 text-xs uppercase tracking-[0.25em] text-[#dbe8ff]">
+                  <article
+                    className={`flex min-h-44 flex-col bg-[#223d67] p-5 text-[#f8eef1] ${layout.body}`}
+                  >
+                    <p
+                      className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#bedb72]"
+                      style={bodyFontStyle}
+                    >
                       {formatDate(noticia.publishedAt)}
                     </p>
 
-                    <h2 className="mb-4 text-3xl font-black uppercase leading-none text-[#f7eaea]">
+                    <h2 className="text-base font-black uppercase leading-tight md:text-lg">
                       {noticia.titulo}
                     </h2>
 
-                    <p className="line-clamp-5 text-sm leading-5 text-white">
-                      {noticia.miniDescricao ||
-                        noticia.descricao ||
-                        "Sem descrição disponível."}
-                    </p>
-
-                    <Link
-                      href={`/noticias/${noticia.id}`}
-                      className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[#38467c] px-5 py-4 text-sm font-bold uppercase tracking-[0.15em] text-white transition hover:bg-[#2a355f]"
+                    <p
+                      className={`mt-3 text-sm leading-5 text-[#fff4f6] ${layout.text}`}
+                      style={bodyFontStyle}
                     >
-                      Ver mais
-                    </Link>
-                  </div>
-                </article>
-              ))}
-            </div>
-
-            {/* CONTADOR */}
-            <div className="mt-10 text-center text-sm uppercase tracking-[0.2em] text-white">
-              {noticiasFiltradas.length} notícias encontradas
-            </div>
-          </>
+                      {resumo}
+                    </p>
+                  </article>
+                </Link>
+              );
+            })}
+          </div>
         )}
       </div>
-
-      {/* CSS CUSTOM */}
-      <style jsx>{`
-        .clip-diagonal {
-          clip-path: polygon(0 100%, 0 45%, 100% 0, 100% 100%);
-        }
-      `}</style>
     </section>
   );
 }

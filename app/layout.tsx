@@ -18,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="pt-br">
       <body suppressHydrationWarning className={`bg-slate-50 text-slate-950`} style={{fontFamily: "'Russo One', sans-serif"}}>
         <Navbar />
-        <main className="bg-[#eeeeee] text-[#223d67]">{children}</main>
+        <main className="bg-slate-50 text-[#223d67]">{children}</main>
         <Footer />
       </body>
     </html>
