@@ -7,9 +7,19 @@ type Status = {
   message: string;
 };
 
+type ContatoFormProps = {
+  institutionalEmail: string;
+};
+
+type ContactResponse = {
+  error?: string;
+  mailtoUrl?: string;
+  mode?: "sent" | "mailto";
+};
+
 const initialStatus: Status = { type: "idle", message: "" };
 
-export function ContatoForm() {
+export function ContatoForm({ institutionalEmail }: ContatoFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<Status>(initialStatus);
 
@@ -20,6 +30,7 @@ export function ContatoForm() {
 
     const form = event.currentTarget;
     const formData = new FormData(form);
+    formData.set("destinoEmail", institutionalEmail);
 
     try {
       const response = await fetch("/api/contato", {
@@ -27,27 +38,34 @@ export function ContatoForm() {
         body: formData,
       });
 
-      const payload = (await response.json()) as { error?: string; protocolo?: string | number | null };
+      const payload = (await response.json()) as ContactResponse;
 
       if (!response.ok) {
         setStatus({
           type: "error",
-          message: payload.error || "Nao foi possivel enviar a mensagem.",
+          message: payload.error || "Nao foi possivel preparar a mensagem.",
         });
         return;
       }
 
+      if (payload.mode === "mailto" && payload.mailtoUrl) {
+        window.location.href = payload.mailtoUrl;
+        setStatus({
+          type: "success",
+          message: "Seu aplicativo de email foi aberto com o destinatario e a copia preenchidos.",
+        });
+      } else {
+        setStatus({
+          type: "success",
+          message: "Mensagem enviada para o email institucional com copia para o email informado.",
+        });
+      }
+
       form.reset();
-      setStatus({
-        type: "success",
-        message: payload.protocolo
-          ? `Mensagem enviada com sucesso. Protocolo: ${payload.protocolo}.`
-          : "Mensagem enviada com sucesso. Retornaremos em breve.",
-      });
     } catch {
       setStatus({
         type: "error",
-        message: "Falha de conexao ao enviar a mensagem.",
+        message: "Falha de conexao ao preparar a mensagem.",
       });
     } finally {
       setIsSubmitting(false);
@@ -55,67 +73,65 @@ export function ContatoForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="rounded-lg bg-[#eeeeee] p-5 text-[#909090] md:p-6">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <label className="text-sm font-medium">
-          Nome
+    <form onSubmit={onSubmit} className="bg-[#95c11f] p-6 text-white shadow-[10px_12px_0_rgba(34,61,103,0.28)] md:p-8">
+      <h2 className="text-xl font-black uppercase leading-tight tracking-[0.04em] md:text-2xl">Formulario de Contato</h2>
+
+      <div className="mt-6 grid gap-4">
+        <label className="block">
+          <span className="sr-only">Nome</span>
           <input
             required
             name="nome"
             type="text"
-            className="mt-2 w-full rounded-md border border-[#cfcfcf] bg-white px-3 py-2 text-sm outline-none focus:border-[#909090]"
+            placeholder="Nome"
+            className="h-12 w-full border-0 bg-[#f8eef1] px-4 text-sm text-[#223d67] outline-none placeholder:text-[#8d8d8d] focus:ring-2 focus:ring-white"
           />
         </label>
-        <label className="text-sm font-medium">
-          Email
+
+        <label className="block">
+          <span className="sr-only">Email</span>
           <input
             required
             name="email"
             type="email"
-            className="mt-2 w-full rounded-md border border-[#cfcfcf] bg-white px-3 py-2 text-sm outline-none focus:border-[#909090]"
+            placeholder="Email"
+            className="h-12 w-full border-0 bg-[#f8eef1] px-4 text-sm text-[#223d67] outline-none placeholder:text-[#8d8d8d] focus:ring-2 focus:ring-white"
+          />
+        </label>
+
+        <label className="block">
+          <span className="sr-only">Assunto</span>
+          <input
+            required
+            name="assunto"
+            type="text"
+            placeholder="Assunto"
+            className="h-12 w-full border-0 bg-[#f8eef1] px-4 text-sm text-[#223d67] outline-none placeholder:text-[#8d8d8d] focus:ring-2 focus:ring-white"
+          />
+        </label>
+
+        <label className="block">
+          <span className="sr-only">Mensagem</span>
+          <textarea
+            required
+            name="mensagem"
+            rows={5}
+            placeholder="Mensagem"
+            className="min-h-28 w-full resize-y border-0 bg-[#f8eef1] px-4 py-3 text-sm text-[#223d67] outline-none placeholder:text-[#8d8d8d] focus:ring-2 focus:ring-white"
           />
         </label>
       </div>
 
-      <label className="mt-4 block text-sm font-medium">
-        Assunto
-        <input
-          required
-          name="assunto"
-          type="text"
-          className="mt-2 w-full rounded-md border border-[#cfcfcf] bg-white px-3 py-2 text-sm outline-none focus:border-[#909090]"
-        />
-      </label>
-
-      <label className="mt-4 block text-sm font-medium">
-        Mensagem
-        <textarea
-          required
-          name="mensagem"
-          rows={6}
-          className="mt-2 w-full rounded-md border border-[#cfcfcf] bg-white px-3 py-2 text-sm outline-none focus:border-[#909090]"
-        />
-      </label>
-
-      <label className="mt-4 block text-sm font-medium">
-        Arquivo (opcional)
-        <input
-          name="anexo"
-          type="file"
-          className="mt-2 block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-[#909090] file:px-4 file:py-2 file:text-xs file:font-semibold file:uppercase file:tracking-[0.1em] file:text-[#eeeeee]"
-        />
-      </label>
-
       <button
         type="submit"
         disabled={isSubmitting}
-        className="mt-6 rounded-md bg-[#909090] px-6 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-[#eeeeee] transition hover:bg-[#7f7f7f] disabled:cursor-not-allowed disabled:opacity-70"
+        className="mt-5 h-12 min-w-40 bg-[#f8eef1] px-6 text-xs font-black uppercase tracking-[0.12em] text-[#223d67] transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-70"
       >
-        {isSubmitting ? "Enviando..." : "Protocolar mensagem"}
+        {isSubmitting ? "Enviando..." : "Enviar"}
       </button>
 
       {status.type !== "idle" ? (
-        <p className={`mt-4 text-sm ${status.type === "success" ? "text-green-700" : "text-red-700"}`}>{status.message}</p>
+        <p className={`mt-4 text-sm font-semibold ${status.type === "success" ? "text-white" : "text-red-900"}`}>{status.message}</p>
       ) : null}
     </form>
   );

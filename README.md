@@ -92,8 +92,10 @@ Fluxo:
 Variaveis:
 - `NEXT_PUBLIC_STRAPI_URL`
 - `STRAPI_API_TOKEN` (recomendado para escrita/upload)
+- `CONTACT_TO_EMAIL` (email institucional de destino do formulario)
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` (opcionais; sem SMTP configurado, o formulario abre o email do usuario com destinatario e copia preenchidos)
 
-Referencia: `.env.example`.
+Referencia: `.env.exemple`.
 
 ## Estado atual (06/05/2026)
 
@@ -109,7 +111,7 @@ npm install
 
 2. Configurar ambiente:
 ```bash
-cp .env.example .env.local
+cp .env.exemple .env.local
 ```
 
 3. Subir app:

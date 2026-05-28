@@ -31,7 +31,7 @@ const fallbackContato: ContatoPageContent = {
   titulo: "Contato",
   subtitulo: "Fale com a organizacao",
   descricao: "Use este canal para tirar duvidas, solicitar informacoes ou registrar sua mensagem.",
-  email: "contato@femictec.org.br",
+  email: "femictec@novohamburgo.rs.gov.br",
   telefone: "(51) 0000-0000",
   endereco: "Novo Hamburgo/RS",
 };
