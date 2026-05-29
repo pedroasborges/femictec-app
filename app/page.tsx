@@ -142,7 +142,7 @@ export default async function Page() {
                   </span>
                 </h2>
 
-                <p className="mt-4 max-w-md whitespace-pre-line text-justify text-sm leading-relaxed text-slate-200">
+                <p className="mt-4 max-w-md font-texto whitespace-pre-line text-justify text-sm leading-relaxed text-slate-200">
                   {dadosCms?.textoInscricao ||
                     "Nenhum texto de inscricao cadastrado."}
                 </p>
@@ -191,7 +191,7 @@ export default async function Page() {
                 <p className="text-base font-semibold text-[#95c11f]">
                   SOBRE A NOSSA FEIRA
                 </p>
-                <p className="whitespace-pre-line text-slate-200">
+                <p className="whitespace-pre-line font-texto text-slate-200">
                   {dadosCms?.textoResumo ||
                     "Conteudo resumido institucional pendente de publicacao no painel."}
                 </p>
@@ -234,7 +234,7 @@ export default async function Page() {
           </h3>
           <div className="flex justify-center">
             <div className="mr-8 mt-10 grid w-full max-w-5xl grid-flow-col grid-cols-1 overflow-hidden text-white md:grid-cols-[0.75fr_1.25fr]">
-              <div className="bg-[#eeeeee]">
+              <div className="">
                 <div className="mb-14 scale-101 bg-[#95c11f] px-6 py-8 text-xl [clip-path:polygon(25%_0%,_100%_0%,_100%_100%,_25%_100%,_10%_50%)] md:text-3xl">
                   INSCRI&Ccedil;&Atilde;O
                 </div>
@@ -245,7 +245,7 @@ export default async function Page() {
                   AVALIA&Ccedil;&Atilde;O
                 </div>
               </div>
-              <div className="bg-[#eeeeee]">
+              <div className="">
                 <div className="mb-14 bg-[#95c11f] px-12 py-8 text-right text-xl [clip-path:polygon(100%_50%,_90%_90%,_80%_90%,_77%_100%,_0%_100%,_0%_0%,_77%_0%,_80%_10%,_90%_10%)] md:text-3xl">
                   XX/XX
                 </div>
@@ -327,7 +327,7 @@ export default async function Page() {
                         <h4 className="mb-4 w-full font-sans text-xl font-black uppercase leading-tight tracking-wide text-white sm:mb-5 sm:w-5/6 sm:text-2xl">
                           {noticia.titulo}
                         </h4>
-                        <p className="line-clamp-6 text-justify text-sm font-normal leading-relaxed text-blue-50 opacity-90">
+                        <p className="line-clamp-6 font-texto text-justify text-sm font-normal leading-relaxed text-blue-50 opacity-90">
                           {noticia.miniDescricao ||
                             "Lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet."}
                         </p>

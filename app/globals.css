@@ -1,6 +1,9 @@
 @import "tailwindcss";
+@import "@fontsource/russo-one/latin.css";
+@import "@fontsource/saira/latin.css";
 
 @theme {
   /* Isso cria a classe bg-primary, text-primary, etc. */
   --color-primary: #223d67;
+  --font-texto: "Saira", sans-serif;
 }
