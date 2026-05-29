@@ -95,7 +95,7 @@ export default async function Page() {
         <div className="absolute left-1/2 top-1/2 h-1 w-32 -translate-x-1/2 -translate-y-1/2 bg-[#95c11f]" />
       </div>
 
-      <section className="w-full bg-slate-50">
+      <section className="w-full bg-white">
         <div className="relative mx-auto w-full max-w-[1920px] overflow-hidden bg-[#223d67] text-white">
           <Image
             src={BackgroundOndaSuperior}

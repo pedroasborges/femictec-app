@@ -79,6 +79,7 @@ Documentacao de setup no repositorio:
 - `STRAPI_FEMICTEC_SETUP.md`
 - `STRAPI_FEIRA_SETUP.md`
 - `STRAPI_REGULAMENTOS_CONTATO_SETUP.md`
+- `STRAPI_DYNAMIC_CONTENT_AUDIT.md`
 
 ## Formulario de contato (protocolo)
 
@@ -93,7 +94,7 @@ Variaveis:
 - `NEXT_PUBLIC_STRAPI_URL`
 - `STRAPI_API_TOKEN` (recomendado para escrita/upload)
 - `CONTACT_TO_EMAIL` (email institucional de destino do formulario)
-- `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` (opcionais; sem SMTP configurado, o formulario abre o email do usuario com destinatario e copia preenchidos)
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` (obrigatorios para envio automatico de email)
 
 Referencia: `.env.exemple`.
 

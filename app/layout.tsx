@@ -11,14 +11,12 @@ export const metadata: Metadata = {
   description: "Portal institucional da FEMICTEC com noticias, eventos e informacoes da feira.",
 };
 
-const inter = { className: "font-sans" };
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-br">
-      <body suppressHydrationWarning className={`bg-slate-50 text-slate-950`} style={{fontFamily: "'Russo One', sans-serif"}}>
+      <body suppressHydrationWarning className={`bg-white text-slate-950`} style={{fontFamily: "'Russo One', sans-serif"}}>
         <Navbar />
-        <main className="bg-slate-50 text-[#223d67]">{children}</main>
+        <main className="bg-white text-[#223d67]">{children}</main>
         <Footer />
       </body>
     </html>

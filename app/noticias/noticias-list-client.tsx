@@ -107,7 +107,7 @@ export default function NoticiasListClient({
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-slate-50 px-4 py-10 text-[#f8eef1] md:py-14">
+    <section className="relative min-h-screen overflow-hidden bg-white px-4 py-10 text-[#f8eef1] md:py-14">
       <div className="relative z-10 mx-auto w-full max-w-[1080px] rounded-[8px] bg-[#223d67] px-4 py-8 shadow-[0_16px_36px_rgba(34,61,103,0.18)] md:px-8 md:py-10">
         <h1 className="text-center text-3xl font-black uppercase leading-tight tracking-wide text-[#f8eef1] md:text-4xl">
           Lista de not&iacute;cias

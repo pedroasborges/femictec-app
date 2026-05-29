@@ -35,7 +35,7 @@ export default async function NoticiaDetalhePage({
   const paragrafos = splitParagraphs(noticia.descricao || noticia.miniDescricao);
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-slate-50 px-4 py-10 text-[#223d67] md:py-14">
+    <section className="relative min-h-screen overflow-hidden bg-white px-4 py-10 text-[#223d67] md:py-14">
       <article className="relative z-10 mx-auto w-full max-w-[1080px]">
         <h1 className="mx-auto max-w-3xl text-center text-2xl font-black uppercase leading-tight tracking-wide text-[#223d67] md:text-4xl">
           {noticia.titulo}

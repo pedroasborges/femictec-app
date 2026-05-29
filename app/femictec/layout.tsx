@@ -17,23 +17,21 @@ export default async function FemictecLayout({ children }: { children: React.Rea
   ];
 
   return (
-    <section className="mx-auto w-full max-w-[1320px] px-4 pb-12 pt-8 md:px-6 md:pt-10">
-      <div className="mx-auto w-full max-w-5xl bg-[#ece8ea] shadow-[0_0_0_1px_rgba(144,144,144,0.2)]">
-        <div className="border-b border-[#b8b2b5] px-4 py-4 md:px-8 md:py-5">
-          <div className="flex flex-wrap items-center gap-2">
-            {itensMenuFemictec.map((itemMenu) => (
-              <Link
-                key={itemMenu.rotaDaPagina}
-                href={itemMenu.rotaDaPagina}
-                className="rounded-sm bg-[#223d67] px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#eeeeee] transition hover:bg-[#878087]"
-              >
-                {itemMenu.tituloNoMenu}
-              </Link>
-            ))}
-          </div>
-        </div>
-        {children}
+    <section className="bg-white pb-10 text-[#223d67]">
+      <div className="mx-auto w-full max-w-[1120px] px-4 py-6 md:px-6">
+        <nav className="flex flex-wrap justify-center gap-3">
+          {itensMenuFemictec.map((itemMenu) => (
+            <Link
+              key={itemMenu.rotaDaPagina}
+              href={itemMenu.rotaDaPagina}
+              className="bg-[#223d67] px-5 py-3 text-sm font-black uppercase tracking-[0.08em] text-white transition hover:bg-[#95c11f] hover:text-[#223d67]"
+            >
+              {itemMenu.tituloNoMenu}
+            </Link>
+          ))}
+        </nav>
       </div>
+      {children}
     </section>
   );
 }

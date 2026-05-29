@@ -106,6 +106,14 @@ function normalizeRoot(payload: unknown): UnknownRecord | null {
   return normalizeItem(record);
 }
 
+function pickSection(source: UnknownRecord, keys: string[]): UnknownRecord {
+  for (const key of keys) {
+    const section = normalizeItem(source[key]);
+    if (section) return section;
+  }
+  return source;
+}
+
 function toDate(value: unknown): Date | null {
   const text = extractText(value);
   if (!text) return null;
@@ -184,7 +192,7 @@ function mapProgramacaoDias(items: UnknownRecord[]): FeiraProgramacaoDia[] {
 
       const atividades = atividadesRaw
         .map((atividade) => {
-          const horario = extractText(atividade.horario);
+          const horario = extractText(atividade.horario) || extractText(atividade.hotario);
           const titulo = extractText(atividade.titulo);
           if (!horario && !titulo) return null;
           return {
@@ -334,8 +342,16 @@ export async function getFeiraContent(): Promise<FeiraContent> {
   const source = normalizeRoot(feiraPayload);
   const eventos = mapEventos(eventosPayload);
 
-  const cronogramaFromStrapi = source ? mapCronograma(toList(source.cronogramaItens)) : [];
-  const programacaoFromStrapi = source ? mapProgramacaoDias(toList(source.programacaoDias)) : [];
+  const visaoGeral = source ? pickSection(source, ["visaoGeral", "secaoVisaoGeral"]) : null;
+  const cronograma = source ? pickSection(source, ["cronograma", "secaoCronograma"]) : null;
+  const programacao = source ? pickSection(source, ["programacao", "secaoProgramacao"]) : null;
+
+  const cronogramaFromStrapi = source
+    ? mapCronograma(toList((cronograma ?? source).cronogramaItens))
+    : [];
+  const programacaoFromStrapi = source
+    ? mapProgramacaoDias(toList((programacao ?? source).programacaoDias))
+    : [];
 
   const cronogramaFromEventos = buildCronogramaFromEventos(eventos);
   const programacaoFromEventos = buildProgramacaoFromEventos(eventos);
@@ -352,24 +368,24 @@ export async function getFeiraContent(): Promise<FeiraContent> {
     };
   }
 
-  const regulamentoUrl = extractText(source.regulamentoUrl) || "#";
+  const regulamentoUrl = extractText((visaoGeral ?? source).regulamentoUrl) || "#";
 
   return {
-    edicaoTitulo: extractText(source.edicaoTitulo) || fallbackContent.edicaoTitulo,
-    edicaoDescricao: extractText(source.edicaoDescricao) || fallbackContent.edicaoDescricao,
-    tematicaImagemUrl: resolveMediaUrl(source.tematicaImagem),
-    tematicaImagemAlt: extractText(source.tematicaImagemAlt) || fallbackContent.tematicaImagemAlt,
-    objetivosTitulo: extractText(source.objetivosTitulo) || fallbackContent.objetivosTitulo,
-    objetivosDescricao: extractText(source.objetivosDescricao) || fallbackContent.objetivosDescricao,
-    regulamentoTitulo: extractText(source.regulamentoTitulo) || fallbackContent.regulamentoTitulo,
-    regulamentoLabel: extractText(source.regulamentoLabel) || fallbackContent.regulamentoLabel,
+    edicaoTitulo: extractText((visaoGeral ?? source).edicaoTitulo) || fallbackContent.edicaoTitulo,
+    edicaoDescricao: extractText((visaoGeral ?? source).edicaoDescricao) || fallbackContent.edicaoDescricao,
+    tematicaImagemUrl: resolveMediaUrl((visaoGeral ?? source).tematicaImagem),
+    tematicaImagemAlt: extractText((visaoGeral ?? source).tematicaImagemAlt) || fallbackContent.tematicaImagemAlt,
+    objetivosTitulo: extractText((visaoGeral ?? source).objetivosTitulo) || fallbackContent.objetivosTitulo,
+    objetivosDescricao: extractText((visaoGeral ?? source).objetivosDescricao) || fallbackContent.objetivosDescricao,
+    regulamentoTitulo: extractText((visaoGeral ?? source).regulamentoTitulo) || fallbackContent.regulamentoTitulo,
+    regulamentoLabel: extractText((visaoGeral ?? source).regulamentoLabel) || fallbackContent.regulamentoLabel,
     regulamentoUrl,
-    cronogramaTitulo: extractText(source.cronogramaTitulo) || fallbackContent.cronogramaTitulo,
-    dataRealizacao: extractText(source.dataRealizacao) || cronogramaItens[0]?.data || fallbackContent.dataRealizacao,
+    cronogramaTitulo: extractText((cronograma ?? source).cronogramaTitulo) || fallbackContent.cronogramaTitulo,
+    dataRealizacao: extractText((cronograma ?? source).dataRealizacao) || cronogramaItens[0]?.data || fallbackContent.dataRealizacao,
     cronogramaItens,
-    mapaImagemUrl: resolveMediaUrl(source.mapaImagem),
-    mapaImagemAlt: extractText(source.mapaImagemAlt) || fallbackContent.mapaImagemAlt,
-    programacaoTitulo: extractText(source.programacaoTitulo) || fallbackContent.programacaoTitulo,
+    mapaImagemUrl: resolveMediaUrl((cronograma ?? source).mapaImagem),
+    mapaImagemAlt: extractText((cronograma ?? source).mapaImagemAlt) || fallbackContent.mapaImagemAlt,
+    programacaoTitulo: extractText((programacao ?? source).programacaoTitulo) || fallbackContent.programacaoTitulo,
     programacaoDias,
   };
 }

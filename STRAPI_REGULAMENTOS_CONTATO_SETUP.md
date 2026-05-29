@@ -42,9 +42,24 @@ Campos recomendados:
 4. `email` (Email ou Text)
 5. `telefone` (Text)
 6. `endereco` (Text)
+7. `destinatariosEvento` (Repeatable Component `contato.destinatario-email`)
+8. `notificacaoAssuntoTemplate` (Text)
+9. `notificacaoMensagemTemplate` (Long text)
+10. `confirmacaoAssuntoTemplate` (Text)
+11. `confirmacaoMensagemTemplate` (Long text)
+
+Componente `contato.destinatario-email`:
+1. `nome` (Text)
+2. `email` (Email)
 
 Endpoint usado no frontend:
 - `/api/contato?populate=*`
+
+Placeholders suportados nos templates:
+- `{nome}`
+- `{email}`
+- `{assunto}`
+- `{mensagem}`
 
 ## 3) Collection Type de mensagens (protocolo)
 
@@ -82,8 +97,15 @@ No Strapi:
 No Next.js (`.env.local`):
 1. `NEXT_PUBLIC_STRAPI_URL=http://127.0.0.1:1337`
 2. `STRAPI_API_TOKEN=seu_token_aqui`
+3. SMTP obrigatorio para disparo automatico:
+   - `SMTP_HOST`
+   - `SMTP_PORT`
+   - `SMTP_SECURE`
+   - `SMTP_USER`
+   - `SMTP_PASS`
+   - `SMTP_FROM`
 
-Sem token, a rota ainda tenta enviar, mas depende de permissoes publicas no Strapi.
+Sem SMTP, a rota `/api/contato` retorna erro `503` e nao envia emails.
 
 ## 6) Checklist rapido
 

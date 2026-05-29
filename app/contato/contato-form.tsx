@@ -7,19 +7,14 @@ type Status = {
   message: string;
 };
 
-type ContatoFormProps = {
-  institutionalEmail: string;
-};
-
 type ContactResponse = {
   error?: string;
-  mailtoUrl?: string;
-  mode?: "sent" | "mailto";
+  mode?: "sent";
 };
 
 const initialStatus: Status = { type: "idle", message: "" };
 
-export function ContatoForm({ institutionalEmail }: ContatoFormProps) {
+export function ContatoForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<Status>(initialStatus);
 
@@ -30,7 +25,6 @@ export function ContatoForm({ institutionalEmail }: ContatoFormProps) {
 
     const form = event.currentTarget;
     const formData = new FormData(form);
-    formData.set("destinoEmail", institutionalEmail);
 
     try {
       const response = await fetch("/api/contato", {
@@ -48,18 +42,10 @@ export function ContatoForm({ institutionalEmail }: ContatoFormProps) {
         return;
       }
 
-      if (payload.mode === "mailto" && payload.mailtoUrl) {
-        window.location.href = payload.mailtoUrl;
-        setStatus({
-          type: "success",
-          message: "Seu aplicativo de email foi aberto com o destinatario e a copia preenchidos.",
-        });
-      } else {
-        setStatus({
-          type: "success",
-          message: "Mensagem enviada para o email institucional com copia para o email informado.",
-        });
-      }
+      setStatus({
+        type: "success",
+        message: "Mensagem enviada com sucesso. Voce tambem recebera um email de confirmacao.",
+      });
 
       form.reset();
     } catch {

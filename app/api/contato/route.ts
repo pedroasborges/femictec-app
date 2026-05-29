@@ -2,6 +2,7 @@ import net from "node:net";
 import tls from "node:tls";
 
 import { NextResponse } from "next/server";
+import { fetchStrapiJson } from "../../lib/strapi";
 
 export const runtime = "nodejs";
 
@@ -20,7 +21,15 @@ type ContactPayload = {
   email: string;
   assunto: string;
   mensagem: string;
-  destinoEmail: string;
+};
+
+type ContatoNotificacaoConfig = {
+  emailPrincipal: string;
+  destinatariosEvento: string[];
+  notificacaoAssuntoTemplate: string;
+  notificacaoMensagemTemplate: string;
+  confirmacaoAssuntoTemplate: string;
+  confirmacaoMensagemTemplate: string;
 };
 
 function isValidEmail(value: string): boolean {
@@ -53,30 +62,81 @@ function getSmtpConfig(): SmtpConfig | null {
   };
 }
 
-function buildEmailText(payload: ContactPayload): string {
-  return [
-    "Nova mensagem enviada pelo formulario de contato da FEMICTEC.",
-    "",
-    `Nome: ${payload.nome}`,
-    `Email para retorno: ${payload.email}`,
-    `Assunto: ${payload.assunto}`,
-    "",
-    "Mensagem:",
-    payload.mensagem,
-    "",
-    "Uma copia desta mensagem foi direcionada ao email informado pelo usuario.",
-  ].join("\n");
+function normalizeEmails(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => (item && typeof item === "object" ? String((item as { email?: unknown }).email ?? "").trim() : ""))
+    .filter((email) => isValidEmail(email));
 }
 
-function buildMailtoUrl(payload: ContactPayload): string {
-  const subject = `Contato FEMICTEC - ${payload.assunto}`;
-  const params = new URLSearchParams({
-    cc: payload.email,
-    subject,
-    body: buildEmailText(payload),
-  });
+function fillTemplate(template: string, payload: ContactPayload): string {
+  return template
+    .replaceAll("{nome}", payload.nome)
+    .replaceAll("{email}", payload.email)
+    .replaceAll("{assunto}", payload.assunto)
+    .replaceAll("{mensagem}", payload.mensagem);
+}
 
-  return `mailto:${payload.destinoEmail}?${params.toString()}`;
+async function getContatoNotificacaoConfig(): Promise<ContatoNotificacaoConfig> {
+  type ContatoResponse = {
+    data?: {
+      email?: unknown;
+      destinatariosEvento?: unknown;
+      notificacaoAssuntoTemplate?: unknown;
+      notificacaoMensagemTemplate?: unknown;
+      confirmacaoAssuntoTemplate?: unknown;
+      confirmacaoMensagemTemplate?: unknown;
+      attributes?: {
+        email?: unknown;
+        destinatariosEvento?: unknown;
+        notificacaoAssuntoTemplate?: unknown;
+        notificacaoMensagemTemplate?: unknown;
+        confirmacaoAssuntoTemplate?: unknown;
+        confirmacaoMensagemTemplate?: unknown;
+      };
+    } | null;
+  };
+
+  const payload = await fetchStrapiJson<ContatoResponse>("/api/contato?populate=*", { data: null });
+  const raw = payload.data;
+  const source = raw?.attributes ?? raw;
+
+  const emailPrincipal = String(source?.email ?? "").trim();
+  const destinatariosEvento = normalizeEmails(source?.destinatariosEvento);
+
+  return {
+    emailPrincipal: isValidEmail(emailPrincipal) ? emailPrincipal : "femictec@novohamburgo.rs.gov.br",
+    destinatariosEvento,
+    notificacaoAssuntoTemplate:
+      String(source?.notificacaoAssuntoTemplate ?? "").trim() || "Novo contato FEMICTEC - {assunto}",
+    notificacaoMensagemTemplate:
+      String(source?.notificacaoMensagemTemplate ?? "").trim() ||
+      [
+        "Novo contato recebido pela FEMICTEC.",
+        "",
+        "Nome: {nome}",
+        "Email: {email}",
+        "Assunto: {assunto}",
+        "",
+        "Mensagem:",
+        "{mensagem}",
+      ].join("\n"),
+    confirmacaoAssuntoTemplate:
+      String(source?.confirmacaoAssuntoTemplate ?? "").trim() || "Recebemos sua mensagem - FEMICTEC",
+    confirmacaoMensagemTemplate:
+      String(source?.confirmacaoMensagemTemplate ?? "").trim() ||
+      [
+        "Ola, {nome}.",
+        "",
+        "Recebemos sua mensagem com sucesso.",
+        "Assunto: {assunto}",
+        "",
+        "Nossa equipe analisara o conteudo e retornara por este email quando necessario.",
+        "",
+        "Resumo da mensagem enviada:",
+        "{mensagem}",
+      ].join("\n"),
+  };
 }
 
 function readSmtpResponse(socket: net.Socket | tls.TLSSocket): Promise<string> {
@@ -183,28 +243,37 @@ function upgradeToTls(socket: net.Socket | tls.TLSSocket, config: SmtpConfig): P
   });
 }
 
-function buildSmtpMessage(payload: ContactPayload, from: string): string {
-  const subject = `Contato FEMICTEC - ${payload.assunto}`;
-  const text = buildEmailText(payload);
+function buildSmtpMessage(params: {
+  from: string;
+  to: string[];
+  subject: string;
+  text: string;
+  replyTo?: string;
+}): string {
   const headers = [
-    `From: FEMICTEC <${from}>`,
-    `To: <${payload.destinoEmail}>`,
-    `Cc: <${payload.email}>`,
-    `Reply-To: <${payload.email}>`,
-    `Subject: ${encodeHeader(subject)}`,
+    `From: FEMICTEC <${params.from}>`,
+    `To: ${params.to.map((email) => `<${email}>`).join(", ")}`,
+    ...(params.replyTo ? [`Reply-To: <${params.replyTo}>`] : []),
+    `Subject: ${encodeHeader(params.subject)}`,
     "MIME-Version: 1.0",
     'Content-Type: text/plain; charset="UTF-8"',
     "Content-Transfer-Encoding: 8bit",
   ];
 
-  return `${headers.join("\r\n")}\r\n\r\n${text}`;
+  return `${headers.join("\r\n")}\r\n\r\n${params.text}`;
 }
 
 function dotStuff(message: string): string {
   return message.replace(/^\./gm, "..");
 }
 
-async function sendSmtpMail(payload: ContactPayload, config: SmtpConfig) {
+async function sendSmtpMail(params: {
+  from: string;
+  to: string[];
+  subject: string;
+  text: string;
+  replyTo?: string;
+}, config: SmtpConfig) {
   let socket = await connectSocket(config);
 
   try {
@@ -224,11 +293,12 @@ async function sendSmtpMail(payload: ContactPayload, config: SmtpConfig) {
     }
 
     await sendSmtpCommand(socket, `MAIL FROM:<${config.from}>`, [250]);
-    await sendSmtpCommand(socket, `RCPT TO:<${payload.destinoEmail}>`, [250, 251]);
-    await sendSmtpCommand(socket, `RCPT TO:<${payload.email}>`, [250, 251]);
+    for (const email of params.to) {
+      await sendSmtpCommand(socket, `RCPT TO:<${email}>`, [250, 251]);
+    }
     await sendSmtpCommand(socket, "DATA", [354]);
 
-    socket.write(`${dotStuff(buildSmtpMessage(payload, config.from))}\r\n.\r\n`);
+    socket.write(`${dotStuff(buildSmtpMessage(params))}\r\n.\r\n`);
     expectSmtpCode(await readSmtpResponse(socket), [250]);
     await sendSmtpCommand(socket, "QUIT", [221]);
   } finally {
@@ -244,11 +314,6 @@ export async function POST(request: Request) {
       email: String(data.get("email") ?? "").trim(),
       assunto: String(data.get("assunto") ?? "").trim(),
       mensagem: String(data.get("mensagem") ?? "").trim(),
-      destinoEmail: (
-        process.env.CONTACT_TO_EMAIL ||
-        String(data.get("destinoEmail") ?? "").trim() ||
-        "femictec@novohamburgo.rs.gov.br"
-      ).trim(),
     };
 
     if (!payload.nome || !payload.email || !payload.assunto || !payload.mensagem) {
@@ -259,30 +324,55 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Email de retorno invalido." }, { status: 400 });
     }
 
-    if (!isValidEmail(payload.destinoEmail)) {
-      return NextResponse.json({ error: "Email institucional invalido." }, { status: 400 });
+    const contatoConfig = await getContatoNotificacaoConfig();
+    const fallbackDestino = (process.env.CONTACT_TO_EMAIL || "").trim();
+    const destinatariosEvento = [
+      ...new Set([
+        ...(contatoConfig.destinatariosEvento.length ? contatoConfig.destinatariosEvento : []),
+        ...(isValidEmail(fallbackDestino) ? [fallbackDestino] : []),
+        contatoConfig.emailPrincipal,
+      ]),
+    ].filter((email) => isValidEmail(email));
+
+    if (destinatariosEvento.length === 0) {
+      return NextResponse.json({ error: "Nenhum destinatario institucional valido configurado no Strapi." }, { status: 500 });
     }
 
     const smtpConfig = getSmtpConfig();
-
-    if (smtpConfig) {
-      try {
-        await sendSmtpMail(payload, smtpConfig);
-        return NextResponse.json({ ok: true, mode: "sent" });
-      } catch {
-        return NextResponse.json({
-          ok: true,
-          mode: "mailto",
-          mailtoUrl: buildMailtoUrl(payload),
-        });
-      }
+    if (!smtpConfig) {
+      return NextResponse.json(
+        { error: "SMTP nao configurado no servidor. Defina SMTP_HOST, SMTP_FROM e credenciais para disparo automatico." },
+        { status: 503 },
+      );
     }
 
-    return NextResponse.json({
-      ok: true,
-      mode: "mailto",
-      mailtoUrl: buildMailtoUrl(payload),
-    });
+    const assuntoEvento = fillTemplate(contatoConfig.notificacaoAssuntoTemplate, payload);
+    const mensagemEvento = fillTemplate(contatoConfig.notificacaoMensagemTemplate, payload);
+    const assuntoConfirmacao = fillTemplate(contatoConfig.confirmacaoAssuntoTemplate, payload);
+    const mensagemConfirmacao = fillTemplate(contatoConfig.confirmacaoMensagemTemplate, payload);
+
+    await sendSmtpMail(
+      {
+        from: smtpConfig.from,
+        to: destinatariosEvento,
+        subject: assuntoEvento,
+        text: mensagemEvento,
+        replyTo: payload.email,
+      },
+      smtpConfig,
+    );
+
+    await sendSmtpMail(
+      {
+        from: smtpConfig.from,
+        to: [payload.email],
+        subject: assuntoConfirmacao,
+        text: mensagemConfirmacao,
+      },
+      smtpConfig,
+    );
+
+    return NextResponse.json({ ok: true, mode: "sent" });
   } catch {
     return NextResponse.json({ error: "Erro inesperado ao preparar mensagem." }, { status: 500 });
   }

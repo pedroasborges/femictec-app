@@ -9,7 +9,7 @@ export default async function ContatoPage() {
   const content = await getContatoPageContent();
 
   return (
-    <section className="bg-[#eeeeee] py-20 text-[#223d67] md:py-28">
+    <section className="bg-white py-20 text-[#223d67] md:py-28">
       <div className="bg-[#223d67]">
         <div className="mx-auto grid w-full max-w-[980px] gap-8 px-4 py-10 md:grid-cols-[0.75fr_1.25fr] md:items-center md:px-6">
           <aside className="text-white">
@@ -38,7 +38,7 @@ export default async function ContatoPage() {
           </aside>
 
           <div className="md:-my-16">
-            <ContatoForm institutionalEmail={content.email} />
+            <ContatoForm />
           </div>
         </div>
       </div>

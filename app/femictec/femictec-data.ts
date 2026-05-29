@@ -31,6 +31,8 @@ export type FemictecContent = {
   menuItemInicioLabel: string;
   menuItemQuemRealizaLabel: string;
   menuItemHistoricoLabel: string;
+  tituloPrincipal: string;
+  subtituloPrincipal: string;
 
   bannerTitulo: string;
   bannerDestaque: string;
@@ -77,6 +79,8 @@ const fallbackContent: FemictecContent = {
   menuItemInicioLabel: "Apresentacao",
   menuItemQuemRealizaLabel: "Quem Realiza",
   menuItemHistoricoLabel: "Historico",
+  tituloPrincipal: "XII FEMICTEC",
+  subtituloPrincipal: "Feira Municipal de Iniciacao Cientifica e Tecnologica",
 
   bannerTitulo: "Banner",
   bannerDestaque: "Comunicacao",
@@ -295,6 +299,10 @@ export async function getFemictecContent(): Promise<FemictecContent> {
       extractText(pickFirstDefined(menu.menuItemQuemRealizaLabel, source.menuItemQuemRealizaLabel)) || fallbackContent.menuItemQuemRealizaLabel,
     menuItemHistoricoLabel:
       extractText(pickFirstDefined(menu.menuItemHistoricoLabel, source.menuItemHistoricoLabel)) || fallbackContent.menuItemHistoricoLabel,
+    tituloPrincipal:
+      extractText(pickFirstDefined(apresentacao.tituloPrincipal, source.tituloPrincipal)) || fallbackContent.tituloPrincipal,
+    subtituloPrincipal:
+      extractText(pickFirstDefined(apresentacao.subtituloPrincipal, source.subtituloPrincipal)) || fallbackContent.subtituloPrincipal,
 
     bannerTitulo: extractText(pickFirstDefined(apresentacao.bannerTitulo, source.bannerTitulo)) || fallbackContent.bannerTitulo,
     bannerDestaque: extractText(pickFirstDefined(apresentacao.bannerDestaque, source.bannerDestaque)) || fallbackContent.bannerDestaque,

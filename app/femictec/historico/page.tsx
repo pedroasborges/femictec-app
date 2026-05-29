@@ -1,4 +1,5 @@
-﻿import Link from "next/link";
+import Image from "next/image";
+import Link from "next/link";
 
 import { getFemictecContent } from "../femictec-data";
 
@@ -6,64 +7,83 @@ export default async function FemictecHistoricoPage() {
   const content = await getFemictecContent();
 
   return (
-    <>
-      <section className="px-4 py-8 md:px-8 md:py-10">
-        <h1 className="text-4xl font-light uppercase tracking-wide text-[#8c8288] md:text-5xl">{content.historicoTitulo}</h1>
-        <p className="mt-4 text-sm leading-7 text-[#8f868b] md:text-base">{content.historicoDescricao}</p>
-      </section>
+    <section className="bg-white px-4 pb-16 pt-8 md:px-6 md:pb-20">
+      <div className="mx-auto max-w-[1000px]">
+        <section className="grid gap-8 bg-[#223d67] p-6 text-white md:grid-cols-[0.92fr_1.08fr] md:p-10">
+          <article>
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#95c11f]">{content.trajetoriaTitulo}</p>
+            <h1 className="mt-3 text-3xl font-black uppercase leading-tight tracking-[0.06em] md:text-5xl">{content.historicoTitulo}</h1>
+            <p className="mt-6 text-justify text-base leading-8 text-white/88 md:text-lg md:leading-9">{content.historicoDescricao}</p>
+          </article>
 
-      <section className="bg-[#8f878b] px-4 py-14 text-center text-[#eeeeee] md:px-8 md:py-16">
-        {content.trajetoriaImagemUrl ? (
-          <img src={content.trajetoriaImagemUrl} alt={content.trajetoriaImagemAlt} className="mx-auto w-full max-w-4xl rounded-sm object-cover" />
-        ) : (
-          <div className="mx-auto max-w-3xl">
-            <p className="text-sm uppercase tracking-[0.12em]">{content.trajetoriaTitulo}</p>
-            <p className="mt-1 text-sm uppercase tracking-[0.12em]">{content.trajetoriaSubtitulo}</p>
-            <p className="mt-3 text-xl uppercase tracking-[0.1em] text-[#73f3c7]">Comunicacao</p>
-          </div>
-        )}
-      </section>
+          <article className="relative min-h-[280px] overflow-hidden bg-[#1b365f] shadow-[10px_10px_0_rgba(149,193,31,0.75)] md:min-h-[360px]">
+            {content.trajetoriaImagemUrl ? (
+              <Image
+                src={content.trajetoriaImagemUrl}
+                alt={content.trajetoriaImagemAlt}
+                fill
+                unoptimized
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 520px"
+              />
+            ) : (
+              <div className="flex h-full min-h-[280px] items-center justify-center p-8 text-center text-xl font-black uppercase tracking-[0.08em] text-white/85 md:min-h-[360px]">
+                {content.trajetoriaSubtitulo}
+              </div>
+            )}
+          </article>
+        </section>
 
-      <section className="px-4 py-8 md:px-8 md:py-10">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <section className="mt-10 grid gap-5 md:grid-cols-2">
           {content.edicoesCards.map((edicao, index) => (
-            <article key={`${edicao.titulo}-${index}`} className="bg-[#8f878b] p-6 text-center text-[#eeeeee]">
-              {edicao.imagemUrl ? (
-                <img src={edicao.imagemUrl} alt={edicao.titulo} className="mx-auto h-40 w-full rounded-sm object-cover" />
-              ) : (
-                <div className="mx-auto flex h-40 w-full items-center justify-center rounded-sm bg-[#9f979b] text-xs uppercase tracking-[0.1em]">
-                  {edicao.titulo}
-                </div>
-              )}
-              <p className="mt-3 text-sm uppercase tracking-[0.08em] text-[#73f3c7]">{edicao.subtitulo}</p>
+            <article key={`${edicao.titulo}-${index}`} className="bg-white p-4 shadow-[0_0_0_1px_rgba(34,61,103,0.12)]">
+              <div className="relative h-56 overflow-hidden bg-[#223d67]">
+                {edicao.imagemUrl ? (
+                  <Image
+                    src={edicao.imagemUrl}
+                    alt={edicao.titulo}
+                    fill
+                    unoptimized
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center p-6 text-center text-lg font-black uppercase tracking-[0.08em] text-white/80">
+                    {edicao.titulo}
+                  </div>
+                )}
+              </div>
+              <p className="mt-4 text-sm font-black uppercase tracking-[0.12em] text-[#95c11f]">{edicao.subtitulo}</p>
+              <h2 className="mt-1 text-xl font-black uppercase tracking-[0.04em] text-[#223d67]">{edicao.titulo}</h2>
             </article>
           ))}
-        </div>
+        </section>
 
-        <div className="mt-6 text-center">
-          <Link
-            href={content.galeriaUrl}
-            className="inline-flex rounded-sm bg-[#938a90] px-8 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-[#eeeeee] transition hover:bg-[#837b80]"
-          >
-            {content.galeriaLabel}
-          </Link>
-        </div>
-      </section>
-
-      <section className="px-4 pb-12 md:px-8 md:pb-14">
-        <div className="overflow-hidden border border-[#b8b2b5]">
-          <div className="border-b border-[#b8b2b5] bg-[#ddd7da] px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.12em] text-[#8c8288]">
-            {content.historicoTabelaTitulo}
-          </div>
-          {content.historicoTabelaLinhas.map((linha) => (
-            <div key={linha.label} className="grid grid-cols-2 border-b border-[#c9c2c6] bg-[#ece8ea] px-4 py-3 text-sm text-[#8f868b] last:border-b-0">
-              <span>{linha.label}</span>
-              <span className="text-right font-medium">{linha.valor}</span>
+        <section className="mt-10 grid gap-6 md:grid-cols-[1fr_0.7fr] md:items-start">
+          <div className="overflow-hidden bg-white shadow-[0_0_0_1px_rgba(34,61,103,0.12)]">
+            <div className="bg-[#95c11f] px-5 py-4 text-lg font-black uppercase tracking-[0.08em] text-[#223d67]">
+              {content.historicoTabelaTitulo}
             </div>
-          ))}
-        </div>
-      </section>
-    </>
+            {content.historicoTabelaLinhas.map((linha) => (
+              <div key={linha.label} className="grid grid-cols-[1fr_auto] gap-4 border-b border-[#223d67]/10 px-5 py-4 text-base text-[#223d67] last:border-b-0 md:text-lg">
+                <span className="font-bold">{linha.label}</span>
+                <span className="font-black text-[#95c11f]">{linha.valor}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="bg-[#223d67] p-6 text-white">
+            <h2 className="text-2xl font-black uppercase tracking-[0.06em]">{content.trajetoriaTitulo}</h2>
+            <p className="mt-4 text-base leading-8 text-white/80">{content.trajetoriaSubtitulo}</p>
+            <Link
+              href={content.galeriaUrl}
+              className="mt-6 inline-flex bg-[#95c11f] px-6 py-3 text-sm font-black uppercase tracking-[0.1em] text-[#223d67] transition hover:bg-white"
+            >
+              {content.galeriaLabel}
+            </Link>
+          </div>
+        </section>
+      </div>
+    </section>
   );
 }
-
