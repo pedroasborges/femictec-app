@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import logoImg from "../../public/femictec.png";
 import { fetchStrapiJson } from "../lib/strapi";
+import { getLocalizacaoContent, sanitizeCoordinates } from "../localizacao/localizacao-data";
 
 type FooterAttributes = {
   Email?: string | null;
@@ -92,7 +93,10 @@ function CityLogoBlock() {
 }
 
 export async function Footer() {
-  const footer = await getFooter();
+  const [footer, localizacao] = await Promise.all([getFooter(), getLocalizacaoContent()]);
+  const coords = sanitizeCoordinates(localizacao.coordenadas);
+  const mapsLink = `https://www.google.com/maps?q=${coords}`;
+  const mapsEmbed = `https://www.google.com/maps?q=${coords}&z=15&output=embed`;
   const instagramUrl = toInstagramUrl(footer.Instagram);
   const whatsappUrl = toWhatsappUrl(footer.Telefone);
   const facebookUrl = toFacebookUrl(footer.Facebook);
@@ -110,10 +114,24 @@ export async function Footer() {
               Feira Municipal de Iniciacao Cientifica e Tecnologica de Novo Hamburgo
             </p>
 
-            <Link href="/" className="hover:text-[#95c11f] mt-2 max-w-[250px] text-[12px] leading-5 text-white/90">
-              Localização
-             </Link>
+            <a
+              href={mapsLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-flex max-w-[250px] text-[12px] leading-5 text-white/90 hover:text-[#95c11f]"
+            >
+              Localizacao
+            </a>
             <p className="mt-2 max-w-[250px] text-[12px] leading-5 text-white/90">Novo Hamburgo/RS</p>
+            <div className="mt-3 max-w-[260px] overflow-hidden border border-white/20">
+              <iframe
+                title="Mapa no rodape FEMICTEC"
+                src={mapsEmbed}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="h-24 w-full"
+              />
+            </div>
           </div>
 
           <div>

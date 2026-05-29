@@ -1,12 +1,16 @@
 import { ContatoForm } from "./contato-form";
 import { getContatoPageContent } from "./contato-data";
+import { getLocalizacaoContent, sanitizeCoordinates } from "../localizacao/localizacao-data";
 
 function SocialSquare() {
   return <span className="block h-9 w-9 rounded-sm bg-[#f8eef1]" aria-hidden="true" />;
 }
 
 export default async function ContatoPage() {
-  const content = await getContatoPageContent();
+  const [content, localizacao] = await Promise.all([getContatoPageContent(), getLocalizacaoContent()]);
+  const coords = sanitizeCoordinates(localizacao.coordenadas);
+  const mapsLink = `https://www.google.com/maps?q=${coords}`;
+  const mapsEmbed = `https://www.google.com/maps?q=${coords}&z=16&output=embed`;
 
   return (
     <section className="bg-white py-20 text-[#223d67] md:py-28">
@@ -25,6 +29,23 @@ export default async function ContatoPage() {
               <h2 className="text-base font-black uppercase tracking-[0.06em]">Localizacao</h2>
               <p className="mt-4 max-w-[260px] text-sm font-semibold leading-6 text-white/90">{content.endereco}</p>
               <p className="mt-2 max-w-[260px] text-sm leading-6 text-white/75">{content.descricao}</p>
+              <a
+                href={mapsLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 inline-flex text-xs font-black uppercase tracking-[0.1em] text-[#95c11f] hover:text-white"
+              >
+                Ver no Google Maps
+              </a>
+              <div className="mt-4 overflow-hidden border border-white/20">
+                <iframe
+                  title="Mapa de localizacao FEMICTEC"
+                  src={mapsEmbed}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="h-44 w-full"
+                />
+              </div>
             </div>
 
             <div className="mt-8">

@@ -7,7 +7,8 @@ Este frontend agora possui as rotas:
 
 1. `/regulamentos`
 2. `/contato`
-3. `POST /api/contato` (rota interna Next.js que salva no Strapi)
+3. `/localizacao`
+4. `POST /api/contato` (rota interna Next.js que salva no Strapi)
 
 ## 1) Single Type `regulamento`
 
@@ -55,6 +56,23 @@ Componente `contato.destinatario-email`:
 Endpoint usado no frontend:
 - `/api/contato?populate=*`
 
+## 2.1) Single Type `localizacao`
+
+No Strapi Admin:
+1. `Content-Type Builder`
+2. `Create new single type`
+3. Display name: `Localizacao`
+4. API ID: `localizacao`
+
+Campos recomendados:
+1. `titulo` (Text)
+2. `descricao` (Long text)
+3. `endereco` (Text)
+4. `coordenadas` (Text) -> formato: `-29.702856, -51.138347`
+
+Endpoint usado no frontend:
+- `/api/localizacao?populate=*`
+
 Placeholders suportados nos templates:
 - `{nome}`
 - `{email}`
@@ -84,7 +102,8 @@ Endpoint de criacao (usado pela rota Next):
 Em `Settings -> Users & Permissions -> Roles -> Public`:
 1. Habilitar `find` para `Regulamento`
 2. Habilitar `find` para `Contato`
-3. Nao habilitar `create` para `Mensagens Contato` se for usar token do servidor (recomendado)
+3. Habilitar `find` para `Localizacao`
+4. Nao habilitar `create` para `Mensagens Contato` se for usar token do servidor (recomendado)
 
 ## 5) Token para escrita segura (recomendado)
 
@@ -114,7 +133,9 @@ Sem SMTP, a rota `/api/contato` retorna erro `503` e nao envia emails.
 3. Testar:
    - `http://127.0.0.1:1337/api/regulamento?populate=*`
    - `http://127.0.0.1:1337/api/contato?populate=*`
+   - `http://127.0.0.1:1337/api/localizacao?populate=*`
 4. Abrir no frontend:
    - `/regulamentos`
    - `/contato`
+   - `/localizacao`
 5. Enviar formulario com anexo e confirmar registro em `Mensagens Contato`.

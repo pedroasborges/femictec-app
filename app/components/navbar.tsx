@@ -11,7 +11,7 @@ const navLinks = [
   { label: "Eventos da Feira", href: "/eventos-da-feira" },
   { label: "Noticias", href: "/noticias" },
   { label: "Contato", href: "/contato" },
-  { label: "Localização", href: "/" },
+  { label: "Localizacao", href: "/localizacao" },
 ];
 
 const desktopNavLinkClass =

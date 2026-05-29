@@ -60,6 +60,7 @@ Arquitetura:
 - `/noticias/[id]`
 - `/regulamentos`
 - `/contato`
+- `/localizacao`
 
 ## Integracao com Strapi
 
@@ -72,6 +73,7 @@ Endpoints utilizados:
 - `GET /api/noticias?...`
 - `GET /api/regulamento?populate=pdfArquivo` (com fallback `populate=*`)
 - `GET /api/contato?populate=*`
+- `GET /api/localizacao?populate=*`
 - `POST /api/mensagens-contatos` (via rota interna Next)
 - `POST /api/upload` (via rota interna Next, quando houver anexo)
 
