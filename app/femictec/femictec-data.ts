@@ -134,7 +134,7 @@ const fallbackContent: FemictecContent = {
     { titulo: "Imagem da edicao de 2025", subtitulo: "Comunicacao", imagemUrl: null },
   ],
   galeriaLabel: "Abrir galeria",
-  galeriaUrl: "#",
+  galeriaUrl: "/galeria",
   historicoTabelaTitulo: "Tabela com dados historicos especificos",
   historicoTabelaLinhas: [
     { label: "Projetos apresentados", valor: "120" },
@@ -238,11 +238,37 @@ function mapTabela(items: UnknownRecord[]): TabelaHistorico[] {
 }
 
 async function fetchFemictecPayload(): Promise<unknown | null> {
+  const customPath = process.env.STRAPI_FEMICTEC_PATH?.trim();
+  const deepPopulateQuery =
+    "populate[menuInterno][populate]=*" +
+    "&populate[apresentacao][populate][estandesImagem][populate]=*" +
+    "&populate[apresentacao][populate][bannerImagem][populate]=*" +
+    "&populate[quemRealiza][populate][imagemEntrada][populate]=*" +
+    "&populate[quemRealiza][populate][parceiros][populate][logo][populate]=*" +
+    "&populate[historico][populate][trajetoriaImagem][populate]=*" +
+    "&populate[historico][populate][edicoesCards][populate][imagem][populate]=*" +
+    "&populate[historico][populate][historicoTabelaLinhas][populate]=*";
   const endpoints = [
+    ...(customPath ? [`${customPath}${customPath.includes("?") ? "&" : "?"}${deepPopulateQuery}`] : []),
+    ...(customPath ? [customPath.includes("?") ? customPath : `${customPath}?populate=deep,5`] : []),
+    `/api/femictec?${deepPopulateQuery}`,
     "/api/femictec?populate=deep,5",
     "/api/femictec?populate=*",
+    `/api/femictecs?${deepPopulateQuery}`,
+    "/api/femictecs?populate=deep,5",
+    "/api/femictecs?populate=*",
+    `/api/femictec-pagina?${deepPopulateQuery}`,
+    "/api/femictec-pagina?populate=deep,5",
+    "/api/femictec-pagina?populate=*",
+    `/api/pagina-femictec?${deepPopulateQuery}`,
+    "/api/pagina-femictec?populate=deep,5",
+    "/api/pagina-femictec?populate=*",
+    `/api/a-femictec?${deepPopulateQuery}`,
     "/api/a-femictec?populate=deep,5",
     "/api/a-femictec?populate=*",
+    `/api/a-femictecs?${deepPopulateQuery}`,
+    "/api/a-femictecs?populate=deep,5",
+    "/api/a-femictecs?populate=*",
   ];
 
   for (const endpoint of endpoints) {

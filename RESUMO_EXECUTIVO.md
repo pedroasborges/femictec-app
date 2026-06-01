@@ -1,11 +1,11 @@
 # FEMICTEC App - Resumo Executivo
 
 ## 1) Objetivo
-Portal institucional da FEMICTEC para comunicacao da feira, publicacao de noticias/eventos e relacionamento com o publico via pagina de contato.
+Portal institucional da FEMICTEC com conteudo dinamico, noticias, eventos, galeria por edicao e canal de contato com envio de email.
 
-## 2) Escopo entregue (ate 06/05/2026)
+## 2) Escopo atual
 
-- Home com banner/carrossel e secoes de destaque.
+- Home institucional.
 - Modulo `A FEMICTEC`:
   - `/femictec`
   - `/femictec/quem-realiza`
@@ -15,67 +15,58 @@ Portal institucional da FEMICTEC para comunicacao da feira, publicacao de notici
   - `/feira/cronograma`
   - `/feira/programacao`
 - Modulo `Eventos da Feira`:
-  - listagem com filtro textual
-  - detalhe por `slug`
+  - `/eventos-da-feira`
+  - `/eventos-da-feira/[slug]`
 - Modulo `Noticias`:
-  - listagem com filtros por texto e periodo
-  - detalhe por `id`
-  - navegacao anterior/proxima
-- Novo modulo `Regulamentos`:
-  - conteudo textual dinamico do Strapi
-  - visualizacao/download de PDF
-- Novo modulo `Contato`:
-  - dados institucionais dinamicos do Strapi
-  - formulario para protocolar mensagem
-  - anexo opcional
-  - retorno de numero de protocolo ao usuario
+  - `/noticias`
+  - `/noticias/[id]`
+- Paginas institucionais:
+  - `/regulamentos`
+  - `/contato`
+  - `/localizacao`
+  - `/politica-de-privacidade`
+  - `/galeria`
+  - `/galeria/[slug]`
 
 ## 3) Arquitetura
 
 - Front-end: Next.js 16 + React 19 + TypeScript + Tailwind.
 - CMS: Strapi (REST).
-- Padrao operacional:
-  - leitura: server-side com normalizacao e fallback;
-  - escrita (contato): rota interna Next para manter token fora do browser.
+- Padrao:
+  - leitura server-side com normalizacao e fallback;
+  - envio de contato por rota interna Next (`POST /api/contato`) com SMTP.
 
 ## 4) Integracoes principais
 
-- Conteudo institucional:
-  - `/api/femictec`
-  - `/api/feira`
-  - `/api/eventos-feiras`
-  - `/api/noticias`
-  - `/api/regulamento`
-  - `/api/contato`
-  - `/api/footer`
-  - `/api/banners`
-- Protocolo de contato:
-  - upload: `/api/upload`
-  - criacao de mensagem: `/api/mensagens-contatos`
-  - entrada do front: `POST /api/contato` (Next)
+- Conteudo: `femictec`, `feira`, `eventos-feiras`, `noticias`, `regulamento`, `contato`, `footer`, `localizacao`, `politica-de-privacidade`, `edicao-galerias`.
+- Email de contato:
+  - leitura de configuracao do Strapi (`/api/contato`);
+  - envio SMTP para equipe institucional e confirmacao ao usuario.
 
-## 5) Estado atual de qualidade
+## 5) Fluxo de contato (estado atual)
 
-- Build de producao validado em 06/05/2026.
-- Lint sem erros bloqueantes.
-- Warnings restantes: `@next/next/no-img-element` em arquivos legados de `feira` e `femictec`.
+1. Usuario envia nome, email, assunto e mensagem.
+2. Next valida dados.
+3. Next busca templates e destinatarios no Strapi (`contato`).
+4. Next envia email institucional + confirmacao ao usuario com copia da mensagem.
 
-## 6) Dependencias e riscos
+Observacao:
+- Fluxo atual nao usa protocolo em `mensagens-contatos` nem upload de anexo.
 
-- Permissoes da role `Public` no Strapi influenciam disponibilidade dos dados.
-- `STRAPI_API_TOKEN` e recomendado para upload/criacao segura de protocolos.
-- Sem token, o fluxo de contato depende de permissoes publicas de escrita no Strapi.
+## 6) Dependencias operacionais
 
-## 7) Documentacao operacional
+- Strapi com permissoes `Public` de leitura para os content-types usados.
+- SMTP configurado no ambiente Next:
+  - `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`.
+- Base URL do Strapi:
+  - `STRAPI_BASE_URL` (ou `NEXT_PUBLIC_STRAPI_BASE_URL`).
+
+## 7) Documentacao
 
 - `README.md`
 - `STRAPI_FEMICTEC_SETUP.md`
 - `STRAPI_FEIRA_SETUP.md`
 - `STRAPI_REGULAMENTOS_CONTATO_SETUP.md`
-- `.env.example`
-
-## 8) Proximos passos recomendados
-
-1. Configurar e validar os content-types no Strapi de homologacao/producao.
-2. Reduzir warnings de `<img>` migrando para `next/image`.
-3. Revisar campos de placeholder da home (inscricoes/datas) para publicacao completa via CMS.
+- `STRAPI_POLITICA_PRIVACIDADE_SETUP.md`
+- `STRAPI_GALERIA_SETUP.md`
+- `STRAPI_CONTATO_TEMPLATES.md`

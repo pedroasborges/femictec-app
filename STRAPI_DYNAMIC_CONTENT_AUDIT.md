@@ -1,65 +1,44 @@
 # Auditoria de Conteudo Dinamico (Strapi)
 
-Atualizado em: 29/05/2026.
+Atualizado em: 01/06/2026.
 
-## Status de conectividade no ambiente local
+## Escopo coberto pelo frontend
 
-Endpoints com resposta `200`:
-- `/api/footer`
-- `/api/feira?populate=*`
-- `/api/regulamento?populate=*`
-- `/api/noticias`
-- `/api/eventos-feiras`
+Conteudos consumidos dinamicamente:
+- Home: `banners`, `dado-institucional`
+- Footer: `footer` (email, telefone, redes sociais)
+- A FEMICTEC: `femictec`
+- A FEIRA: `feira` (com fallback opcional para `eventos-feiras` em cronograma/programacao)
+- Eventos da Feira: `eventos-feiras` (compatibilidade com `eventos-da-feira`)
+- Noticias: `noticias`
+- Regulamentos: `regulamento`
+- Contato: `contato`
+- Localizacao: `localizacao`
+- Politica de Privacidade: `politica-de-privacidade`
+- Galeria: `edicao-galerias` (ou fallback de UID para `galeria-edicoes`)
 
-Endpoints ausentes ou nao habilitados:
-- `/api/femictec` (nao retornou conteudo no teste local)
-- `/api/contato` (retorno `404`)
+## Fluxos sensiveis
 
-Tentativa de criacao via API:
-- `POST /api/contato` retornou `Method Not Allowed` (nao foi possivel criar pelo frontend sem ajuste no CMS/permissoes).
+### Contato (`POST /api/contato`)
 
-## O que ja vem dinamico do Strapi
+Dependencias:
+- SMTP configurado no Next.
+- Registro `contato` publicado no Strapi (com `email` institucional e templates opcionais).
 
-- Navbar/Home:
-  - banners (`/api/banners`)
-  - dados institucionais da home (`/api/dado-institucional`)
-- Footer:
-  - email, telefone, instagram, facebook, youtube (`/api/footer`)
-- A FEMICTEC:
-  - conteudo principal das 3 paginas via `getFemictecContent()` (`/api/femictec` com fallbacks)
-  - estatisticas publicas (`/api/public/femictec/stats`) quando disponivel
-- A FEIRA:
-  - conteudo geral + cronograma/programacao (`/api/feira` com fallbacks)
-- Eventos da Feira:
-  - listagem/detalhe (`/api/eventos-feiras` com fallback legado)
-- Noticias:
-  - listagem/detalhe (`/api/noticias`)
-- Regulamentos:
-  - titulo, subtitulo, texto e PDF (`/api/regulamento`)
-- Contato:
-  - configurado no frontend para consumir (`/api/contato`), mas endpoint ainda nao existe no CMS local
+Comportamento:
+- envio de email para equipe institucional;
+- envio de confirmacao para o usuario com copia da mensagem.
 
-## Conteudos ainda estaticos no frontend e recomendados para Strapi
+## Pontos de compatibilidade implementados no frontend
 
-1. Pagina `/femictec`:
-- titulo principal: `XII FEMICTEC`
-- subtitulo principal: `Feira Municipal de Iniciacao Cientifica e Tecnologica`
-- arte de fundo local: `/public/apresentacao.svg`
+- Variacoes de endpoints para alguns content-types (fallbacks tecnicos).
+- Normalizacao de payload com e sem `attributes`.
+- Tolerancia a formatos diferentes de links de rede social no `footer`.
 
-Campos sugeridos no Strapi (secao `apresentacao`):
-- `tituloPrincipal` (Text)
-- `subtituloPrincipal` (Text)
-- `arteFundoApresentacao` (Media - single image)
-- `arteFundoApresentacaoAlt` (Text)
+## Recomendacao operacional
 
-2. Pagina `/contato`:
-- labels fixas: `Ligue para nos`, `Localizacao`, `Siga-nos`
-
-Campos sugeridos no Strapi (single type `contato`):
-- `blocoContatoTitulo` (Text)
-- `blocoLocalizacaoTitulo` (Text)
-- `blocoRedesTitulo` (Text)
-
-## Itens criados no Strapi nesta execucao
-
-Nenhum item foi criado automaticamente no Strapi nesta execucao, porque o ambiente local retornou endpoint ausente (`404`) e bloqueio de metodo para criacao (`Method Not Allowed`) sem token/permissoes de escrita no CMS.
+Ao criar novo content-type no Strapi:
+1. publicar schema e reiniciar o backend do Strapi quando necessario;
+2. habilitar permissao `Public -> find`;
+3. publicar ao menos um registro;
+4. validar endpoint diretamente no navegador antes de testar no Next.

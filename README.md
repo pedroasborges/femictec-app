@@ -1,111 +1,90 @@
 # FEMICTEC App
 
-Front-end institucional da FEMICTEC, construido em Next.js, com consumo de conteudo via Strapi (Headless CMS).
+Front-end institucional da FEMICTEC em Next.js, com conteudo dinamico via Strapi.
 
 ## Visao geral
 
 O projeto entrega:
-- Home com banner/carrossel e secoes de destaque.
-- Modulo `A FEMICTEC` com 3 paginas institucionais.
-- Modulo `A FEIRA` com visao geral, cronograma e programacao.
-- Modulo `Eventos da Feira` com listagem e detalhe dinamico.
-- Modulo `Noticias` com listagem, filtros e detalhe dinamico.
-- Pagina `Regulamentos` com conteudo textual e visualizacao de PDF do Strapi.
-- Pagina `Contato` com dados institucionais e formulario de protocolo com anexo.
-
-Arquitetura:
-- Strapi entrega conteudo via API REST.
-- Next.js renderiza a interface e normaliza payloads com fallback.
-- Rota interna Next (`POST /api/contato`) intermedia envio de mensagem + upload para o Strapi.
+- Home institucional.
+- Modulo `A FEMICTEC`:
+  - `/femictec`
+  - `/femictec/quem-realiza`
+  - `/femictec/historico`
+- Modulo `A FEIRA`:
+  - `/feira`
+  - `/feira/cronograma`
+  - `/feira/programacao`
+- Modulo `Eventos da Feira`:
+  - `/eventos-da-feira`
+  - `/eventos-da-feira/[slug]`
+- Modulo `Noticias`:
+  - `/noticias`
+  - `/noticias/[id]`
+- Paginas institucionais:
+  - `/regulamentos`
+  - `/contato`
+  - `/localizacao`
+  - `/politica-de-privacidade`
+  - `/galeria`
+  - `/galeria/[slug]`
 
 ## Stack
 
 - Next.js 16.1.7 (App Router)
 - React 19.2.3
-- TypeScript (strict)
+- TypeScript
 - Tailwind CSS v4
-- Strapi CMS (REST)
-
-## Estrutura principal
-
-- `app/layout.tsx`: layout global com `Navbar` e `Footer`.
-- `app/page.tsx`: home.
-- `app/components/navbar.tsx`: navegacao principal (inclui `Regulamentos` e `Contato`).
-- `app/components/footer.tsx`: contato institucional dinamico + atalhos para `Regulamentos` e `Contato`.
-- `app/lib/strapi.ts`: URL base e fetch seguro.
-- `app/lib/content-utils.ts`: normalizacao de texto, midia e data.
-- `app/femictec/*`: modulo institucional `A FEMICTEC`.
-- `app/feira/*`: modulo `A FEIRA`.
-- `app/eventos-da-feira/*`: eventos com detalhe dinamico por `slug`.
-- `app/noticias/*`: noticias com detalhe dinamico por `id`.
-- `app/regulamentos/page.tsx`: pagina de regulamentos.
-- `app/regulamentos/regulamentos-data.ts`: leitura de `regulamento` no Strapi.
-- `app/contato/page.tsx`: pagina de contato.
-- `app/contato/contato-form.tsx`: formulario com anexo e retorno de protocolo.
-- `app/contato/contato-data.ts`: leitura de `contato` no Strapi.
-- `app/api/contato/route.ts`: envio para `mensagens-contatos` + upload no Strapi.
-
-## Rotas do front-end
-
-- `/`
-- `/femictec`
-- `/femictec/quem-realiza`
-- `/femictec/historico`
-- `/feira`
-- `/feira/cronograma`
-- `/feira/programacao`
-- `/eventos-da-feira`
-- `/eventos-da-feira/[slug]`
-- `/noticias`
-- `/noticias/[id]`
-- `/regulamentos`
-- `/contato`
-- `/localizacao`
+- Strapi (REST)
 
 ## Integracao com Strapi
 
-Endpoints utilizados:
-- `GET /api/banners?populate=*`
-- `GET /api/footer`
-- `GET /api/feira?populate=*` (com fallbacks tecnicos)
-- `GET /api/femictec?populate=deep,5` (com fallbacks tecnicos)
-- `GET /api/eventos-feiras?populate=*` (com fallback legado)
-- `GET /api/noticias?...`
-- `GET /api/regulamento?populate=pdfArquivo` (com fallback `populate=*`)
-- `GET /api/contato?populate=*`
-- `GET /api/localizacao?populate=*`
-- `POST /api/mensagens-contatos` (via rota interna Next)
-- `POST /api/upload` (via rota interna Next, quando houver anexo)
+Endpoints principais:
+- `/api/banners?populate=*`
+- `/api/footer`
+- `/api/femictec?populate=deep,5` (com fallbacks)
+- `/api/feira?...` (com populate aninhado e fallbacks)
+- `/api/eventos-feiras?populate=*` (compatibilidade com `/api/eventos-da-feira`)
+- `/api/noticias`
+- `/api/regulamento?populate=*`
+- `/api/contato?populate=*`
+- `/api/localizacao?populate=*`
+- `/api/politica-de-privacidade?populate=*`
+- `/api/edicao-galerias?populate=*&sort[0]=dataEdicao:desc`
 
-Documentacao de setup no repositorio:
-- `STRAPI_FEMICTEC_SETUP.md`
-- `STRAPI_FEIRA_SETUP.md`
-- `STRAPI_REGULAMENTOS_CONTATO_SETUP.md`
-- `STRAPI_DYNAMIC_CONTENT_AUDIT.md`
+## Contato (email)
 
-## Formulario de contato (protocolo)
+Fluxo atual:
+1. Usuario envia `nome`, `email`, `assunto`, `mensagem` no formulario.
+2. Next processa em `POST /api/contato`.
+3. Destinatario institucional e templates sao lidos de `/api/contato`.
+4. Next envia:
+   - email de notificacao para equipe institucional;
+   - email de confirmacao para o usuario com copia da mensagem.
 
-Fluxo:
-1. Usuario envia nome, email, assunto, mensagem e anexo opcional.
-2. Next.js recebe em `POST /api/contato`.
-3. Se houver arquivo, envia para `/api/upload` no Strapi.
-4. Cria registro em `/api/mensagens-contatos`.
-5. Front exibe confirmacao com numero/ID de protocolo quando disponivel.
+Observacao:
+- Nao ha mais protocolo via `mensagens-contatos` nem upload de anexo nesse fluxo atual.
 
-Variaveis:
-- `NEXT_PUBLIC_STRAPI_URL`
-- `STRAPI_API_TOKEN` (recomendado para escrita/upload)
-- `CONTACT_TO_EMAIL` (email institucional de destino do formulario)
-- `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` (obrigatorios para envio automatico de email)
+## Variaveis de ambiente
 
-Referencia: `.env.exemple`.
+Base Strapi:
+- `STRAPI_BASE_URL` (recomendado)
+- `NEXT_PUBLIC_STRAPI_BASE_URL` (alternativa)
 
-## Estado atual (06/05/2026)
+Contato/email:
+- `CONTACT_TO_EMAIL` (fallback institucional)
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_SECURE`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `SMTP_FROM`
+- `SMTP_TLS_REJECT_UNAUTHORIZED`
 
-- `npm run build`: sucesso.
-- `npm run lint`: sem erros, com warnings preexistentes de `<img>` (`@next/next/no-img-element`) em paginas antigas de `feira` e `femictec`.
+Arquivo de referencia:
+- `.env.exemple`
+- `.env.local.example`
 
-## Como executar
+## Como rodar
 
 1. Instalar dependencias:
 ```bash
@@ -117,7 +96,7 @@ npm install
 cp .env.exemple .env.local
 ```
 
-3. Subir app:
+3. Iniciar:
 ```bash
 npm run dev
 ```
@@ -132,6 +111,11 @@ npm run dev
 - `npm run start`
 - `npm run lint`
 
-## Licenca
+## Documentacao complementar
 
-Uso institucional (FEMICTEC / Governo Digital).
+- `STRAPI_FEMICTEC_SETUP.md`
+- `STRAPI_FEIRA_SETUP.md`
+- `STRAPI_REGULAMENTOS_CONTATO_SETUP.md`
+- `STRAPI_POLITICA_PRIVACIDADE_SETUP.md`
+- `STRAPI_GALERIA_SETUP.md`
+- `STRAPI_CONTATO_TEMPLATES.md`

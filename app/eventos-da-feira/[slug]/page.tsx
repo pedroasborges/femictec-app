@@ -3,6 +3,10 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { findEventoBySlug } from "../events-data";
 
+const bodyFontStyle = {
+  fontFamily: "'Saira', sans-serif",
+};
+
 type EventoDetalhePageProps = {
   params: Promise<{
     slug: string;
@@ -19,7 +23,7 @@ export default async function EventoDetalhePage({ params }: EventoDetalhePagePro
 
   return (
     <>
-      <div className="mx-auto w-full max-w-[1320px] px-4 md:px-6">
+      <div className="mx-auto w-full max-w-[1320px] px-4 md:px-6" style={bodyFontStyle}>
         <div className="mb-6">
           <Link
             href="/eventos-da-feira"

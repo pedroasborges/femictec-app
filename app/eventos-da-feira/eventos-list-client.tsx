@@ -95,7 +95,7 @@ export default function EventosListClient({ eventos }: EventosListClientProps) {
                 </div>
               </article>
 
-              <article className="min-h-[110px] rounded bg-[#223d67] px-4 py-5 transition hover:bg-[#4085c6] md:px-6">
+              <article className="min-h-[110px] rounded bg-[#95c11f] px-4 py-5 transition hover:bg-[#86ad1c] md:px-6">
                 <p className="text-sm text-[#eeeeee]">{evento.dados}</p>
                 <p className="mt-2 text-sm leading-relaxed text-[#ece8ea] md:text-base">{evento.miniDescricao}</p>
               </article>

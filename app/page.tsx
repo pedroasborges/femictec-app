@@ -19,7 +19,7 @@ interface InscricaoFeiraData {
 
 async function getDadoInstitucional(): Promise<InscricaoFeiraData | null> {
   const STRAPI_URL =
-    process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://127.0.0.1:1337";
+    process.env.STRAPI_BASE_URL || process.env.NEXT_PUBLIC_STRAPI_URL || "http://127.0.0.1:1338";
 
   try {
     const res = await fetch(`${STRAPI_URL}/api/dado-institucional?populate=*`, {
@@ -346,3 +346,4 @@ export default async function Page() {
     </>
   );
 }
+

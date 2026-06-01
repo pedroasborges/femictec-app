@@ -105,7 +105,7 @@ export default function Navbar() {
             <HeaderIconLink href="/" label="Portal institucional">
               <GlobeIcon />
             </HeaderIconLink>
-            <HeaderIconLink href="/" label="Galeria">
+            <HeaderIconLink href="/galeria" label="Galeria">
               <ImageIcon />
             </HeaderIconLink>
             <HeaderIconLink href="/" label="Novo Hamburgo">
@@ -146,7 +146,7 @@ export default function Navbar() {
               <HeaderIconLink href="/" label="Portal institucional">
                 <GlobeIcon />
               </HeaderIconLink>
-              <HeaderIconLink href="/" label="Galeria">
+              <HeaderIconLink href="/galeria" label="Galeria">
                 <ImageIcon />
               </HeaderIconLink>
               <HeaderIconLink href="/" label="Novo Hamburgo">

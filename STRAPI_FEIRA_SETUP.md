@@ -56,11 +56,13 @@ No `Content-Type Builder`, no tipo `Feira`, manter apenas 3 blocos:
 
 ## 3) Compatibilidade e fallback
 
-O frontend continua com fallback automatico para `eventos-feiras` quando:
-- `cronogramaItens` estiver vazio
-- `programacaoDias` estiver vazio
+No codigo atual:
+- `/feira` usa prioritariamente os campos da propria `feira`.
+- `/feira/cronograma` e `/feira/programacao` estao configuradas para usar fallback de `eventos-feiras` quando as listas locais estiverem vazias.
 
-Assim, mesmo sem preenchimento manual completo, cronograma/programacao podem ser montados pelos eventos.
+Assim:
+- voce pode manter cronograma/programacao centralizados em `eventos-feiras`;
+- e ainda usar `feira.cronograma.mapaImagem` para a imagem do mapa no cronograma.
 
 ## 4) Permissoes
 

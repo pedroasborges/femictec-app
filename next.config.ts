@@ -8,8 +8,18 @@ const defaultPatterns = [
   },
   {
     protocol: "http" as const,
+    hostname: "localhost",
+    port: "1338",
+  },
+  {
+    protocol: "http" as const,
     hostname: "127.0.0.1",
     port: "1337",
+  },
+  {
+    protocol: "http" as const,
+    hostname: "127.0.0.1",
+    port: "1338",
   },
 ];
 
@@ -33,7 +43,7 @@ const envPattern = getEnvRemotePattern();
 const remotePatterns = envPattern ? [envPattern, ...defaultPatterns] : defaultPatterns;
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  output: "standalone",
   images: {
     remotePatterns,
   },
