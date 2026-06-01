@@ -2,6 +2,10 @@ import Image from "next/image";
 
 import { getFemictecContent } from "./femictec-data";
 
+const bodyFontStyle = {
+  fontFamily: "'Saira', sans-serif",
+};
+
 export default async function FemictecPage() {
   const content = await getFemictecContent();
 
@@ -31,20 +35,20 @@ export default async function FemictecPage() {
           <div className="mx-auto max-w-[760px] px-6 py-8 text-white md:px-10 md:py-10">
             <article>
               <h1 className="text-xl font-black uppercase tracking-[0.08em] text-[#95c11f] md:text-2xl">{content.oQueTitulo}</h1>
-              <p className="mt-5 text-justify text-base leading-8 text-white/90 md:text-lg md:leading-9">{content.oQueDescricao}</p>
+              <p className="mt-5 text-justify text-base leading-8 text-white/90 md:text-lg md:leading-9" style={bodyFontStyle}>{content.oQueDescricao}</p>
             </article>
 
             <article className="mt-8 bg-white p-5 text-[#223d67] md:p-7">
               <h2 className="text-lg font-black uppercase tracking-[0.08em] text-[#95c11f] md:text-xl">{content.missaoTitulo}</h2>
               <div className="mt-4 grid gap-4 md:grid-cols-[0.34fr_1fr]">
-                <p className="text-base font-black uppercase tracking-[0.04em] text-[#95c11f]">{content.missaoDestaque}</p>
-                <p className="text-justify text-base leading-8 text-[#223d67]/80 md:text-lg md:leading-9">{content.missaoDescricao}</p>
+                <p className="text-base font-black uppercase tracking-[0.04em] text-[#95c11f]" style={bodyFontStyle}>{content.missaoDestaque}</p>
+                <p className="text-justify text-base leading-8 text-[#223d67]/80 md:text-lg md:leading-9" style={bodyFontStyle}>{content.missaoDescricao}</p>
               </div>
             </article>
 
             <article className="mt-8">
               <h2 className="text-xl font-black uppercase tracking-[0.08em] text-[#95c11f] md:text-2xl">{content.impactoTitulo}</h2>
-              <p className="mt-5 text-justify text-base leading-8 text-white/90 md:text-lg md:leading-9">{content.impactoDescricao}</p>
+              <p className="mt-5 text-justify text-base leading-8 text-white/90 md:text-lg md:leading-9" style={bodyFontStyle}>{content.impactoDescricao}</p>
             </article>
 
             {content.estandesImagemUrl ? (

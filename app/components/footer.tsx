@@ -146,7 +146,7 @@ export async function Footer() {
               <Link href="/" className="hover:text-[#95c11f]">
                 Mapa do Site
               </Link>
-              <Link href="/" className="hover:text-[#95c11f]">
+              <Link href="/politica-de-privacidade" className="hover:text-[#95c11f]">
                 Politica de Privacidade
               </Link>
               <Link href="/" className="hover:text-[#95c11f]">

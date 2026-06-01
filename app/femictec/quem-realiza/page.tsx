@@ -2,6 +2,10 @@ import Image from "next/image";
 
 import { getFemictecContent } from "../femictec-data";
 
+const bodyFontStyle = {
+  fontFamily: "'Saira', sans-serif",
+};
+
 function PartnerLogoPlaceholder() {
   return (
     <div className="flex h-full min-h-32 items-center justify-center bg-[#223d67] px-4 text-center text-sm font-black uppercase tracking-[0.08em] text-white/80">
@@ -22,12 +26,12 @@ export default async function FemictecQuemRealizaPage() {
           <div className="space-y-10">
             <article>
               <h2 className="text-xl font-black uppercase tracking-[0.08em] text-[#223d67] md:text-2xl">{content.organizacaoTitulo}</h2>
-              <p className="mt-5 text-justify text-base leading-8 text-[#223d67]/75 md:text-lg md:leading-9">{content.organizacaoDescricao}</p>
+              <p className="mt-5 text-justify text-base leading-8 text-[#223d67]/75 md:text-lg md:leading-9" style={bodyFontStyle}>{content.organizacaoDescricao}</p>
             </article>
 
             <article>
               <h2 className="text-xl font-black uppercase tracking-[0.08em] text-[#223d67] md:text-2xl">{content.comissaoTitulo}</h2>
-              <p className="mt-5 text-justify text-base leading-8 text-[#223d67]/75 md:text-lg md:leading-9">{content.comissaoDescricao}</p>
+              <p className="mt-5 text-justify text-base leading-8 text-[#223d67]/75 md:text-lg md:leading-9" style={bodyFontStyle}>{content.comissaoDescricao}</p>
             </article>
           </div>
 
@@ -73,7 +77,7 @@ export default async function FemictecQuemRealizaPage() {
                     <PartnerLogoPlaceholder />
                   )}
                 </div>
-                <p className="mt-3 text-center text-sm font-black uppercase tracking-[0.06em] text-[#223d67]">{parceiro.nome}</p>
+                <p className="mt-3 text-center text-sm font-black uppercase tracking-[0.06em] text-[#223d67]" style={bodyFontStyle}>{parceiro.nome}</p>
               </a>
             ))}
           </div>

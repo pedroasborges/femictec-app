@@ -3,6 +3,10 @@ import Link from "next/link";
 
 import { getFemictecContent } from "../femictec-data";
 
+const bodyFontStyle = {
+  fontFamily: "'Saira', sans-serif",
+};
+
 export default async function FemictecHistoricoPage() {
   const content = await getFemictecContent();
 
@@ -13,7 +17,7 @@ export default async function FemictecHistoricoPage() {
           <article>
             <p className="text-sm font-black uppercase tracking-[0.18em] text-[#95c11f]">{content.trajetoriaTitulo}</p>
             <h1 className="mt-3 text-3xl font-black uppercase leading-tight tracking-[0.06em] md:text-5xl">{content.historicoTitulo}</h1>
-            <p className="mt-6 text-justify text-base leading-8 text-white/88 md:text-lg md:leading-9">{content.historicoDescricao}</p>
+            <p className="mt-6 text-justify text-base leading-8 text-white/88 md:text-lg md:leading-9" style={bodyFontStyle}>{content.historicoDescricao}</p>
           </article>
 
           <article className="relative min-h-[280px] overflow-hidden bg-[#1b365f] shadow-[10px_10px_0_rgba(149,193,31,0.75)] md:min-h-[360px]">
@@ -53,7 +57,7 @@ export default async function FemictecHistoricoPage() {
                   </div>
                 )}
               </div>
-              <p className="mt-4 text-sm font-black uppercase tracking-[0.12em] text-[#95c11f]">{edicao.subtitulo}</p>
+              <p className="mt-4 text-sm font-black uppercase tracking-[0.12em] text-[#95c11f]" style={bodyFontStyle}>{edicao.subtitulo}</p>
               <h2 className="mt-1 text-xl font-black uppercase tracking-[0.04em] text-[#223d67]">{edicao.titulo}</h2>
             </article>
           ))}
@@ -65,7 +69,7 @@ export default async function FemictecHistoricoPage() {
               {content.historicoTabelaTitulo}
             </div>
             {content.historicoTabelaLinhas.map((linha) => (
-              <div key={linha.label} className="grid grid-cols-[1fr_auto] gap-4 border-b border-[#223d67]/10 px-5 py-4 text-base text-[#223d67] last:border-b-0 md:text-lg">
+              <div key={linha.label} className="grid grid-cols-[1fr_auto] gap-4 border-b border-[#223d67]/10 px-5 py-4 text-base text-[#223d67] last:border-b-0 md:text-lg" style={bodyFontStyle}>
                 <span className="font-bold">{linha.label}</span>
                 <span className="font-black text-[#95c11f]">{linha.valor}</span>
               </div>
@@ -74,10 +78,11 @@ export default async function FemictecHistoricoPage() {
 
           <div className="bg-[#223d67] p-6 text-white">
             <h2 className="text-2xl font-black uppercase tracking-[0.06em]">{content.trajetoriaTitulo}</h2>
-            <p className="mt-4 text-base leading-8 text-white/80">{content.trajetoriaSubtitulo}</p>
+            <p className="mt-4 text-base leading-8 text-white/80" style={bodyFontStyle}>{content.trajetoriaSubtitulo}</p>
             <Link
               href={content.galeriaUrl}
               className="mt-6 inline-flex bg-[#95c11f] px-6 py-3 text-sm font-black uppercase tracking-[0.1em] text-[#223d67] transition hover:bg-white"
+              style={bodyFontStyle}
             >
               {content.galeriaLabel}
             </Link>
