@@ -172,12 +172,12 @@ export async function Footer() {
               </a>
               {whatsappUrl ? (
                 <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:text-[#95c11f]">
-                  <Image src="ic-whatsapp.svg" alt="WhatsApp" width={20} height={20} />
+                  <Image src="/ic-whatsapp.svg" alt="WhatsApp" width={20} height={20} />
                   {footer.Telefone}
                 </a>
               ) : (
                 <span className="inline-flex items-center gap-2">
-                  <Image src="ic-whatsapp.svg" alt="WhatsApp" width={20} height={20} />
+                  <Image src="/ic-whatsapp.svg" alt="WhatsApp" width={20} height={20} />
                   {footer.Telefone}
                 </span>
               )}
@@ -187,26 +187,26 @@ export async function Footer() {
             <div className="mt-3 flex gap-2">
               {instagramUrl ? (
                 <a href={instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-                  <Image src="ic-instagram.svg" alt="Instagram" width={20} height={20} />
+                  <Image src="/ic-instagram.svg" alt="Instagram" width={20} height={20} />
                 </a>
               ) : (
-                <Image src="ic-instagram.svg" alt="Instagram" width={20} height={20} />
+                <Image src="/ic-instagram.svg" alt="Instagram" width={20} height={20} />
               )}
 
               {facebookUrl ? (
                 <a href={facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-                  <Image src="ic-facebook.svg" alt="Facebook" width={20} height={20} />
+                  <Image src="/ic-facebook.svg" alt="Facebook" width={20} height={20} />
                 </a>
               ) : (
-                <Image src="ic-facebook.svg" alt="Facebook" width={20} height={20} />
+                <Image src="/ic-facebook.svg" alt="Facebook" width={20} height={20} />
               )}
               
               {youtubeUrl ? (
                 <a href={youtubeUrl} target="_blank" rel="noopener noreferrer" aria-label="YouTube">
-                  <Image src="ic-youtube.svg" alt="YouTube" width={20} height={20} />
+                  <Image src="/ic-youtube.svg" alt="YouTube" width={20} height={20} />
                 </a>
               ) : (
-                <Image src="ic-youtube.svg" alt="YouTube" width={20} height={20} />
+                <Image src="/ic-youtube.svg" alt="YouTube" width={20} height={20} />
               )}
             </div>
           </div>

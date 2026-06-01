@@ -1,7 +1,7 @@
 import { getFeiraContent } from "../feira-data";
 
 export default async function FeiraProgramacaoPage() {
-  const content = await getFeiraContent();
+  const content = await getFeiraContent({ useEventosFallback: true });
 
   return (
     <>

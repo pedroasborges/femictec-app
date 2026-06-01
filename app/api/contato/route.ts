@@ -65,7 +65,11 @@ function getSmtpConfig(): SmtpConfig | null {
 function normalizeEmails(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
   return value
-    .map((item) => (item && typeof item === "object" ? String((item as { email?: unknown }).email ?? "").trim() : ""))
+    .map((item) => {
+      if (typeof item === "string") return item.trim();
+      if (item && typeof item === "object") return String((item as { email?: unknown }).email ?? "").trim();
+      return "";
+    })
     .filter((email) => isValidEmail(email));
 }
 
@@ -75,6 +79,19 @@ function fillTemplate(template: string, payload: ContactPayload): string {
     .replaceAll("{email}", payload.email)
     .replaceAll("{assunto}", payload.assunto)
     .replaceAll("{mensagem}", payload.mensagem);
+}
+
+function buildConfirmationCopy(payload: ContactPayload): string {
+  return [
+    "Copia da sua mensagem enviada:",
+    "",
+    `Nome: ${payload.nome}`,
+    `Email: ${payload.email}`,
+    `Assunto: ${payload.assunto}`,
+    "",
+    "Mensagem:",
+    payload.mensagem,
+  ].join("\n");
 }
 
 async function getContatoNotificacaoConfig(): Promise<ContatoNotificacaoConfig> {
@@ -349,7 +366,8 @@ export async function POST(request: Request) {
     const assuntoEvento = fillTemplate(contatoConfig.notificacaoAssuntoTemplate, payload);
     const mensagemEvento = fillTemplate(contatoConfig.notificacaoMensagemTemplate, payload);
     const assuntoConfirmacao = fillTemplate(contatoConfig.confirmacaoAssuntoTemplate, payload);
-    const mensagemConfirmacao = fillTemplate(contatoConfig.confirmacaoMensagemTemplate, payload);
+    const mensagemConfirmacaoBase = fillTemplate(contatoConfig.confirmacaoMensagemTemplate, payload);
+    const mensagemConfirmacao = `${mensagemConfirmacaoBase}\n\n---\n${buildConfirmationCopy(payload)}`;
 
     await sendSmtpMail(
       {

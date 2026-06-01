@@ -307,6 +307,7 @@ function buildProgramacaoFromEventos(eventos: EventoFeira[]): FeiraProgramacaoDi
 
 async function fetchFeiraPayload(): Promise<unknown | null> {
   const endpoints = [
+    "/api/feira?populate[visaoGeral][populate]=*&populate[cronograma][populate]=*&populate[programacao][populate]=*",
     "/api/feira?populate=*",
     "/api/feira?populate=deep,5",
     "/api/a-feira?populate=*",
@@ -336,8 +337,12 @@ async function fetchEventosPayload(): Promise<unknown | null> {
   return null;
 }
 
-export async function getFeiraContent(): Promise<FeiraContent> {
-  const [feiraPayload, eventosPayload] = await Promise.all([fetchFeiraPayload(), fetchEventosPayload()]);
+export async function getFeiraContent(options?: { useEventosFallback?: boolean }): Promise<FeiraContent> {
+  const useEventosFallback = options?.useEventosFallback ?? false;
+  const [feiraPayload, eventosPayload] = await Promise.all([
+    fetchFeiraPayload(),
+    useEventosFallback ? fetchEventosPayload() : Promise.resolve(null),
+  ]);
 
   const source = normalizeRoot(feiraPayload);
   const eventos = mapEventos(eventosPayload);
@@ -356,8 +361,16 @@ export async function getFeiraContent(): Promise<FeiraContent> {
   const cronogramaFromEventos = buildCronogramaFromEventos(eventos);
   const programacaoFromEventos = buildProgramacaoFromEventos(eventos);
 
-  const cronogramaItens = cronogramaFromStrapi.length ? cronogramaFromStrapi : cronogramaFromEventos;
-  const programacaoDias = programacaoFromStrapi.length ? programacaoFromStrapi : programacaoFromEventos;
+  const cronogramaItens = cronogramaFromStrapi.length
+    ? cronogramaFromStrapi
+    : useEventosFallback
+      ? cronogramaFromEventos
+      : [];
+  const programacaoDias = programacaoFromStrapi.length
+    ? programacaoFromStrapi
+    : useEventosFallback
+      ? programacaoFromEventos
+      : [];
 
   if (!source) {
     return {
