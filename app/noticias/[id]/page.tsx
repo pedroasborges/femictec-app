@@ -60,7 +60,7 @@ export default async function NoticiaDetalhePage({
         </div>
 
         <div
-          className="mx-auto mt-8 max-w-[980px] space-y-4 text-justify text-sm leading-7 text-[#8f747c] md:mt-10 md:text-base md:leading-8"
+          className="mx-auto mt-8 max-w-[980px] space-y-4 text-justify text-sm leading-7 text-[#223d67] md:mt-10 md:text-base md:leading-8"
           style={bodyFontStyle}
         >
           {paragrafos.length ? (

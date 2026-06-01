@@ -13,6 +13,9 @@ type ContactResponse = {
 };
 
 const initialStatus: Status = { type: "idle", message: "" };
+const bodyFontStyle = {
+  fontFamily: "'Saira', sans-serif",
+};
 
 export function ContatoForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,7 +62,7 @@ export function ContatoForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="bg-[#95c11f] p-6 text-white shadow-[10px_12px_0_rgba(34,61,103,0.28)] md:p-8">
+    <form onSubmit={onSubmit} className="bg-[#95c11f] p-6 text-white shadow-[10px_12px_0_rgba(34,61,103,0.28)] md:p-8" style={bodyFontStyle}>
       <h2 className="text-xl font-black uppercase leading-tight tracking-[0.04em] md:text-2xl">Formulario de Contato</h2>
 
       <div className="mt-6 grid gap-4">

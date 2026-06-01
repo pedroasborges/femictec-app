@@ -9,8 +9,10 @@ type FooterAttributes = {
   Email?: string | null;
   Telefone?: string | null;
   Instagram?: string | null;
-  Facebook?:string | null;
-  Youtube?:string | null;
+  Facebook?: string | null;
+  Youtube?: string | null;
+  facebook?: string | null;
+  youtube?: string | null;
 };
 
 type FooterApiItem = FooterAttributes & {
@@ -30,8 +32,8 @@ async function getFooter(): Promise<FooterAttributes> {
     Email: raw?.Email ?? raw?.attributes?.Email ?? "femictec@novohamburgo.rs.gov.br",
     Telefone: raw?.Telefone ?? raw?.attributes?.Telefone ?? "(51) 0000-0000",
     Instagram: raw?.Instagram ?? raw?.attributes?.Instagram ?? null,
-    Facebook: raw?.Facebook ?? raw?.attributes?.Facebook ?? null,
-    Youtube: raw?.Youtube ?? raw?.attributes?.Youtube ?? null,
+    Facebook: raw?.Facebook ?? raw?.attributes?.Facebook ?? raw?.facebook ?? raw?.attributes?.facebook ?? null,
+    Youtube: raw?.Youtube ?? raw?.attributes?.Youtube ?? raw?.youtube ?? raw?.attributes?.youtube ?? null,
   };
 }
 
@@ -49,7 +51,10 @@ function toFacebookUrl(facebook: string | null | undefined): string | null {
   const value = facebook.trim();
   if (!value) return null;
   if (value.startsWith("http://") || value.startsWith("https://")) return value;
-  const handle = value.startsWith("@") ? value.slice(1) : value;
+  if (value.startsWith("//")) return `https:${value}`;
+  if (value.startsWith("www.")) return `https://${value}`;
+  if (value.includes("facebook.com")) return `https://${value.replace(/^https?:\/\//, "")}`;
+  const handle = value.startsWith("@") ? value.slice(1) : value.replace(/^facebook\//i, "");
   return `https://facebook.com/${handle}`;
 }
 
@@ -58,7 +63,10 @@ function toYoutubeUrl(youtube: string | null | undefined): string | null {
   const value = youtube.trim();
   if (!value) return null;
   if (value.startsWith("http://") || value.startsWith("https://")) return value;
-  const handle = value.startsWith("@") ? value.slice(1) : value;
+  if (value.startsWith("//")) return `https:${value}`;
+  if (value.startsWith("www.")) return `https://${value}`;
+  if (value.includes("youtube.com") || value.includes("youtu.be")) return `https://${value.replace(/^https?:\/\//, "")}`;
+  const handle = value.startsWith("@") ? value : `@${value}`;
   return `https://youtube.com/${handle}`;
 }
 
