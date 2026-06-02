@@ -157,7 +157,7 @@ export async function Footer() {
               <Link href="/politica-de-privacidade" className="hover:text-[#95c11f]">
                 Politica de Privacidade
               </Link>
-              <Link href="/" className="hover:text-[#95c11f]">
+              <Link href="/termo-de-uso" className="hover:text-[#95c11f]">
                 Termo de Uso
               </Link>
             </nav>

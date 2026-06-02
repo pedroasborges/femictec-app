@@ -15,6 +15,7 @@ Conteudos consumidos dinamicamente:
 - Contato: `contato`
 - Localizacao: `localizacao`
 - Politica de Privacidade: `politica-de-privacidade`
+- Termo de Uso: `termo-de-uso`
 - Galeria: `edicao-galerias` (ou fallback de UID para `galeria-edicoes`)
 
 ## Fluxos sensiveis
