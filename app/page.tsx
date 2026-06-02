@@ -239,12 +239,12 @@ export default async function Page() {
                 <div className="">
                   {homeDatas.etapas.map((etapa, index) => (
                     <div
-                      key={etapa.titulo}
+                      key={etapa.data}
                       className={`px-6 py-8 text-xl md:text-3xl ${
                         index === 0 ? "mb-14 bg-[#95c11f]" : index === 1 ? "mb-14 bg-[#4085c6]" : "bg-[#223d67]"
                       } [clip-path:polygon(25%_0%,_100%_0%,_100%_100%,_25%_100%,_10%_50%)]`}
                     >
-                      {etapa.titulo}
+                      {etapa.data}
                     </div>
                   ))}
                 </div>
@@ -256,7 +256,7 @@ export default async function Page() {
                         index === 0 ? "mb-14 bg-[#95c11f]" : index === 1 ? "mb-14 bg-[#4085c6]" : "bg-[#223d67]"
                       } [clip-path:polygon(100%_50%,_90%_90%,_80%_90%,_77%_100%,_0%_100%,_0%_0%,_77%_0%,_80%_10%,_90%_10%)]`}
                     >
-                      {etapa.data}
+                      {etapa.titulo}
                     </div>
                   ))}
                 </div>
