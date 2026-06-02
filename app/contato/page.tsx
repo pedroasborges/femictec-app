@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image";
 
 import { ContatoForm } from "./contato-form";
@@ -149,6 +150,14 @@ export default async function ContatoPage() {
 
           <div className="md:-my-16">
             <ContatoForm />
+            <div className="mt-4 flex justify-end">
+              <Link
+                href="/perguntas-frequentes"
+                className="inline-flex h-12 items-center justify-center rounded-[6px] border border-white/30 bg-white/10 px-6 text-xs font-black uppercase tracking-[0.12em] text-white transition hover:bg-white/20"
+              >
+                Perguntas Frequentes
+              </Link>
+            </div>
           </div>
         </div>
       </div>

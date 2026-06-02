@@ -1,12 +1,13 @@
 # Auditoria de Conteudo Dinamico (Strapi)
 
-Atualizado em: 01/06/2026.
+Atualizado em: 02/06/2026.
 
 ## Escopo coberto pelo frontend
 
 Conteudos consumidos dinamicamente:
 - Home: `banners`, `dado-institucional`
 - Home datas: `home-datas`
+- FAQ: `faq`
 - Navbar: `navbar` (logo compartilhado com o footer)
 - Footer: `footer` (email, telefone, redes sociais)
 - A FEMICTEC: `femictec`
@@ -37,6 +38,8 @@ Comportamento:
 - Variacoes de endpoints para alguns content-types (fallbacks tecnicos).
 - Normalizacao de payload com e sem `attributes`.
 - Tolerancia a formatos diferentes de links de rede social no `footer`.
+- FAQ publica com perguntas repetiveis no Strapi e renderizacao em acordeon no Next.
+- FAQ exige permissao `Public -> find` e pelo menos um item publicado para ser exibida no frontend.
 - Estado global de manutencao do site via `SITE_MAINTENANCE_MODE` ou `NEXT_PUBLIC_SITE_MAINTENANCE_MODE`.
 
 ## Recomendacao operacional

@@ -11,6 +11,7 @@
 - Navbar (`app/components/navbar.tsx` + `app/navbar/*`): logo institucional via Strapi
 - Footer (`app/components/footer.tsx`): dados institucionais e logo compartilhado com o navbar
 - Home datas (`app/home-datas/*`): secao editavel "Confira as datas" via Strapi
+- FAQ (`app/perguntas-frequentes/*`): pagina publica com accordion e conteudo editavel via Strapi
 - A Feira (`app/feira/page.tsx`): conteudo rich text do CMS
 - Eventos (`app/eventos-da-feira/*`): lista com filtro e detalhe por `slug`
 - Noticias (`app/noticias/*`): lista com filtros, detalhe por `id` e navegacao anterior/proxima
@@ -34,6 +35,7 @@
 - Navbar: `GET /api/navbar?populate=*`
 - Footer: `GET /api/footer?populate=*`
 - Home datas: `GET /api/home-datas?populate=*` com fallbacks para `datas-home` e `home-data`
+- FAQ: `GET /api/faq?populate=*`
 - A Feira: `GET /api/a-feira?populate=*`
 - Eventos (ordem de tentativa):
   1. `/api/eventos-feiras?populate=*`
@@ -51,6 +53,7 @@
 - Home conectada a noticias reais do Strapi
 - Secao "Confira as datas" da home editavel pelo Strapi
 - Navbar e footer com logo institucional vindo do Strapi
+- FAQ publica acessada pelo botao abaixo do formulario de contato
 - Paginas legais com estados proprios de indisponibilidade
 - Estado global de manutencao aplicado no layout
 - Navegacao ajustada:
@@ -58,6 +61,7 @@
   - `Localizacao` -> `/#contato`
   - Footer com `id="contato"`
 - `layout.tsx` com metadata institucional
+- FAQ depende de `Public -> find` habilitado no Strapi e de pelo menos um registro publicado
 
 ## 6) Qualidade e validacao
 - `npm run lint`: validar sempre antes de entregar mudancas

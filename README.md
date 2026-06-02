@@ -30,6 +30,8 @@ O projeto entrega:
   - `/termo-de-uso`
   - `/galeria`
   - `/galeria/[slug]`
+- FAQ publica:
+  - `/perguntas-frequentes`
 
 ## Stack
 
@@ -53,9 +55,13 @@ Endpoints principais:
 - `/api/regulamento?populate=*`
 - `/api/contato?populate=*`
 - `/api/localizacao?populate=*`
+- `/api/faq?populate=*`
 - `/api/politica-de-privacidade?populate=*`
 - `/api/termo-de-uso?populate=*`
 - `/api/edicao-galerias?populate=*&sort[0]=dataEdicao:desc`
+
+Observacao:
+- O content type `faq` precisa ter `Public -> find` habilitado no Strapi para a pagina `/perguntas-frequentes` exibir o conteudo.
 
 ## Indisponibilidade
 
@@ -135,6 +141,7 @@ npm run dev
 - `STRAPI_NAVBAR_SETUP.md`
 - `STRAPI_FOOTER_SETUP.md`
 - `STRAPI_TERMO_USO_SETUP.md`
+- `STRAPI_FAQ_SETUP.md`
 - `STRAPI_FEMICTEC_SETUP.md`
 - `STRAPI_FEIRA_SETUP.md`
 - `STRAPI_REGULAMENTOS_CONTATO_SETUP.md`

@@ -30,6 +30,8 @@ Portal institucional da FEMICTEC com conteudo dinamico, noticias, eventos, galer
   - `/termo-de-uso`
   - `/galeria`
   - `/galeria/[slug]`
+- FAQ publica:
+  - `/perguntas-frequentes`
 
 ## 3) Arquitetura
 
@@ -42,7 +44,7 @@ Portal institucional da FEMICTEC com conteudo dinamico, noticias, eventos, galer
 
 ## 4) Integracoes principais
 
-- Conteudo: `navbar`, `home-datas`, `footer`, `femictec`, `feira`, `eventos-feiras`, `noticias`, `regulamento`, `contato`, `localizacao`, `politica-de-privacidade`, `termo-de-uso`, `edicao-galerias`.
+- Conteudo: `navbar`, `home-datas`, `faq`, `footer`, `femictec`, `feira`, `eventos-feiras`, `noticias`, `regulamento`, `contato`, `localizacao`, `politica-de-privacidade`, `termo-de-uso`, `edicao-galerias`.
 - Email de contato:
   - leitura de configuracao do Strapi (`/api/contato`);
   - envio SMTP para equipe institucional e confirmacao ao usuario.
@@ -61,6 +63,8 @@ Observacao:
 
 - Estado global de manutencao: `SITE_MAINTENANCE_MODE` ou `NEXT_PUBLIC_SITE_MAINTENANCE_MODE`.
 - Estados de conteudo: paginas exibem avisos dedicados quando o CMS nao retorna registro publicado.
+- FAQ publica em formato acordeon, consumida via Strapi e acessada pela pagina de contato.
+- Para o FAQ aparecer no Next, o role `Public` precisa ter `find` habilitado no Strapi.
 
 ## 7) Dependencias operacionais
 
@@ -76,6 +80,7 @@ Observacao:
 - `SITE_MAINTENANCE_SETUP.md`
 - `STRAPI_DYNAMIC_CONTENT_AUDIT.md`
 - `STRAPI_HOME_DATAS_SETUP.md`
+- `STRAPI_FAQ_SETUP.md`
 - `STRAPI_NAVBAR_SETUP.md`
 - `STRAPI_FOOTER_SETUP.md`
 - `STRAPI_TERMO_USO_SETUP.md`
