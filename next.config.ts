@@ -24,7 +24,7 @@ const defaultPatterns = [
 ];
 
 function getEnvRemotePattern() {
-  const rawUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
+  const rawUrl = process.env.NEXT_PUBLIC_STRAPI_URL || process.env.STRAPI_BASE_URL;
   if (!rawUrl) return null;
 
   try {

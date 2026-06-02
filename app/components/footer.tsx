@@ -4,6 +4,7 @@ import Link from "next/link";
 import logoImg from "../../public/femictec.png";
 import { fetchStrapiJson } from "../lib/strapi";
 import { getLocalizacaoContent, sanitizeCoordinates } from "../localizacao/localizacao-data";
+import { getNavbarContent } from "../navbar/navbar-data";
 
 type FooterAttributes = {
   Email?: string | null;
@@ -101,10 +102,12 @@ function CityLogoBlock() {
 }
 
 export async function Footer() {
-  const [footer, localizacao] = await Promise.all([getFooter(), getLocalizacaoContent()]);
+  const [footer, localizacao, navbar] = await Promise.all([getFooter(), getLocalizacaoContent(), getNavbarContent()]);
   const coords = sanitizeCoordinates(localizacao.coordenadas);
   const mapsLink = `https://www.google.com/maps?q=${coords}`;
   const mapsEmbed = `https://www.google.com/maps?q=${coords}&z=15&output=embed`;
+  const footerLogoUrl = navbar.logoUrl || logoImg;
+  const footerLogoAlt = navbar.logoAlt || "FEMICTEC";
   const instagramUrl = toInstagramUrl(footer.Instagram);
   const whatsappUrl = toWhatsappUrl(footer.Telefone);
   const facebookUrl = toFacebookUrl(footer.Facebook);
@@ -115,8 +118,8 @@ export async function Footer() {
       <div className="mx-auto w-full max-w-[1320px] px-4 py-8 md:px-6" >
         <div className="grid grid-cols-1 gap-8 text-left sm:grid-cols-2 lg:grid-cols-[1.25fr_0.75fr_1fr_1.2fr]">
           <div>
-            <Link href="/" className="inline-flex bg-[#35406e] px-2 py-1">
-              <Image src={logoImg} alt="FEMICTEC" width={170} height={48} className="h-auto w-[170px]" />
+            <Link href="/" className="inline-flex px-0 py-1">
+              <Image src={footerLogoUrl} alt={footerLogoAlt} width={170} height={48} className="h-auto w-[170px]" />
             </Link>
             <p className="mt-4 max-w-[260px] text-[12px] font-Saira uppercase leading-5 text-white">
               Feira Municipal de Iniciacao Cientifica e Tecnologica de Novo Hamburgo

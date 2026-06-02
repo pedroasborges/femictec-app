@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 
+import UnavailableState from "../../components/unavailable-state";
 import { getGaleriaEdicaoBySlug, getGaleriaEdicoes } from "../galeria-data";
 
 const bodyFontStyle = {
@@ -32,7 +32,17 @@ export async function generateMetadata({ params }: GaleriaEdicaoPageProps): Prom
 export default async function GaleriaEdicaoPage({ params }: GaleriaEdicaoPageProps) {
   const { slug } = await params;
   const edicao = await getGaleriaEdicaoBySlug(slug);
-  if (!edicao) notFound();
+  if (!edicao) {
+    return (
+      <UnavailableState
+        title="Galeria indisponivel"
+        description="Nao foi possivel localizar imagens para esta edicao no CMS no momento."
+        detail="Se a edicao ainda nao foi publicada ou foi removida, a pagina permanecera indisponivel."
+        actionHref="/galeria"
+        actionLabel="Voltar para galeria"
+      />
+    );
+  }
 
   return (
     <section className="bg-white px-4 py-10 md:px-6 md:py-14">

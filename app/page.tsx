@@ -2,7 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 import Banner from "./components/banner";
-import { getNoticias } from "./noticias/noticias-data";
+import UnavailableState from "./components/unavailable-state";
+import { getHomeDatasContent } from "./home-datas/home-datas-data";
+import { getNoticiasPageData } from "./noticias/noticias-data";
 import PointsIcon from "../public/points.svg";
 import BackgroundOndaSuperior from "../public/bgwavetop.svg";
 import BackgroundOndaInferior from "../public/bgwavebottom.svg";
@@ -78,7 +80,9 @@ function getYoutubeEmbedUrl(urlOriginal: string): string {
 }
 
 export default async function Page() {
-  const noticias = (await getNoticias()).slice(0, 3);
+  const homeDatas = await getHomeDatasContent();
+  const noticiasData = await getNoticiasPageData();
+  const noticias = noticiasData.noticias.slice(0, 3);
   const dadosCms = await getDadoInstitucional();
   const videoUrl = dadosCms?.urlVideo
     ? getYoutubeEmbedUrl(dadosCms.urlVideo.trim())
@@ -228,34 +232,43 @@ export default async function Page() {
 
       <section className="w-full py-16 text-center md:py-20">
         <div className="mx-auto w-full max-w-[1320px] px-4 md:px-6">
-          <h3 className="text-3xl font-normal tracking-tight md:text-5xl">
-            CONFIRA AS DATAS
-          </h3>
+          <h3 className="text-3xl font-normal tracking-tight md:text-5xl">{homeDatas.tituloSecao}</h3>
           <div className="flex justify-center">
-            <div className="mr-8 mt-10 grid w-full max-w-5xl grid-flow-col grid-cols-1 overflow-hidden text-white md:grid-cols-[0.75fr_1.25fr]">
-              <div className="">
-                <div className="mb-14 scale-101 bg-[#95c11f] px-6 py-8 text-xl [clip-path:polygon(25%_0%,_100%_0%,_100%_100%,_25%_100%,_10%_50%)] md:text-3xl">
-                  INSCRI&Ccedil;&Atilde;O
+            {homeDatas.isAvailable ? (
+              <div className="mr-8 mt-10 grid w-full max-w-5xl grid-flow-col grid-cols-1 overflow-hidden text-white md:grid-cols-[0.75fr_1.25fr]">
+                <div className="">
+                  {homeDatas.etapas.map((etapa, index) => (
+                    <div
+                      key={etapa.titulo}
+                      className={`px-6 py-8 text-xl md:text-3xl ${
+                        index === 0 ? "mb-14 bg-[#95c11f]" : index === 1 ? "mb-14 bg-[#4085c6]" : "bg-[#223d67]"
+                      } [clip-path:polygon(25%_0%,_100%_0%,_100%_100%,_25%_100%,_10%_50%)]`}
+                    >
+                      {etapa.titulo}
+                    </div>
+                  ))}
                 </div>
-                <div className="mb-14 scale-101 bg-[#4085c6] px-6 py-8 text-xl [clip-path:polygon(25%_0%,_100%_0%,_100%_100%,_25%_100%,_10%_50%)] md:text-3xl">
-                  SUBMISS&Atilde;O
-                </div>
-                <div className="scale-101 bg-[#223d67] px-6 py-8 text-xl [clip-path:polygon(25%_0%,_100%_0%,_100%_100%,_25%_100%,_10%_50%)] md:text-3xl">
-                  AVALIA&Ccedil;&Atilde;O
+                <div className="">
+                  {homeDatas.etapas.map((etapa, index) => (
+                    <div
+                      key={`${etapa.titulo}-data`}
+                      className={`px-12 py-8 text-right text-xl md:text-3xl ${
+                        index === 0 ? "mb-14 bg-[#95c11f]" : index === 1 ? "mb-14 bg-[#4085c6]" : "bg-[#223d67]"
+                      } [clip-path:polygon(100%_50%,_90%_90%,_80%_90%,_77%_100%,_0%_100%,_0%_0%,_77%_0%,_80%_10%,_90%_10%)]`}
+                    >
+                      {etapa.data}
+                    </div>
+                  ))}
                 </div>
               </div>
-              <div className="">
-                <div className="mb-14 bg-[#95c11f] px-12 py-8 text-right text-xl [clip-path:polygon(100%_50%,_90%_90%,_80%_90%,_77%_100%,_0%_100%,_0%_0%,_77%_0%,_80%_10%,_90%_10%)] md:text-3xl">
-                  XX/XX
-                </div>
-                <div className="mb-14 bg-[#4085c6] px-12 py-8 text-right text-xl [clip-path:polygon(100%_50%,_90%_90%,_80%_90%,_77%_100%,_0%_100%,_0%_0%,_77%_0%,_80%_10%,_90%_10%)] md:text-3xl">
-                  XX/XX
-                </div>
-                <div className="bg-[#223d67] px-12 py-8 text-right text-xl [clip-path:polygon(100%_50%,_90%_90%,_80%_90%,_77%_100%,_0%_100%,_0%_0%,_77%_0%,_80%_10%,_90%_10%)] md:text-3xl">
-                  XX/XX
-                </div>
-              </div>
-            </div>
+            ) : (
+              <UnavailableState
+                compact
+                title="Datas em atualizacao"
+                description="A secao de datas da home ainda nao foi publicada no Strapi."
+                detail="Assim que o conteudo for salvo no CMS, a home passara a exibir as datas automaticamente."
+              />
+            )}
             <Image
               className="mt-12"
               alt="icone"
@@ -288,7 +301,7 @@ export default async function Page() {
             Not&iacute;cias
           </h3>
 
-          {noticias.length > 0 ? (
+          {noticiasData.status === "ready" && noticias.length > 0 ? (
             <div className="grid gap-x-8 gap-y-10 sm:grid-cols-2 sm:gap-y-20 lg:grid-cols-3">
               {noticias.map((noticia) => (
                 <Link
@@ -337,8 +350,17 @@ export default async function Page() {
               ))}
             </div>
           ) : (
-            <div className="py-12 text-center text-lg font-medium text-white">
-              Nenhuma not&iacute;cia publicada no momento.
+            <div className="py-6">
+              <UnavailableState
+                compact
+                title={noticiasData.status === "empty" ? "Nenhuma noticia publicada" : "Noticias indisponiveis"}
+                description={
+                  noticiasData.status === "empty"
+                    ? "Ainda nao existem noticias publicadas no CMS."
+                    : "Nao foi possivel carregar as noticias neste momento."
+                }
+                detail="Assim que houver publicacoes, esta secao sera atualizada automaticamente."
+              />
             </div>
           )}
         </div>

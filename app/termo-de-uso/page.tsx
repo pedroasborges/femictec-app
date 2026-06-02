@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import UnavailableState from "../components/unavailable-state";
 import { getTermoDeUsoContent } from "./termo-de-uso-data";
 
 export const metadata: Metadata = {
@@ -35,6 +36,17 @@ function parseConteudo(raw: string): Bloco[] {
 
 export default async function TermoDeUsoPage() {
   const content = await getTermoDeUsoContent();
+  if (!content.isAvailable) {
+    return (
+      <UnavailableState
+        title="Termo de Uso indisponivel"
+        description="O conteudo desta pagina ainda nao foi publicado no CMS ou esta temporariamente indisponivel."
+        detail="Quando o termo for publicado no Strapi, o texto passara a ser carregado automaticamente."
+        actionHref="/"
+        actionLabel="Voltar para a home"
+      />
+    );
+  }
   const blocos = parseConteudo(content.conteudo);
 
   return (

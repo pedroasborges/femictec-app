@@ -1,7 +1,19 @@
+import UnavailableState from "../components/unavailable-state";
 import { getLocalizacaoContent, sanitizeCoordinates } from "./localizacao-data";
 
 export default async function LocalizacaoPage() {
   const content = await getLocalizacaoContent();
+  if (!content.isAvailable) {
+    return (
+      <UnavailableState
+        title="Localizacao indisponivel"
+        description="As informacoes de localizacao ainda nao foram publicadas no CMS ou estao temporariamente indisponiveis."
+        detail="Quando houver conteudo no Strapi, o mapa e os dados do endereco serao exibidos normalmente."
+        actionHref="/"
+        actionLabel="Voltar para a home"
+      />
+    );
+  }
   const coordinates = sanitizeCoordinates(content.coordenadas);
   const mapsLink = `https://www.google.com/maps?q=${coordinates}`;
   const mapsEmbed = `https://www.google.com/maps?q=${coordinates}&z=16&output=embed`;

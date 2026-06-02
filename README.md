@@ -1,11 +1,13 @@
 # FEMICTEC App
 
-Front-end institucional da FEMICTEC em Next.js, com conteudo dinamico via Strapi.
+Portal institucional da FEMICTEC em Next.js, com conteudo dinamico vindo do Strapi e estados de indisponibilidade para site e conteudos.
 
 ## Visao geral
 
 O projeto entrega:
 - Home institucional.
+- Navbar e footer institucionais com logo e dados vindos do Strapi.
+- Secao "Confira as datas" da home editavel pelo CMS.
 - Modulo `A FEMICTEC`:
   - `/femictec`
   - `/femictec/quem-realiza`
@@ -25,6 +27,7 @@ O projeto entrega:
   - `/contato`
   - `/localizacao`
   - `/politica-de-privacidade`
+  - `/termo-de-uso`
   - `/galeria`
   - `/galeria/[slug]`
 
@@ -40,25 +43,34 @@ O projeto entrega:
 
 Endpoints principais:
 - `/api/banners?populate=*`
-- `/api/footer`
-- `/api/femictec?populate=deep,5` (com fallbacks)
-- `/api/feira?...` (com populate aninhado e fallbacks)
-- `/api/eventos-feiras?populate=*` (compatibilidade com `/api/eventos-da-feira`)
-- `/api/noticias`
+- `/api/navbar?populate=*`
+- `/api/footer?populate=*`
+- `/api/home-datas?populate=*`
+- `/api/femictec?populate=deep,5`
+- `/api/feira?populate=deep,5`
+- `/api/eventos-feiras?populate=*` e compatibilidade com `/api/eventos-da-feira`
+- `/api/noticias?populate=imagem&sort[0]=publishedAt:desc&sort[1]=createdAt:desc&pagination[pageSize]=100`
 - `/api/regulamento?populate=*`
 - `/api/contato?populate=*`
 - `/api/localizacao?populate=*`
 - `/api/politica-de-privacidade?populate=*`
+- `/api/termo-de-uso?populate=*`
 - `/api/edicao-galerias?populate=*&sort[0]=dataEdicao:desc`
 
-## Contato (email)
+## Indisponibilidade
+
+O site possui dois niveis de indisponibilidade:
+- global, ativado por `SITE_MAINTENANCE_MODE` ou `NEXT_PUBLIC_SITE_MAINTENANCE_MODE`;
+- por conteudo, quando uma pagina do CMS ainda nao tem registro publicado.
+
+## Contato por email
 
 Fluxo atual:
-1. Usuario envia `nome`, `email`, `assunto`, `mensagem` no formulario.
+1. Usuario envia `nome`, `email`, `assunto`, `mensagem`.
 2. Next processa em `POST /api/contato`.
 3. Destinatario institucional e templates sao lidos de `/api/contato`.
 4. Next envia:
-   - email de notificacao para equipe institucional;
+   - email de notificacao para a equipe institucional;
    - email de confirmacao para o usuario com copia da mensagem.
 
 Observacao:
@@ -70,8 +82,12 @@ Base Strapi:
 - `STRAPI_BASE_URL` (recomendado)
 - `NEXT_PUBLIC_STRAPI_BASE_URL` (alternativa)
 
+Modo de manutencao:
+- `SITE_MAINTENANCE_MODE`
+- `NEXT_PUBLIC_SITE_MAINTENANCE_MODE`
+
 Contato/email:
-- `CONTACT_TO_EMAIL` (fallback institucional)
+- `CONTACT_TO_EMAIL`
 - `SMTP_HOST`
 - `SMTP_PORT`
 - `SMTP_SECURE`
@@ -80,7 +96,7 @@ Contato/email:
 - `SMTP_FROM`
 - `SMTP_TLS_REJECT_UNAUTHORIZED`
 
-Arquivo de referencia:
+Arquivos de referencia:
 - `.env.exemple`
 - `.env.local.example`
 
@@ -113,6 +129,12 @@ npm run dev
 
 ## Documentacao complementar
 
+- `SITE_MAINTENANCE_SETUP.md`
+- `STRAPI_DYNAMIC_CONTENT_AUDIT.md`
+- `STRAPI_HOME_DATAS_SETUP.md`
+- `STRAPI_NAVBAR_SETUP.md`
+- `STRAPI_FOOTER_SETUP.md`
+- `STRAPI_TERMO_USO_SETUP.md`
 - `STRAPI_FEMICTEC_SETUP.md`
 - `STRAPI_FEIRA_SETUP.md`
 - `STRAPI_REGULAMENTOS_CONTATO_SETUP.md`

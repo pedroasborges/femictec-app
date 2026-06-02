@@ -2,8 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import type { StaticImageData } from "next/image";
 import { useState } from "react";
 import logoImg from "../../public/femictec.png";
+
+type NavbarProps = {
+  logoUrl: string | null;
+  logoAlt: string;
+};
 
 const navLinks = [
   { label: "A Femictec", href: "/femictec" },
@@ -79,14 +85,15 @@ function HeaderIconLink({ href, label, children }: { href: string; label: string
   );
 }
 
-export default function Navbar() {
+export default function Navbar({ logoUrl, logoAlt }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const logoSrc: string | StaticImageData = logoUrl || logoImg;
 
   return (
     <nav className="sticky top-0 z-50 border-y border-[#00b8c6] bg-[#223d67] text-white">
       <div className="mx-auto flex h-[62px] w-full max-w-[1320px] items-stretch justify-between bg-[#223d67] px-0">
-        <Link href="/" className="flex w-[170px] shrink-0 items-center justify-center bg-[#35406e] px-3">
-          <Image src={logoImg} alt="FEMICTEC" width={156} height={44} priority className="h-auto w-[156px]" />
+        <Link href="/" className="flex w-[170px] shrink-0 items-center justify-center bg-[#223d67] px-3">
+          <Image src={logoSrc} alt={logoAlt} width={156} height={44} priority className="h-auto w-[156px]" />
         </Link>
 
         <div className="hidden flex-1 items-stretch justify-end lg:flex">

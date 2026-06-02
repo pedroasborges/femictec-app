@@ -10,6 +10,11 @@ export type Noticia = {
   publishedAt: string | null;
 };
 
+export type NoticiasPageData = {
+  noticias: Noticia[];
+  status: "ready" | "empty" | "unavailable";
+};
+
 type StrapiMedia = Record<string, unknown> | null;
 
 type StrapiNoticia = {
@@ -69,47 +74,74 @@ function normalizeResponse(payload: NoticiasResponse): StrapiNoticia[] {
   return [];
 }
 
-async function fetchNoticiasFromEndpoint(path: string): Promise<Noticia[]> {
-  const response = await fetch(toStrapiUrl(path), {
-    cache: "no-store",
-  });
+async function fetchNoticiasFromEndpoint(path: string): Promise<{ items: Noticia[]; reachable: boolean }> {
+  try {
+    const response = await fetch(toStrapiUrl(path), { cache: "no-store" });
+    if (!response.ok) return { items: [], reachable: false };
 
-  if (!response.ok) return [];
+    const payload = (await response.json()) as NoticiasResponse;
+    const itens = normalizeResponse(payload).map(normalizeNoticia);
+    return { items: itens, reachable: true };
+  } catch {
+    return { items: [], reachable: false };
+  }
+}
 
-  const payload = (await response.json()) as NoticiasResponse;
-  const itens = normalizeResponse(payload);
+export async function getNoticiasPageData(): Promise<NoticiasPageData> {
+  let sawReachableEndpoint = false;
 
-  return itens.map(normalizeNoticia);
+  for (const endpoint of NOTICIAS_ENDPOINTS) {
+    const result = await fetchNoticiasFromEndpoint(endpoint);
+    if (result.reachable) sawReachableEndpoint = true;
+    if (result.items.length > 0) {
+      return { noticias: result.items, status: "ready" };
+    }
+  }
+
+  return {
+    noticias: [],
+    status: sawReachableEndpoint ? "empty" : "unavailable",
+  };
 }
 
 export async function getNoticias(): Promise<Noticia[]> {
-  try {
-    for (const endpoint of NOTICIAS_ENDPOINTS) {
-      const noticias = await fetchNoticiasFromEndpoint(endpoint);
-      if (noticias.length > 0) return noticias;
-    }
-
-    return [];
-  } catch {
-    return [];
-  }
+  const data = await getNoticiasPageData();
+  return data.noticias;
 }
 
 export type NoticiaWithNeighbors = {
   noticia: Noticia;
   anterior: Noticia | null;
   proxima: Noticia | null;
+  status: "ready" | "empty" | "unavailable";
 };
 
 export async function getNoticiaWithNeighbors(id: string): Promise<NoticiaWithNeighbors | null> {
-  const noticias = await getNoticias();
-  const currentIndex = noticias.findIndex((item) => item.id === id);
+  const data = await getNoticiasPageData();
+  const currentIndex = data.noticias.findIndex((item) => item.id === id);
+
+  if (data.status !== "ready") {
+    return {
+      noticia: data.noticias[0] ?? {
+        id: "",
+        titulo: "",
+        miniDescricao: "",
+        descricao: "",
+        imagemUrl: null,
+        publishedAt: null,
+      },
+      anterior: null,
+      proxima: null,
+      status: data.status,
+    };
+  }
 
   if (currentIndex === -1) return null;
 
   return {
-    noticia: noticias[currentIndex],
-    anterior: noticias[currentIndex - 1] ?? null,
-    proxima: noticias[currentIndex + 1] ?? null,
+    noticia: data.noticias[currentIndex],
+    anterior: data.noticias[currentIndex - 1] ?? null,
+    proxima: data.noticias[currentIndex + 1] ?? null,
+    status: "ready",
   };
 }

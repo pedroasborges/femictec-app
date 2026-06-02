@@ -6,6 +6,7 @@ export type PoliticaPrivacidadeContent = {
   subtitulo: string;
   conteudo: string;
   atualizadoEm: string;
+  isAvailable: boolean;
 };
 
 type PoliticaPrivacidadeAttributes = {
@@ -26,8 +27,9 @@ type PoliticaPrivacidadeResponse = {
 const fallbackPolitica: PoliticaPrivacidadeContent = {
   titulo: "Politica de Privacidade",
   subtitulo: "Site da FEMICTEC - Secretaria Municipal de Educacao (SMED) - Prefeitura de Novo Hamburgo/RS",
-  conteudo: "Conteúdo não disponível",
-  atualizadoEm: "não disponível",
+  conteudo: "Conteudo nao disponivel",
+  atualizadoEm: "nao disponivel",
+  isAvailable: false,
 };
 
 export async function getPoliticaPrivacidadeContent(): Promise<PoliticaPrivacidadeContent> {
@@ -38,12 +40,14 @@ export async function getPoliticaPrivacidadeContent(): Promise<PoliticaPrivacida
   ];
 
   let source: PoliticaPrivacidadeAttributes = {};
+  let foundContent = false;
 
   for (const endpoint of endpoints) {
     const payload = await fetchStrapiJson<PoliticaPrivacidadeResponse>(endpoint, { data: null });
     const raw = payload.data;
     if (raw) {
       source = (raw.attributes ?? raw) as PoliticaPrivacidadeAttributes;
+      foundContent = true;
       break;
     }
   }
@@ -53,5 +57,6 @@ export async function getPoliticaPrivacidadeContent(): Promise<PoliticaPrivacida
     subtitulo: extractText(source.subtitulo) || fallbackPolitica.subtitulo,
     conteudo: extractText(source.conteudo) || fallbackPolitica.conteudo,
     atualizadoEm: extractText(source.atualizadoEm) || fallbackPolitica.atualizadoEm,
+    isAvailable: foundContent,
   };
 }

@@ -6,6 +6,7 @@ export type TermoDeUsoContent = {
   subtitulo: string;
   conteudo: string;
   atualizadoEm: string;
+  isAvailable: boolean;
 };
 
 type TermoDeUsoAttributes = {
@@ -29,18 +30,21 @@ const fallbackTermo: TermoDeUsoContent = {
   conteudo:
     "Este Termo de Uso regula a utilizacao do portal institucional da FEMICTEC. Ao acessar o site, voce concorda com as condicoes descritas abaixo e com as politicas complementares disponiveis nesta plataforma.",
   atualizadoEm: "nao disponivel",
+  isAvailable: false,
 };
 
 export async function getTermoDeUsoContent(): Promise<TermoDeUsoContent> {
   const endpoints = ["/api/termo-de-uso?populate=*", "/api/termos-de-uso?populate=*", "/api/termo-uso?populate=*"];
 
   let source: TermoDeUsoAttributes = {};
+  let foundContent = false;
 
   for (const endpoint of endpoints) {
     const payload = await fetchStrapiJson<TermoDeUsoResponse>(endpoint, { data: null });
     const raw = payload.data;
     if (raw) {
       source = (raw.attributes ?? raw) as TermoDeUsoAttributes;
+      foundContent = true;
       break;
     }
   }
@@ -50,5 +54,6 @@ export async function getTermoDeUsoContent(): Promise<TermoDeUsoContent> {
     subtitulo: extractText(source.subtitulo) || fallbackTermo.subtitulo,
     conteudo: extractText(source.conteudo) || fallbackTermo.conteudo,
     atualizadoEm: extractText(source.atualizadoEm) || fallbackTermo.atualizadoEm,
+    isAvailable: foundContent,
   };
 }

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import UnavailableState from "../../components/unavailable-state";
 import { getNoticiaWithNeighbors } from "../noticias-data";
 
 type NoticiaDetalhePageProps = {
@@ -29,6 +30,22 @@ export default async function NoticiaDetalhePage({
 
   if (!noticiaContext) {
     notFound();
+  }
+
+  if (noticiaContext.status !== "ready") {
+    return (
+      <UnavailableState
+        title="Noticia indisponivel"
+        description={
+          noticiaContext.status === "empty"
+            ? "Nao ha noticias publicadas no CMS no momento."
+            : "Nao foi possivel carregar a noticia a partir do CMS neste momento."
+        }
+        detail="Quando houver publicacao valida, o detalhe da noticia sera exibido normalmente."
+        actionHref="/noticias"
+        actionLabel="Voltar para noticias"
+      />
+    );
   }
 
   const { noticia, anterior, proxima } = noticiaContext;

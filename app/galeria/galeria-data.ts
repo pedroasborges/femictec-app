@@ -17,6 +17,11 @@ export type GaleriaEdicao = {
   imagens: GaleriaImagem[];
 };
 
+export type GaleriaPageData = {
+  edicoes: GaleriaEdicao[];
+  status: "ready" | "empty" | "unavailable";
+};
+
 function asRecord(value: unknown): UnknownRecord | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   return value as UnknownRecord;
@@ -124,15 +129,30 @@ async function fetchGaleriaPayload(): Promise<unknown | null> {
   return null;
 }
 
-export async function getGaleriaEdicoes(): Promise<GaleriaEdicao[]> {
+export async function getGaleriaPageData(): Promise<GaleriaPageData> {
   const payload = await fetchGaleriaPayload();
   const root = asRecord(payload);
   const items = toList(root?.data);
-  if (!items.length) return [];
-  return mapEdicoes(items);
+
+  if (!items.length) {
+    return {
+      edicoes: [],
+      status: payload ? "empty" : "unavailable",
+    };
+  }
+
+  return {
+    edicoes: mapEdicoes(items),
+    status: "ready",
+  };
+}
+
+export async function getGaleriaEdicoes(): Promise<GaleriaEdicao[]> {
+  const data = await getGaleriaPageData();
+  return data.edicoes;
 }
 
 export async function getGaleriaEdicaoBySlug(slug: string): Promise<GaleriaEdicao | null> {
-  const edicoes = await getGaleriaEdicoes();
-  return edicoes.find((item) => item.slug === slug) ?? null;
+  const data = await getGaleriaPageData();
+  return data.edicoes.find((item) => item.slug === slug) ?? null;
 }

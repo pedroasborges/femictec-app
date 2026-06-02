@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import UnavailableState from "../components/unavailable-state";
 import { getRegulamento } from "./regulamentos-data";
 
 function splitParagraphs(text: string): string[] {
@@ -11,6 +12,17 @@ function splitParagraphs(text: string): string[] {
 
 export default async function RegulamentosPage() {
   const regulamento = await getRegulamento();
+  if (!regulamento.isAvailable) {
+    return (
+      <UnavailableState
+        title="Regulamentos indisponiveis"
+        description="Os regulamentos ainda nao foram publicados no CMS ou estao temporariamente indisponiveis."
+        detail="Quando houver conteudo no Strapi, esta pagina passara a exibir o texto e o PDF normalmente."
+        actionHref="/"
+        actionLabel="Voltar para a home"
+      />
+    );
+  }
   const paragraphs = splitParagraphs(regulamento.conteudo);
 
   return (

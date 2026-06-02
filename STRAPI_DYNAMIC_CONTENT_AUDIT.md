@@ -6,6 +6,8 @@ Atualizado em: 01/06/2026.
 
 Conteudos consumidos dinamicamente:
 - Home: `banners`, `dado-institucional`
+- Home datas: `home-datas`
+- Navbar: `navbar` (logo compartilhado com o footer)
 - Footer: `footer` (email, telefone, redes sociais)
 - A FEMICTEC: `femictec`
 - A FEIRA: `feira` (com fallback opcional para `eventos-feiras` em cronograma/programacao)
@@ -35,6 +37,7 @@ Comportamento:
 - Variacoes de endpoints para alguns content-types (fallbacks tecnicos).
 - Normalizacao de payload com e sem `attributes`.
 - Tolerancia a formatos diferentes de links de rede social no `footer`.
+- Estado global de manutencao do site via `SITE_MAINTENANCE_MODE` ou `NEXT_PUBLIC_SITE_MAINTENANCE_MODE`.
 
 ## Recomendacao operacional
 

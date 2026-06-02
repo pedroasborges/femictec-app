@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import UnavailableState from "../components/unavailable-state";
 import { getPoliticaPrivacidadeContent } from "./politica-de-privacidade-data";
 
 export const metadata: Metadata = {
@@ -35,6 +36,17 @@ function parseConteudo(raw: string): Bloco[] {
 
 export default async function PoliticaDePrivacidadePage() {
   const content = await getPoliticaPrivacidadeContent();
+  if (!content.isAvailable) {
+    return (
+      <UnavailableState
+        title="Politica de Privacidade indisponivel"
+        description="O conteudo desta pagina ainda nao foi publicado no CMS ou esta temporariamente indisponivel."
+        detail="Assim que o texto for publicado no Strapi, a pagina sera exibida normalmente."
+        actionHref="/"
+        actionLabel="Voltar para a home"
+      />
+    );
+  }
   const blocos = parseConteudo(content.conteudo);
 
   return (

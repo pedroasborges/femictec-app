@@ -7,6 +7,7 @@ export type RegulamentoContent = {
   conteudo: string;
   pdfUrl: string | null;
   pdfLabel: string;
+  isAvailable: boolean;
 };
 
 type RegulamentoAttributes = {
@@ -33,6 +34,7 @@ const fallbackRegulamento: RegulamentoContent = {
   conteudo: "Os regulamentos ainda nao foram publicados no CMS.",
   pdfUrl: null,
   pdfLabel: "Baixar regulamento em PDF",
+  isAvailable: false,
 };
 
 function normalizeRegulamento(payload: RegulamentoResponse): RegulamentoContent {
@@ -45,6 +47,7 @@ function normalizeRegulamento(payload: RegulamentoResponse): RegulamentoContent 
     conteudo: extractText(source.conteudo) || fallbackRegulamento.conteudo,
     pdfUrl: resolveMediaUrl(source.pdfArquivo),
     pdfLabel: extractText(source.pdfLabel) || fallbackRegulamento.pdfLabel,
+    isAvailable: false,
   };
 }
 
@@ -59,7 +62,12 @@ export async function getRegulamento(): Promise<RegulamentoContent> {
       normalized.conteudo !== fallbackRegulamento.conteudo ||
       Boolean(normalized.pdfUrl);
 
-    if (hasCmsData) return normalized;
+    if (hasCmsData) {
+      return {
+        ...normalized,
+        isAvailable: true,
+      };
+    }
   }
 
   return fallbackRegulamento;
