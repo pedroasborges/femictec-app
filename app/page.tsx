@@ -4,6 +4,9 @@ import Link from "next/link";
 import Banner from "./components/banner";
 import UnavailableState from "./components/unavailable-state";
 import { getHomeDatasContent } from "./home-datas/home-datas-data";
+import { extractText, resolveMediaUrl } from "./lib/content-utils";
+import { normalizeStrapiItem } from "./lib/strapi-normalize";
+import { toStrapiUrl } from "./lib/strapi";
 import { getNoticiasPageData } from "./noticias/noticias-data";
 import PointsIcon from "../public/points.svg";
 import BackgroundOndaSuperior from "../public/bgwavetop.svg";
@@ -19,44 +22,47 @@ interface InscricaoFeiraData {
   urlVideo: string;
 }
 
-async function getDadoInstitucional(): Promise<InscricaoFeiraData | null> {
-  const STRAPI_URL =
-    process.env.STRAPI_BASE_URL || process.env.NEXT_PUBLIC_STRAPI_URL || "http://127.0.0.1:1338";
+type DadoInstitucionalAttributes = {
+  imagemEstudanteUrl?: unknown;
+  textoInscricao?: unknown;
+  linkPlataforma?: unknown;
+  dataLimite?: unknown;
+  tituloResumo?: unknown;
+  textoResumo?: unknown;
+  urlVideo?: unknown;
+};
 
+type DadoInstitucionalResponse = {
+  data?: unknown;
+};
+
+async function getDadoInstitucional(): Promise<InscricaoFeiraData | null> {
   try {
-    const res = await fetch(`${STRAPI_URL}/api/dado-institucional?populate=*`, {
+    const res = await fetch(toStrapiUrl("/api/dado-institucional?populate=*"), {
       cache: "no-store",
     });
 
-    if (!res.ok) throw new Error("Falha ao buscar dados institucionais");
-
-    const json = await res.json();
-    const dados = json.data?.attributes || json.data;
-    if (!dados) return null;
-
-    let urlRelativaImagem = "";
-
-    if (dados.imagemEstudanteUrl?.data) {
-      const mediaData = dados.imagemEstudanteUrl.data;
-      urlRelativaImagem = mediaData.attributes?.url || mediaData.url || "";
-    } else if (dados.imagemEstudanteUrl?.url) {
-      urlRelativaImagem = dados.imagemEstudanteUrl.url;
+    if (!res.ok) {
+      console.warn(
+        `Strapi respondeu com ${res.status} ao buscar /api/dado-institucional`,
+      );
+      return null;
     }
 
-    const imagemEstudanteUrl = urlRelativaImagem
-      ? urlRelativaImagem.startsWith("http")
-        ? urlRelativaImagem
-        : `${STRAPI_URL}${urlRelativaImagem}`
-      : "";
+    const json = (await res.json()) as DadoInstitucionalResponse;
+    const dados = normalizeStrapiItem<DadoInstitucionalAttributes>(json.data);
+    if (!dados) return null;
+
+    const imagemEstudanteUrl = resolveMediaUrl(dados.imagemEstudanteUrl) || "";
 
     return {
       imagemEstudanteUrl,
-      textoInscricao: dados.textoInscricao || "",
-      linkPlataforma: dados.linkPlataforma || "",
-      dataLimite: dados.dataLimite || "",
-      tituloResumo: dados.tituloResumo || "",
-      textoResumo: dados.textoResumo || "",
-      urlVideo: dados.urlVideo || "",
+      textoInscricao: extractText(dados.textoInscricao),
+      linkPlataforma: extractText(dados.linkPlataforma),
+      dataLimite: extractText(dados.dataLimite),
+      tituloResumo: extractText(dados.tituloResumo),
+      textoResumo: extractText(dados.textoResumo),
+      urlVideo: extractText(dados.urlVideo),
     };
   } catch (error) {
     console.error("Erro na requisicao do Strapi:", error);

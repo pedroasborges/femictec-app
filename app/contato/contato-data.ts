@@ -1,4 +1,5 @@
 import { extractText } from "../lib/content-utils";
+import { normalizeStrapiItem, type StrapiSingleResponse } from "../lib/strapi-normalize";
 import { fetchStrapiJson } from "../lib/strapi";
 
 export type ContatoPageContent = {
@@ -19,13 +20,7 @@ type ContatoAttributes = {
   endereco?: unknown;
 };
 
-type ContatoItem = ContatoAttributes & {
-  attributes?: ContatoAttributes;
-};
-
-type ContatoResponse = {
-  data?: ContatoItem | null;
-};
+type ContatoResponse = StrapiSingleResponse<ContatoAttributes>;
 
 const fallbackContato: ContatoPageContent = {
   titulo: "Contato",
@@ -38,8 +33,7 @@ const fallbackContato: ContatoPageContent = {
 
 export async function getContatoPageContent(): Promise<ContatoPageContent> {
   const payload = await fetchStrapiJson<ContatoResponse>("/api/contato?populate=*", { data: null });
-  const raw = payload.data;
-  const source = raw?.attributes ?? raw ?? {};
+  const source = normalizeStrapiItem<ContatoAttributes>(payload.data) ?? {};
 
   return {
     titulo: extractText(source.titulo) || fallbackContato.titulo,

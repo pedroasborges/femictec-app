@@ -1,5 +1,6 @@
 import { toStrapiUrl } from "../lib/strapi";
 import { extractText, resolveMediaUrl } from "../lib/content-utils";
+import { normalizeStrapiList, type StrapiListResponse } from "../lib/strapi-normalize";
 
 export type Noticia = {
   id: string;
@@ -26,19 +27,9 @@ type StrapiNoticia = {
   imagem?: StrapiMedia;
   publishedAt?: unknown;
   createdAt?: unknown;
-  attributes?: {
-    titulo?: unknown;
-    miniDescricao?: unknown;
-    descricao?: unknown;
-    imagem?: StrapiMedia;
-    publishedAt?: unknown;
-    createdAt?: unknown;
-  };
 };
 
-type NoticiasResponse = {
-  data?: StrapiNoticia[] | StrapiNoticia | null;
-};
+type NoticiasResponse = StrapiListResponse<StrapiNoticia>;
 
 const NOTICIAS_ENDPOINTS = [
   "/api/noticias?populate=imagem&sort[0]=publishedAt:desc&sort[1]=createdAt:desc&pagination[pageSize]=100",
@@ -47,7 +38,7 @@ const NOTICIAS_ENDPOINTS = [
 ];
 
 function normalizeNoticia(item: StrapiNoticia, index: number): Noticia {
-  const source = item.attributes ?? item;
+  const source = item;
 
   const titulo = extractText(source.titulo) || `Noticia ${index + 1}`;
   const miniDescricao = extractText(source.miniDescricao);
@@ -69,9 +60,7 @@ function normalizeNoticia(item: StrapiNoticia, index: number): Noticia {
 }
 
 function normalizeResponse(payload: NoticiasResponse): StrapiNoticia[] {
-  if (Array.isArray(payload.data)) return payload.data;
-  if (payload.data && typeof payload.data === "object") return [payload.data];
-  return [];
+  return normalizeStrapiList<StrapiNoticia>(payload.data);
 }
 
 async function fetchNoticiasFromEndpoint(path: string): Promise<{ items: Noticia[]; reachable: boolean }> {

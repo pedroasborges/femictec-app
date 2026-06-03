@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -49,8 +50,14 @@ export default async function GaleriaPage() {
                 </p>
               </header>
 
-              <figure className="overflow-hidden rounded-sm border border-[#223d67]/15 bg-white">
-                <img src={edicao.imagens[0].url} alt={edicao.imagens[0].alt} className="h-64 w-full object-cover" loading="lazy" />
+              <figure className="relative aspect-[4/3] overflow-hidden rounded-sm border border-[#223d67]/15 bg-white">
+                <Image
+                  src={edicao.imagens[0].url}
+                  alt={edicao.imagens[0].alt}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
               </figure>
 
               <div className="mt-4 flex items-center justify-between">

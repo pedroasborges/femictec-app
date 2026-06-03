@@ -1,4 +1,8 @@
 import { extractText } from "../lib/content-utils";
+import {
+  normalizeStrapiList,
+  type StrapiListResponse,
+} from "../lib/strapi-normalize";
 import { fetchStrapiJson } from "../lib/strapi";
 
 export type PerguntaFrequente = {
@@ -19,21 +23,11 @@ type PerguntasFrequentesAttributes = {
   perguntas?: unknown;
 };
 
-type PerguntasFrequentesItem = PerguntasFrequentesAttributes & {
-  attributes?: PerguntasFrequentesAttributes;
-};
-
-type PerguntasFrequentesResponse = {
-  data?: PerguntasFrequentesItem | PerguntasFrequentesItem[] | null;
-};
+type PerguntasFrequentesResponse = StrapiListResponse<PerguntasFrequentesAttributes>;
 
 type PerguntaItem = {
   pergunta?: unknown;
   resposta?: unknown;
-  attributes?: {
-    pergunta?: unknown;
-    resposta?: unknown;
-  };
 };
 
 const fallbackFaq: PerguntasFrequentesContent = {
@@ -43,10 +37,7 @@ const fallbackFaq: PerguntasFrequentesContent = {
   isAvailable: false,
 };
 
-function normalizePergunta(value: unknown): PerguntaFrequente | null {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
-  const item = value as PerguntaItem;
-  const source = item.attributes ?? item;
+function normalizePergunta(source: PerguntaItem): PerguntaFrequente | null {
   const pergunta = extractText(source.pergunta);
   const resposta = extractText(source.resposta);
   if (!pergunta || !resposta) return null;
@@ -54,8 +45,9 @@ function normalizePergunta(value: unknown): PerguntaFrequente | null {
 }
 
 function mapPerguntas(value: unknown): PerguntaFrequente[] {
-  if (!Array.isArray(value)) return [];
-  return value.map(normalizePergunta).filter((item): item is PerguntaFrequente => item !== null);
+  return normalizeStrapiList<PerguntaItem>(value)
+    .map((item) => normalizePergunta(item))
+    .filter((item): item is PerguntaFrequente => item !== null);
 }
 
 export async function getPerguntasFrequentesContent(): Promise<PerguntasFrequentesContent> {
@@ -63,11 +55,9 @@ export async function getPerguntasFrequentesContent(): Promise<PerguntasFrequent
 
   for (const endpoint of endpoints) {
     const payload = await fetchStrapiJson<PerguntasFrequentesResponse>(endpoint, { data: null });
-    const raw = payload.data;
-    const item = Array.isArray(raw) ? raw[0] : raw;
-    if (!item) continue;
+    const source = normalizeStrapiList<PerguntasFrequentesAttributes>(payload.data)[0];
+    if (!source) continue;
 
-    const source = ((item as PerguntasFrequentesItem).attributes ?? item) as PerguntasFrequentesAttributes;
     const perguntas = mapPerguntas(source.perguntas);
 
     if (!perguntas.length) continue;

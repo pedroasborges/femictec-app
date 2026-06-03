@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getFeiraContent } from "../feira-data";
 
 export default async function FeiraCronogramaPage() {
@@ -38,7 +39,15 @@ export default async function FeiraCronogramaPage() {
 
       <section className="px-4 pb-12 pt-4 md:px-8 md:pb-14">
         {content.mapaImagemUrl ? (
-          <img src={content.mapaImagemUrl} alt={content.mapaImagemAlt} className="mx-auto w-full max-w-4xl border border-[#223d67]/20 object-cover" />
+          <div className="relative mx-auto aspect-[16/9] w-full max-w-4xl overflow-hidden border border-[#223d67]/20 bg-white">
+            <Image
+              src={content.mapaImagemUrl}
+              alt={content.mapaImagemAlt}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 896px"
+            />
+          </div>
         ) : (
           <div className="mx-auto flex min-h-60 w-full max-w-4xl items-center justify-center border border-[#223d67]/20 bg-[#a2a2a2] px-6 text-center text-xl font-black uppercase tracking-[0.08em] text-white md:text-3xl">
             Mapa da Feira (Interno)

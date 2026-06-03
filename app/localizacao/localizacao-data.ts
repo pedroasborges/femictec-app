@@ -1,4 +1,5 @@
 import { extractText } from "../lib/content-utils";
+import { normalizeStrapiItem, type StrapiSingleResponse } from "../lib/strapi-normalize";
 import { fetchStrapiJson } from "../lib/strapi";
 
 export type LocalizacaoContent = {
@@ -16,13 +17,7 @@ type LocalizacaoAttributes = {
   coordenadas?: unknown;
 };
 
-type LocalizacaoItem = LocalizacaoAttributes & {
-  attributes?: LocalizacaoAttributes;
-};
-
-type LocalizacaoResponse = {
-  data?: LocalizacaoItem | null;
-};
+type LocalizacaoResponse = StrapiSingleResponse<LocalizacaoAttributes>;
 
 const fallbackLocalizacao: LocalizacaoContent = {
   titulo: "Localizacao",
@@ -34,9 +29,8 @@ const fallbackLocalizacao: LocalizacaoContent = {
 
 export async function getLocalizacaoContent(): Promise<LocalizacaoContent> {
   const payload = await fetchStrapiJson<LocalizacaoResponse>("/api/localizacao?populate=*", { data: null });
-  const raw = payload.data;
-  const source = raw?.attributes ?? raw ?? {};
-  const hasContent = Boolean(raw);
+  const source = normalizeStrapiItem<LocalizacaoAttributes>(payload.data) ?? {};
+  const hasContent = Boolean(payload.data);
 
   return {
     titulo: extractText(source.titulo) || fallbackLocalizacao.titulo,

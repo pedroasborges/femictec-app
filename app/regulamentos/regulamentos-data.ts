@@ -1,4 +1,5 @@
 import { extractText, resolveMediaUrl } from "../lib/content-utils";
+import { normalizeStrapiItem, type StrapiSingleResponse } from "../lib/strapi-normalize";
 import { fetchStrapiJson, toStrapiUrl } from "../lib/strapi";
 
 export type RegulamentoContent = {
@@ -18,13 +19,7 @@ type RegulamentoAttributes = {
   pdfArquivo?: unknown;
 };
 
-type RegulamentoItem = RegulamentoAttributes & {
-  attributes?: RegulamentoAttributes;
-};
-
-type RegulamentoResponse = {
-  data?: RegulamentoItem | null;
-};
+type RegulamentoResponse = StrapiSingleResponse<RegulamentoAttributes>;
 
 const REGULAMENTOS_ENDPOINTS = ["/api/regulamento?populate=pdfArquivo", "/api/regulamento?populate=*"];
 
@@ -38,8 +33,7 @@ const fallbackRegulamento: RegulamentoContent = {
 };
 
 function normalizeRegulamento(payload: RegulamentoResponse): RegulamentoContent {
-  const raw = payload.data;
-  const source = raw?.attributes ?? raw ?? {};
+  const source = normalizeStrapiItem<RegulamentoAttributes>(payload.data) ?? {};
 
   return {
     titulo: extractText(source.titulo) || fallbackRegulamento.titulo,

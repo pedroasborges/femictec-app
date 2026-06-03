@@ -1,5 +1,6 @@
 import { toStrapiUrl } from "../lib/strapi";
 import { extractText } from "../lib/content-utils";
+import { normalizeStrapiList, type StrapiListResponse } from "../lib/strapi-normalize";
 
 export type Projeto = {
   id: string;
@@ -16,17 +17,9 @@ type StrapiProjeto = {
   escola?: unknown;
   area?: unknown;
   participantes?: unknown;
-  attributes?: {
-    Titulo?: unknown;
-    escola?: unknown;
-    area?: unknown;
-    participantes?: unknown;
-  };
 };
 
-type ProjetosResponse = {
-  data?: StrapiProjeto[] | StrapiProjeto | null;
-};
+type ProjetosResponse = StrapiListResponse<StrapiProjeto>;
 
 const PROJETOS_ENDPOINTS = [
   "/api/projetos?sort[0]=publishedAt:desc&sort[1]=createdAt:desc&pagination[pageSize]=100",
@@ -34,9 +27,7 @@ const PROJETOS_ENDPOINTS = [
 ];
 
 function normalizeResponse(payload: ProjetosResponse): StrapiProjeto[] {
-  if (Array.isArray(payload.data)) return payload.data;
-  if (payload.data && typeof payload.data === "object") return [payload.data];
-  return [];
+  return normalizeStrapiList<StrapiProjeto>(payload.data);
 }
 
 function toPositiveNumber(value: unknown): number {
@@ -49,7 +40,7 @@ function toPositiveNumber(value: unknown): number {
 }
 
 function normalizeProjeto(item: StrapiProjeto, index: number): Projeto {
-  const source = item.attributes ?? item;
+  const source = item;
   const titulo = extractText(source.Titulo) || `Projeto ${index + 1}`;
   const escola = extractText(source.escola) || "Escola nao informada";
   const area = extractText(source.area) || "Area nao informada";

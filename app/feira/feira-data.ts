@@ -1,4 +1,9 @@
 import { extractText, resolveMediaUrl } from "../lib/content-utils";
+import {
+  normalizeStrapiList,
+  normalizeStrapiRoot,
+  pickStrapiSection,
+} from "../lib/strapi-normalize";
 import { fetchStrapiJson } from "../lib/strapi";
 
 type UnknownRecord = Record<string, unknown>;
@@ -64,55 +69,6 @@ const fallbackContent: FeiraContent = {
   programacaoTitulo: "Programacao Completa",
   programacaoDias: [],
 };
-
-function asRecord(value: unknown): UnknownRecord | null {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
-  return value as UnknownRecord;
-}
-
-function normalizeItem(value: unknown): UnknownRecord | null {
-  const record = asRecord(value);
-  if (!record) return null;
-
-  const attributes = asRecord(record.attributes);
-  return attributes ? { ...record, ...attributes } : record;
-}
-
-function toList(value: unknown): UnknownRecord[] {
-  if (Array.isArray(value)) {
-    return value.map(normalizeItem).filter((item): item is UnknownRecord => item !== null);
-  }
-
-  const record = asRecord(value);
-  if (!record) return [];
-
-  if (Array.isArray(record.data)) {
-    return record.data.map(normalizeItem).filter((item): item is UnknownRecord => item !== null);
-  }
-
-  const single = normalizeItem(record.data);
-  return single ? [single] : [];
-}
-
-function normalizeRoot(payload: unknown): UnknownRecord | null {
-  const record = asRecord(payload);
-  if (!record) return null;
-
-  if (record.data !== undefined) {
-    const fromData = normalizeItem(record.data);
-    if (fromData) return fromData;
-  }
-
-  return normalizeItem(record);
-}
-
-function pickSection(source: UnknownRecord, keys: string[]): UnknownRecord {
-  for (const key of keys) {
-    const section = normalizeItem(source[key]);
-    if (section) return section;
-  }
-  return source;
-}
 
 function toDate(value: unknown): Date | null {
   const text = extractText(value);
@@ -218,8 +174,8 @@ function extractEventos(node: unknown): UnknownRecord[] {
     return node.flatMap(extractEventos);
   }
 
-  const record = asRecord(node);
-  if (!record) return [];
+  if (!node || typeof node !== "object" || Array.isArray(node)) return [];
+  const record = node as UnknownRecord;
 
   const hasEventoFields =
     "nomeEvento" in record || "miniDescricao" in record || "dataHorario" in record || "data" in record || "dados" in record;
@@ -344,18 +300,18 @@ export async function getFeiraContent(options?: { useEventosFallback?: boolean }
     useEventosFallback ? fetchEventosPayload() : Promise.resolve(null),
   ]);
 
-  const source = normalizeRoot(feiraPayload);
+  const source = normalizeStrapiRoot<UnknownRecord>(feiraPayload);
   const eventos = mapEventos(eventosPayload);
 
-  const visaoGeral = source ? pickSection(source, ["visaoGeral", "secaoVisaoGeral"]) : null;
-  const cronograma = source ? pickSection(source, ["cronograma", "secaoCronograma"]) : null;
-  const programacao = source ? pickSection(source, ["programacao", "secaoProgramacao"]) : null;
+  const visaoGeral = source ? pickStrapiSection<UnknownRecord>(source, ["visaoGeral", "secaoVisaoGeral"]) : null;
+  const cronograma = source ? pickStrapiSection<UnknownRecord>(source, ["cronograma", "secaoCronograma"]) : null;
+  const programacao = source ? pickStrapiSection<UnknownRecord>(source, ["programacao", "secaoProgramacao"]) : null;
 
   const cronogramaFromStrapi = source
-    ? mapCronograma(toList((cronograma ?? source).cronogramaItens))
+    ? mapCronograma(normalizeStrapiList<UnknownRecord>((cronograma ?? source).cronogramaItens))
     : [];
   const programacaoFromStrapi = source
-    ? mapProgramacaoDias(toList((programacao ?? source).programacaoDias))
+    ? mapProgramacaoDias(normalizeStrapiList<UnknownRecord>((programacao ?? source).programacaoDias))
     : [];
 
   const cronogramaFromEventos = buildCronogramaFromEventos(eventos);

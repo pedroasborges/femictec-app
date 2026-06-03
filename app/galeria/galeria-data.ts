@@ -1,4 +1,5 @@
 import { extractText, resolveMediaUrl } from "../lib/content-utils";
+import { normalizeStrapiList } from "../lib/strapi-normalize";
 import { fetchStrapiJson } from "../lib/strapi";
 
 type UnknownRecord = Record<string, unknown>;
@@ -22,34 +23,6 @@ export type GaleriaPageData = {
   status: "ready" | "empty" | "unavailable";
 };
 
-function asRecord(value: unknown): UnknownRecord | null {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
-  return value as UnknownRecord;
-}
-
-function normalizeItem(value: unknown): UnknownRecord | null {
-  const record = asRecord(value);
-  if (!record) return null;
-  const attributes = asRecord(record.attributes);
-  return attributes ? { ...record, ...attributes } : record;
-}
-
-function toList(value: unknown): UnknownRecord[] {
-  if (Array.isArray(value)) {
-    return value.map(normalizeItem).filter((item): item is UnknownRecord => item !== null);
-  }
-
-  const record = asRecord(value);
-  if (!record) return [];
-
-  if (Array.isArray(record.data)) {
-    return record.data.map(normalizeItem).filter((item): item is UnknownRecord => item !== null);
-  }
-
-  const single = normalizeItem(record.data);
-  return single ? [single] : [];
-}
-
 function formatDateLabel(value: string | null): string {
   if (!value) return "Data nao informada";
   const date = new Date(value);
@@ -71,7 +44,7 @@ function slugify(value: string): string {
 }
 
 function mapImagens(value: unknown): GaleriaImagem[] {
-  const items = toList(value);
+  const items = normalizeStrapiList<UnknownRecord>(value);
   return items
     .map((item) => {
       const url = resolveMediaUrl(item);
@@ -131,8 +104,7 @@ async function fetchGaleriaPayload(): Promise<unknown | null> {
 
 export async function getGaleriaPageData(): Promise<GaleriaPageData> {
   const payload = await fetchGaleriaPayload();
-  const root = asRecord(payload);
-  const items = toList(root?.data);
+  const items = normalizeStrapiList<UnknownRecord>(payload);
 
   if (!items.length) {
     return {

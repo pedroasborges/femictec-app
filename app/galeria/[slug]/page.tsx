@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -60,8 +61,14 @@ export default async function GaleriaEdicaoPage({ params }: GaleriaEdicaoPagePro
 
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {edicao.imagens.map((imagem, index) => (
-            <figure key={`${imagem.url}-${index}`} className="overflow-hidden rounded-sm border border-[#223d67]/15 bg-white">
-              <img src={imagem.url} alt={imagem.alt} className="h-64 w-full object-cover" loading="lazy" />
+            <figure key={`${imagem.url}-${index}`} className="relative aspect-[4/3] overflow-hidden rounded-sm border border-[#223d67]/15 bg-white">
+              <Image
+                src={imagem.url}
+                alt={imagem.alt}
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              />
             </figure>
           ))}
         </div>

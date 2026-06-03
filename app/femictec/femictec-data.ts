@@ -1,4 +1,9 @@
-﻿import { extractText, resolveMediaUrl } from "../lib/content-utils";
+import { extractText, resolveMediaUrl } from "../lib/content-utils";
+import {
+  normalizeStrapiList,
+  normalizeStrapiRoot,
+  pickStrapiSection,
+} from "../lib/strapi-normalize";
 import { fetchStrapiJson } from "../lib/strapi";
 
 type UnknownRecord = Record<string, unknown>;
@@ -143,59 +148,11 @@ const fallbackContent: FemictecContent = {
   ],
 };
 
-function asRecord(value: unknown): UnknownRecord | null {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
-  return value as UnknownRecord;
-}
-
-function normalizeItem(value: unknown): UnknownRecord | null {
-  const record = asRecord(value);
-  if (!record) return null;
-
-  const attributes = asRecord(record.attributes);
-  return attributes ? { ...record, ...attributes } : record;
-}
-
-function normalizeRoot(payload: unknown): UnknownRecord | null {
-  const record = asRecord(payload);
-  if (!record) return null;
-
-  if (record.data !== undefined) {
-    return normalizeItem(record.data);
-  }
-
-  return normalizeItem(record);
-}
-
-function toList(value: unknown): UnknownRecord[] {
-  if (Array.isArray(value)) {
-    return value.map(normalizeItem).filter((item): item is UnknownRecord => item !== null);
-  }
-
-  const record = asRecord(value);
-  if (!record) return [];
-
-  if (Array.isArray(record.data)) {
-    return record.data.map(normalizeItem).filter((item): item is UnknownRecord => item !== null);
-  }
-
-  const single = normalizeItem(record.data);
-  return single ? [single] : [];
-}
-
 function pickFirstDefined(...values: unknown[]): unknown {
   for (const value of values) {
     if (value !== undefined && value !== null) return value;
   }
   return undefined;
-}
-
-function pickSection(source: UnknownRecord, keys: string[]): UnknownRecord {
-  for (const key of keys) {
-    const section = normalizeItem(source[key]);
-    if (section) return section;
-  }
-  return source;
 }
 
 function mapParceiros(items: UnknownRecord[]): Parceiro[] {
@@ -248,6 +205,7 @@ async function fetchFemictecPayload(): Promise<unknown | null> {
     "&populate[historico][populate][trajetoriaImagem][populate]=*" +
     "&populate[historico][populate][edicoesCards][populate][imagem][populate]=*" +
     "&populate[historico][populate][historicoTabelaLinhas][populate]=*";
+
   const endpoints = [
     ...(customPath ? [`${customPath}${customPath.includes("?") ? "&" : "?"}${deepPopulateQuery}`] : []),
     ...(customPath ? [customPath.includes("?") ? customPath : `${customPath}?populate=deep,5`] : []),
@@ -281,8 +239,7 @@ async function fetchFemictecPayload(): Promise<unknown | null> {
 
 async function fetchFemictecStats(): Promise<FemictecStats | null> {
   const payload = await fetchStrapiJson<unknown | null>("/api/public/femictec/stats", null);
-  const root = asRecord(payload);
-  const data = asRecord(root?.data);
+  const data = normalizeStrapiRoot<UnknownRecord>(payload);
   if (!data) return null;
 
   const totalProjects = Number(data.totalProjects);
@@ -310,14 +267,16 @@ async function fetchFemictecStats(): Promise<FemictecStats | null> {
 export async function getFemictecContent(): Promise<FemictecContent> {
   const payload = await fetchFemictecPayload();
   const stats = await fetchFemictecStats();
-  const source = normalizeRoot(payload);
+  const source = normalizeStrapiRoot<UnknownRecord>(payload);
 
   if (!source) return fallbackContent;
 
-  const menu = pickSection(source, ["menuInterno", "menu"]);
-  const apresentacao = pickSection(source, ["apresentacao", "secaoApresentacao", "paginaApresentacao"]);
-  const quemRealiza = pickSection(source, ["quemRealiza", "secaoQuemRealiza", "paginaQuemRealiza"]);
-  const historico = pickSection(source, ["historico", "secaoHistorico", "paginaHistorico"]);
+  // Cada secao pode vir de um bloco diferente no Strapi; este helper procura
+  // os nomes mais provaveis e cai no objeto raiz se nenhuma variante existir.
+  const menu = pickStrapiSection<UnknownRecord>(source, ["menuInterno", "menu"]);
+  const apresentacao = pickStrapiSection<UnknownRecord>(source, ["apresentacao", "secaoApresentacao", "paginaApresentacao"]);
+  const quemRealiza = pickStrapiSection<UnknownRecord>(source, ["quemRealiza", "secaoQuemRealiza", "paginaQuemRealiza"]);
+  const historico = pickStrapiSection<UnknownRecord>(source, ["historico", "secaoHistorico", "paginaHistorico"]);
 
   return {
     menuItemInicioLabel: extractText(pickFirstDefined(menu.menuItemInicioLabel, source.menuItemInicioLabel)) || fallbackContent.menuItemInicioLabel,
@@ -325,8 +284,7 @@ export async function getFemictecContent(): Promise<FemictecContent> {
       extractText(pickFirstDefined(menu.menuItemQuemRealizaLabel, source.menuItemQuemRealizaLabel)) || fallbackContent.menuItemQuemRealizaLabel,
     menuItemHistoricoLabel:
       extractText(pickFirstDefined(menu.menuItemHistoricoLabel, source.menuItemHistoricoLabel)) || fallbackContent.menuItemHistoricoLabel,
-    tituloPrincipal:
-      extractText(pickFirstDefined(apresentacao.tituloPrincipal, source.tituloPrincipal)) || fallbackContent.tituloPrincipal,
+    tituloPrincipal: extractText(pickFirstDefined(apresentacao.tituloPrincipal, source.tituloPrincipal)) || fallbackContent.tituloPrincipal,
     subtituloPrincipal:
       extractText(pickFirstDefined(apresentacao.subtituloPrincipal, source.subtituloPrincipal)) || fallbackContent.subtituloPrincipal,
 
@@ -360,7 +318,7 @@ export async function getFemictecContent(): Promise<FemictecContent> {
     imagemEntradaLabel:
       extractText(pickFirstDefined(quemRealiza.imagemEntradaLabel, source.imagemEntradaLabel)) || fallbackContent.imagemEntradaLabel,
     parceirosTitulo: extractText(pickFirstDefined(quemRealiza.parceirosTitulo, source.parceirosTitulo)) || fallbackContent.parceirosTitulo,
-    parceiros: mapParceiros(toList(pickFirstDefined(quemRealiza.parceiros, source.parceiros))),
+    parceiros: mapParceiros(normalizeStrapiList<UnknownRecord>(pickFirstDefined(quemRealiza.parceiros, source.parceiros))),
 
     historicoTitulo: extractText(pickFirstDefined(historico.historicoTitulo, source.historicoTitulo)) || fallbackContent.historicoTitulo,
     historicoDescricao: extractText(pickFirstDefined(historico.historicoDescricao, source.historicoDescricao)) || fallbackContent.historicoDescricao,
@@ -370,7 +328,7 @@ export async function getFemictecContent(): Promise<FemictecContent> {
     trajetoriaImagemUrl: resolveMediaUrl(pickFirstDefined(historico.trajetoriaImagem, source.trajetoriaImagem)),
     trajetoriaImagemAlt:
       extractText(pickFirstDefined(historico.trajetoriaImagemAlt, source.trajetoriaImagemAlt)) || fallbackContent.trajetoriaImagemAlt,
-    edicoesCards: mapEdicoes(toList(pickFirstDefined(historico.edicoesCards, source.edicoesCards))),
+    edicoesCards: mapEdicoes(normalizeStrapiList<UnknownRecord>(pickFirstDefined(historico.edicoesCards, source.edicoesCards))),
     galeriaLabel: extractText(pickFirstDefined(historico.galeriaLabel, source.galeriaLabel)) || fallbackContent.galeriaLabel,
     galeriaUrl: extractText(pickFirstDefined(historico.galeriaUrl, source.galeriaUrl)) || fallbackContent.galeriaUrl,
     historicoTabelaTitulo:
@@ -383,7 +341,6 @@ export async function getFemictecContent(): Promise<FemictecContent> {
             { label: "Participantes", valor: String(stats.totalParticipants) },
             { label: "Areas", valor: String(stats.totalAreas) },
           ]
-        : mapTabela(toList(pickFirstDefined(historico.historicoTabelaLinhas, source.historicoTabelaLinhas))),
+        : mapTabela(normalizeStrapiList<UnknownRecord>(pickFirstDefined(historico.historicoTabelaLinhas, source.historicoTabelaLinhas))),
   };
 }
-

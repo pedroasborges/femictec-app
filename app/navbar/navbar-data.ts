@@ -1,4 +1,5 @@
 import { extractText, resolveMediaUrl } from "../lib/content-utils";
+import { normalizeStrapiItem, type StrapiSingleResponse } from "../lib/strapi-normalize";
 import { fetchStrapiJson } from "../lib/strapi";
 
 export type NavbarContent = {
@@ -11,13 +12,7 @@ type NavbarAttributes = {
   logoAlt?: unknown;
 };
 
-type NavbarItem = NavbarAttributes & {
-  attributes?: NavbarAttributes;
-};
-
-type NavbarResponse = {
-  data?: NavbarItem | null;
-};
+type NavbarResponse = StrapiSingleResponse<NavbarAttributes>;
 
 const fallbackNavbar: NavbarContent = {
   logoUrl: null,
@@ -29,10 +24,9 @@ export async function getNavbarContent(): Promise<NavbarContent> {
 
   for (const endpoint of endpoints) {
     const payload = await fetchStrapiJson<NavbarResponse>(endpoint, { data: null });
-    const raw = payload.data;
-    if (!raw) continue;
+    const source = normalizeStrapiItem<NavbarAttributes>(payload.data);
+    if (!source) continue;
 
-    const source = (raw.attributes ?? raw) as NavbarAttributes;
     return {
       logoUrl: resolveMediaUrl(source.logo),
       logoAlt: extractText(source.logoAlt) || fallbackNavbar.logoAlt,

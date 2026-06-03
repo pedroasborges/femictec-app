@@ -1,4 +1,5 @@
 import { extractText } from "../lib/content-utils";
+import { normalizeStrapiItem, type StrapiListResponse } from "../lib/strapi-normalize";
 import { fetchStrapiJson } from "../lib/strapi";
 
 export type HomeDatasEtapa = {
@@ -22,13 +23,7 @@ type HomeDatasAttributes = {
   etapa3Data?: unknown;
 };
 
-type HomeDatasItem = HomeDatasAttributes & {
-  attributes?: HomeDatasAttributes;
-};
-
-type HomeDatasResponse = {
-  data?: HomeDatasItem | HomeDatasItem[] | null;
-};
+type HomeDatasResponse = StrapiListResponse<HomeDatasAttributes>;
 
 const fallbackHomeDatas: HomeDatasContent = {
   tituloSecao: "Confira as datas",
@@ -56,7 +51,7 @@ export async function getHomeDatasContent(): Promise<HomeDatasContent> {
     const item = Array.isArray(raw) ? raw[0] : raw;
     if (!item) continue;
 
-    const source = ((item as HomeDatasItem).attributes ?? item) as HomeDatasAttributes;
+    const source = normalizeStrapiItem<HomeDatasAttributes>(item) ?? {};
     const etapas = [
       {
         titulo: extractText(source.etapa1Titulo) || fallbackHomeDatas.etapas[0].titulo,

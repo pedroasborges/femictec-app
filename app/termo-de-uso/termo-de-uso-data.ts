@@ -1,4 +1,5 @@
 import { extractText } from "../lib/content-utils";
+import { normalizeStrapiItem, type StrapiSingleResponse } from "../lib/strapi-normalize";
 import { fetchStrapiJson } from "../lib/strapi";
 
 export type TermoDeUsoContent = {
@@ -16,13 +17,7 @@ type TermoDeUsoAttributes = {
   atualizadoEm?: unknown;
 };
 
-type TermoDeUsoItem = TermoDeUsoAttributes & {
-  attributes?: TermoDeUsoAttributes;
-};
-
-type TermoDeUsoResponse = {
-  data?: TermoDeUsoItem | null;
-};
+type TermoDeUsoResponse = StrapiSingleResponse<TermoDeUsoAttributes>;
 
 const fallbackTermo: TermoDeUsoContent = {
   titulo: "Termo de Uso",
@@ -41,9 +36,9 @@ export async function getTermoDeUsoContent(): Promise<TermoDeUsoContent> {
 
   for (const endpoint of endpoints) {
     const payload = await fetchStrapiJson<TermoDeUsoResponse>(endpoint, { data: null });
-    const raw = payload.data;
-    if (raw) {
-      source = (raw.attributes ?? raw) as TermoDeUsoAttributes;
+    const normalized = normalizeStrapiItem<TermoDeUsoAttributes>(payload.data);
+    if (normalized) {
+      source = normalized;
       foundContent = true;
       break;
     }

@@ -1,4 +1,5 @@
 import { extractText } from "../lib/content-utils";
+import { normalizeStrapiItem, type StrapiSingleResponse } from "../lib/strapi-normalize";
 import { fetchStrapiJson } from "../lib/strapi";
 
 export type PoliticaPrivacidadeContent = {
@@ -16,13 +17,7 @@ type PoliticaPrivacidadeAttributes = {
   atualizadoEm?: unknown;
 };
 
-type PoliticaPrivacidadeItem = PoliticaPrivacidadeAttributes & {
-  attributes?: PoliticaPrivacidadeAttributes;
-};
-
-type PoliticaPrivacidadeResponse = {
-  data?: PoliticaPrivacidadeItem | null;
-};
+type PoliticaPrivacidadeResponse = StrapiSingleResponse<PoliticaPrivacidadeAttributes>;
 
 const fallbackPolitica: PoliticaPrivacidadeContent = {
   titulo: "Politica de Privacidade",
@@ -44,9 +39,9 @@ export async function getPoliticaPrivacidadeContent(): Promise<PoliticaPrivacida
 
   for (const endpoint of endpoints) {
     const payload = await fetchStrapiJson<PoliticaPrivacidadeResponse>(endpoint, { data: null });
-    const raw = payload.data;
-    if (raw) {
-      source = (raw.attributes ?? raw) as PoliticaPrivacidadeAttributes;
+    const normalized = normalizeStrapiItem<PoliticaPrivacidadeAttributes>(payload.data);
+    if (normalized) {
+      source = normalized;
       foundContent = true;
       break;
     }

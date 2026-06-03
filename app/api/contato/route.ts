@@ -2,6 +2,7 @@ import net from "node:net";
 import tls from "node:tls";
 
 import { NextResponse } from "next/server";
+import { normalizeStrapiItem, type StrapiSingleResponse } from "../../lib/strapi-normalize";
 import { fetchStrapiJson } from "../../lib/strapi";
 
 export const runtime = "nodejs";
@@ -95,39 +96,30 @@ function buildConfirmationCopy(payload: ContactPayload): string {
 }
 
 async function getContatoNotificacaoConfig(): Promise<ContatoNotificacaoConfig> {
-  type ContatoResponse = {
-    data?: {
-      email?: unknown;
-      destinatariosEvento?: unknown;
-      notificacaoAssuntoTemplate?: unknown;
-      notificacaoMensagemTemplate?: unknown;
-      confirmacaoAssuntoTemplate?: unknown;
-      confirmacaoMensagemTemplate?: unknown;
-      attributes?: {
-        email?: unknown;
-        destinatariosEvento?: unknown;
-        notificacaoAssuntoTemplate?: unknown;
-        notificacaoMensagemTemplate?: unknown;
-        confirmacaoAssuntoTemplate?: unknown;
-        confirmacaoMensagemTemplate?: unknown;
-      };
-    } | null;
+  type ContatoAttributes = {
+    email?: unknown;
+    destinatariosEvento?: unknown;
+    notificacaoAssuntoTemplate?: unknown;
+    notificacaoMensagemTemplate?: unknown;
+    confirmacaoAssuntoTemplate?: unknown;
+    confirmacaoMensagemTemplate?: unknown;
   };
 
-  const payload = await fetchStrapiJson<ContatoResponse>("/api/contato?populate=*", { data: null });
-  const raw = payload.data;
-  const source = raw?.attributes ?? raw;
+  type ContatoResponse = StrapiSingleResponse<ContatoAttributes>;
 
-  const emailPrincipal = String(source?.email ?? "").trim();
-  const destinatariosEvento = normalizeEmails(source?.destinatariosEvento);
+  const payload = await fetchStrapiJson<ContatoResponse>("/api/contato?populate=*", { data: null });
+  const source = normalizeStrapiItem<ContatoAttributes>(payload.data) ?? {};
+
+  const emailPrincipal = String(source.email ?? "").trim();
+  const destinatariosEvento = normalizeEmails(source.destinatariosEvento);
 
   return {
     emailPrincipal: isValidEmail(emailPrincipal) ? emailPrincipal : "femictec@novohamburgo.rs.gov.br",
     destinatariosEvento,
     notificacaoAssuntoTemplate:
-      String(source?.notificacaoAssuntoTemplate ?? "").trim() || "Novo contato FEMICTEC - {assunto}",
+      String(source.notificacaoAssuntoTemplate ?? "").trim() || "Novo contato FEMICTEC - {assunto}",
     notificacaoMensagemTemplate:
-      String(source?.notificacaoMensagemTemplate ?? "").trim() ||
+      String(source.notificacaoMensagemTemplate ?? "").trim() ||
       [
         "Novo contato recebido pela FEMICTEC.",
         "",
@@ -139,9 +131,9 @@ async function getContatoNotificacaoConfig(): Promise<ContatoNotificacaoConfig> 
         "{mensagem}",
       ].join("\n"),
     confirmacaoAssuntoTemplate:
-      String(source?.confirmacaoAssuntoTemplate ?? "").trim() || "Recebemos sua mensagem - FEMICTEC",
+      String(source.confirmacaoAssuntoTemplate ?? "").trim() || "Recebemos sua mensagem - FEMICTEC",
     confirmacaoMensagemTemplate:
-      String(source?.confirmacaoMensagemTemplate ?? "").trim() ||
+      String(source.confirmacaoMensagemTemplate ?? "").trim() ||
       [
         "Ola, {nome}.",
         "",
