@@ -138,7 +138,7 @@ export default function Navbar({ logoUrl, logoAlt }: NavbarProps) {
       </div>
 
       {isMenuOpen && (
-        <div className="border-t border-[#00b8c6] bg-[#223d67] px-4 py-5 lg:hidden">
+        <div className=" bg-[#223d67] px-4 py-5 lg:hidden">
           <div className="flex flex-col gap-4">
             {navLinks.map((link) => (
               <Link key={link.label} href={link.href} className={mobileNavLinkClass} onClick={() => setIsMenuOpen(false)}>
@@ -146,7 +146,7 @@ export default function Navbar({ logoUrl, logoAlt }: NavbarProps) {
               </Link>
             ))}
 
-            <div className="flex h-12 items-stretch border border-[#1b365f]">
+            <div className="flex h-12 items-stretch">
               <HeaderIconLink href="/noticias" label="Pesquisar">
                 <SearchIcon />
               </HeaderIconLink>
