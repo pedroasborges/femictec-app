@@ -144,7 +144,7 @@ function mapProgramacaoDias(items: UnknownRecord[]): FeiraProgramacaoDia[] {
     .map((item, index) => {
       const dia = extractText(item.dia) || `Dia ${index + 1}`;
       const data = extractText(item.data) || "Data";
-      const atividadesRaw = toList(item.atividades);
+      const atividadesRaw = normalizeStrapiList<UnknownRecord>(item.atividades);
 
       const atividades = atividadesRaw
         .map((atividade) => {
