@@ -12,7 +12,7 @@ import PointsIcon from "../public/points.svg";
 import BackgroundOndaSuperior from "../public/bgwavetop.svg";
 import BackgroundOndaInferior from "../public/bgwavebottom.svg";
 
-interface InscricaoFeiraData {
+interface HomeInstitucionalData {
   imagemEstudanteUrl: string;
   textoInscricao: string;
   linkPlataforma: string;
@@ -22,7 +22,7 @@ interface InscricaoFeiraData {
   urlVideo: string;
 }
 
-type DadoInstitucionalAttributes = {
+type HomeInstitucionalAttributes = {
   imagemEstudanteUrl?: unknown;
   textoInscricao?: unknown;
   linkPlataforma?: unknown;
@@ -32,11 +32,13 @@ type DadoInstitucionalAttributes = {
   urlVideo?: unknown;
 };
 
-type DadoInstitucionalResponse = {
+type HomeInstitucionalResponse = {
   data?: unknown;
 };
 
-async function getDadoInstitucional(): Promise<InscricaoFeiraData | null> {
+// O endpoint continua `dado-institucional` por compatibilidade com a API do Strapi,
+// mas o displayName no CMS identifica claramente que este bloco pertence a Home.
+async function getHomeInstitucionalContent(): Promise<HomeInstitucionalData | null> {
   try {
     const res = await fetch(toStrapiUrl("/api/dado-institucional?populate=*"), {
       cache: "no-store",
@@ -49,8 +51,8 @@ async function getDadoInstitucional(): Promise<InscricaoFeiraData | null> {
       return null;
     }
 
-    const json = (await res.json()) as DadoInstitucionalResponse;
-    const dados = normalizeStrapiItem<DadoInstitucionalAttributes>(json.data);
+    const json = (await res.json()) as HomeInstitucionalResponse;
+    const dados = normalizeStrapiItem<HomeInstitucionalAttributes>(json.data);
     if (!dados) return null;
 
     const imagemEstudanteUrl = resolveMediaUrl(dados.imagemEstudanteUrl) || "";
@@ -89,9 +91,9 @@ export default async function Page() {
   const homeDatas = await getHomeDatasContent();
   const noticiasData = await getNoticiasPageData();
   const noticias = noticiasData.noticias.slice(0, 3);
-  const dadosCms = await getDadoInstitucional();
-  const videoUrl = dadosCms?.urlVideo
-    ? getYoutubeEmbedUrl(dadosCms.urlVideo.trim())
+  const homeInstitucionalCms = await getHomeInstitucionalContent();
+  const videoUrl = homeInstitucionalCms?.urlVideo
+    ? getYoutubeEmbedUrl(homeInstitucionalCms.urlVideo.trim())
     : "";
 
   return (
@@ -123,9 +125,9 @@ export default async function Page() {
           <div className="relative mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-8">
             <div className="relative grid grid-cols-1 gap-0 pb-24 md:grid-cols-[1.05fr_0.95fr] md:pb-36">
               <div className="relative z-10 -mx-4 aspect-[4/3] overflow-hidden bg-slate-700 sm:mx-0 md:min-h-[390px]">
-                {dadosCms?.imagemEstudanteUrl ? (
+                {homeInstitucionalCms?.imagemEstudanteUrl ? (
                   <Image
-                    src={dadosCms.imagemEstudanteUrl}
+                    src={homeInstitucionalCms.imagemEstudanteUrl}
                     alt="Estudante em atividade laboratorial"
                     fill
                     className="object-cover"
@@ -152,19 +154,19 @@ export default async function Page() {
                 </h2>
 
                 <p className="mt-4 max-w-md font-texto whitespace-pre-line text-justify text-sm leading-relaxed text-slate-200">
-                  {dadosCms?.textoInscricao ||
+                  {homeInstitucionalCms?.textoInscricao ||
                     "Nenhum texto de inscricao cadastrado."}
                 </p>
 
-                {dadosCms?.dataLimite && (
+                {homeInstitucionalCms?.dataLimite && (
                   <p className="mt-3 text-sm font-semibold tracking-wide">
-                    {dadosCms.dataLimite}
+                    {homeInstitucionalCms.dataLimite}
                   </p>
                 )}
 
                 <div className="mt-6 text-left">
                   <Link
-                    href={dadosCms?.linkPlataforma || "#"}
+                    href={homeInstitucionalCms?.linkPlataforma || "#"}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block rounded-[6px] bg-[#223d67] px-8 py-4 text-xs font-bold uppercase tracking-widest text-white shadow-lg transition duration-300 hover:-translate-y-0.5 hover:bg-[#2c4a7d]"
@@ -178,7 +180,7 @@ export default async function Page() {
             <div className="relative z-30 -mt-10 grid grid-cols-1 items-center gap-8 pb-20 md:-mt-16 md:grid-cols-12 md:pb-28">
               <div className="flex items-center justify-between gap-4 md:col-span-5 md:justify-start">
                 <h3 className="border-b-4 border-white pb-2 text-3xl font-black uppercase tracking-wide text-white">
-                  {dadosCms?.tituloResumo || "Sobre o evento"}
+                  {homeInstitucionalCms?.tituloResumo || "Sobre o evento"}
                 </h3>
                 <svg
                   className="mt-4 hidden h-12 w-12 flex-shrink-0 animate-bounce text-white sm:block"
@@ -201,7 +203,7 @@ export default async function Page() {
                   SOBRE A NOSSA FEIRA
                 </p>
                 <p className="whitespace-pre-line font-texto text-slate-200">
-                  {dadosCms?.textoResumo ||
+                  {homeInstitucionalCms?.textoResumo ||
                     "Conteudo resumido institucional pendente de publicacao no painel."}
                 </p>
               </div>
