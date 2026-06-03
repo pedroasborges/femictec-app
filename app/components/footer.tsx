@@ -82,7 +82,7 @@ export async function Footer() {
   const youtubeUrl = toYoutubeUrl(footer.Youtube);
 
   return (
-    <footer id="contato" className="mt-20 border-y border-[#00b8c6] bg-[#223d67] text-white">
+    <footer id="contato" className="mt-20 bg-[#223d67] text-white">
       <div className="mx-auto w-full max-w-[1320px] px-4 py-8 md:px-6" >
         <div className="grid grid-cols-1 gap-8 text-left sm:grid-cols-2 lg:grid-cols-[1.25fr_0.75fr_1fr_1.2fr]">
           <div>

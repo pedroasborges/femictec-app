@@ -90,7 +90,7 @@ export default function Navbar({ logoUrl, logoAlt }: NavbarProps) {
   const logoSrc: string | StaticImageData = logoUrl || logoImg;
 
   return (
-    <nav className="sticky top-0 z-50 border-y border-[#00b8c6] bg-[#223d67] text-white">
+    <nav className="sticky top-0 z-50 shadow-xl bg-[#223d67] text-white">
       <div className="mx-auto flex h-[62px] w-full max-w-[1320px] items-stretch justify-between bg-[#223d67] px-0">
         <Link href="/" className="flex w-[170px] shrink-0 items-center justify-center bg-[#223d67] px-3">
           <Image src={logoSrc} alt={logoAlt} width={156} height={44} priority className="h-auto w-[156px]" />
