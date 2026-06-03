@@ -21,6 +21,11 @@ const defaultPatterns = [
     hostname: "127.0.0.1",
     port: "1338",
   },
+  {
+    protocol: "http" as const,
+    hostname: "cms-femictec.novohamburgo.rs.gov.br",
+    port: "81",
+  },
 ];
 
 function getEnvRemotePattern() {
@@ -45,6 +50,7 @@ const remotePatterns = envPattern ? [envPattern, ...defaultPatterns] : defaultPa
 const nextConfig: NextConfig = {
   output: "standalone",
   images: {
+    dangerouslyAllowLocalIP: process.env.NODE_ENV === "development",
     remotePatterns,
   },
 };
