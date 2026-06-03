@@ -1,6 +1,7 @@
-﻿import BannerCarousel, { type BannerCarouselSize, type BannerImage } from "./banner-carousel";
-import { fetchStrapiJson } from "../lib/strapi";
+import BannerCarousel, { type BannerCarouselSize, type BannerImage } from "./banner-carousel";
 import { resolveMediaUrl } from "../lib/content-utils";
+import { fetchStrapiJson } from "../lib/strapi";
+import { normalizeStrapiItem } from "../lib/strapi-normalize";
 
 type BannerApiItem = {
   id: number;
@@ -17,7 +18,11 @@ async function getBanner() {
 }
 
 function normalizeBannerImages(items: BannerApiItem[]): BannerImage[] {
+  // O Strapi pode devolver o media no item direto ou dentro de `attributes`.
+  // Normalizando antes de ler a imagem, o carrossel fica resiliente a ambos os formatos.
   return items
+    .map((item) => normalizeStrapiItem<BannerApiItem>(item))
+    .filter((item): item is BannerApiItem => item !== null)
     .map((item) => {
       const media = item.Imagem ?? item.imagem ?? item.attributes?.Imagem ?? item.attributes?.imagem;
       const src = resolveMediaUrl(media);
@@ -47,4 +52,3 @@ export default async function Banner({ size = "default" }: BannerProps) {
 
   return <BannerCarousel images={images} size={size} />;
 }
-

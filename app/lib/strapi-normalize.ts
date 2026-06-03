@@ -49,7 +49,10 @@ export function normalizeStrapiList<T extends StrapiRecord>(value: unknown): T[]
     return record.data.map((item) => normalizeStrapiItem<T>(item)).filter((item): item is T => item !== null);
   }
 
-  const single = normalizeStrapiItem<T>(record.data);
+  // Alguns endpoints do Strapi devolvem um item unico ja desembrulhado em `data`.
+  // Outros devolvem a propria entidade diretamente. Aceitamos os dois formatos
+  // para evitar que telas caiam para fallback quando a API responder 200.
+  const single = "data" in record ? normalizeStrapiItem<T>(record.data) : normalizeStrapiItem<T>(record);
   return single ? [single] : [];
 }
 

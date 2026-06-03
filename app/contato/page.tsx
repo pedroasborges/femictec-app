@@ -3,34 +3,8 @@ import Image from "next/image";
 
 import { ContatoForm } from "./contato-form";
 import { getContatoPageContent } from "./contato-data";
+import { getFooterContent } from "../lib/footer-content";
 import { getLocalizacaoContent, sanitizeCoordinates } from "../localizacao/localizacao-data";
-import { fetchStrapiJson } from "../lib/strapi";
-
-type FooterAttributes = {
-  Instagram?: string | null;
-  Facebook?: string | null;
-  Youtube?: string | null;
-  facebook?: string | null;
-  youtube?: string | null;
-};
-
-type FooterApiItem = FooterAttributes & {
-  attributes?: FooterAttributes;
-};
-
-type FooterApiResponse = {
-  data?: FooterApiItem | null;
-};
-
-async function getFooterSocials(): Promise<FooterAttributes> {
-  const response = await fetchStrapiJson<FooterApiResponse>("/api/footer", { data: null });
-  const raw = response.data;
-  return {
-    Instagram: raw?.Instagram ?? raw?.attributes?.Instagram ?? null,
-    Facebook: raw?.Facebook ?? raw?.attributes?.Facebook ?? raw?.facebook ?? raw?.attributes?.facebook ?? null,
-    Youtube: raw?.Youtube ?? raw?.attributes?.Youtube ?? raw?.youtube ?? raw?.attributes?.youtube ?? null,
-  };
-}
 
 function toInstagramUrl(instagram: string | null | undefined): string | null {
   if (!instagram) return null;
@@ -70,17 +44,17 @@ const bodyFontStyle = {
 };
 
 export default async function ContatoPage() {
-  const [content, localizacao, footerSocials] = await Promise.all([
+  const [content, localizacao, footerContent] = await Promise.all([
     getContatoPageContent(),
     getLocalizacaoContent(),
-    getFooterSocials(),
+    getFooterContent(),
   ]);
   const coords = sanitizeCoordinates(localizacao.coordenadas);
   const mapsLink = `https://www.google.com/maps?q=${coords}`;
   const mapsEmbed = `https://www.google.com/maps?q=${coords}&z=16&output=embed`;
-  const instagramUrl = toInstagramUrl(footerSocials.Instagram);
-  const facebookUrl = toFacebookUrl(footerSocials.Facebook);
-  const youtubeUrl = toYoutubeUrl(footerSocials.Youtube);
+  const instagramUrl = toInstagramUrl(footerContent.Instagram);
+  const facebookUrl = toFacebookUrl(footerContent.Facebook);
+  const youtubeUrl = toYoutubeUrl(footerContent.Youtube);
 
   return (
     <section className="bg-white py-20 text-[#223d67] md:py-28">

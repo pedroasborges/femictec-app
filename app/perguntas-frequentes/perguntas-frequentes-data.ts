@@ -1,7 +1,8 @@
 import { extractText } from "../lib/content-utils";
 import {
+  normalizeStrapiItem,
   normalizeStrapiList,
-  type StrapiListResponse,
+  type StrapiSingleResponse,
 } from "../lib/strapi-normalize";
 import { fetchStrapiJson } from "../lib/strapi";
 
@@ -23,7 +24,7 @@ type PerguntasFrequentesAttributes = {
   perguntas?: unknown;
 };
 
-type PerguntasFrequentesResponse = StrapiListResponse<PerguntasFrequentesAttributes>;
+type PerguntasFrequentesResponse = StrapiSingleResponse<PerguntasFrequentesAttributes>;
 
 type PerguntaItem = {
   pergunta?: unknown;
@@ -55,7 +56,7 @@ export async function getPerguntasFrequentesContent(): Promise<PerguntasFrequent
 
   for (const endpoint of endpoints) {
     const payload = await fetchStrapiJson<PerguntasFrequentesResponse>(endpoint, { data: null });
-    const source = normalizeStrapiList<PerguntasFrequentesAttributes>(payload.data)[0];
+    const source = normalizeStrapiItem<PerguntasFrequentesAttributes>(payload.data);
     if (!source) continue;
 
     const perguntas = mapPerguntas(source.perguntas);

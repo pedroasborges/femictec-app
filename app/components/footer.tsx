@@ -2,41 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 import logoImg from "../../public/femictec.png";
-import { fetchStrapiJson } from "../lib/strapi";
+import { getFooterContent } from "../lib/footer-content";
 import { getLocalizacaoContent, sanitizeCoordinates } from "../localizacao/localizacao-data";
 import { getNavbarContent } from "../navbar/navbar-data";
-
-type FooterAttributes = {
-  Email?: string | null;
-  Telefone?: string | null;
-  Instagram?: string | null;
-  Facebook?: string | null;
-  Youtube?: string | null;
-  facebook?: string | null;
-  youtube?: string | null;
-};
-
-type FooterApiItem = FooterAttributes & {
-  attributes?: FooterAttributes;
-};
-
-type FooterApiResponse = {
-  data?: FooterApiItem | null;
-};
-
-
-async function getFooter(): Promise<FooterAttributes> {
-  const response = await fetchStrapiJson<FooterApiResponse>("/api/footer", { data: null });
-  const raw = response.data;
-
-  return {
-    Email: raw?.Email ?? raw?.attributes?.Email ?? "femictec@novohamburgo.rs.gov.br",
-    Telefone: raw?.Telefone ?? raw?.attributes?.Telefone ?? "(51) 0000-0000",
-    Instagram: raw?.Instagram ?? raw?.attributes?.Instagram ?? null,
-    Facebook: raw?.Facebook ?? raw?.attributes?.Facebook ?? raw?.facebook ?? raw?.attributes?.facebook ?? null,
-    Youtube: raw?.Youtube ?? raw?.attributes?.Youtube ?? raw?.youtube ?? raw?.attributes?.youtube ?? null,
-  };
-}
 
 function toInstagramUrl(instagram: string | null | undefined): string | null {
   if (!instagram) return null;
@@ -102,7 +70,7 @@ function CityLogoBlock() {
 }
 
 export async function Footer() {
-  const [footer, localizacao, navbar] = await Promise.all([getFooter(), getLocalizacaoContent(), getNavbarContent()]);
+  const [footer, localizacao, navbar] = await Promise.all([getFooterContent(), getLocalizacaoContent(), getNavbarContent()]);
   const coords = sanitizeCoordinates(localizacao.coordenadas);
   const mapsLink = `https://www.google.com/maps?q=${coords}`;
   const mapsEmbed = `https://www.google.com/maps?q=${coords}&z=15&output=embed`;
