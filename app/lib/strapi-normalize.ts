@@ -53,7 +53,7 @@ export function normalizeStrapiList<T extends StrapiRecord>(value: unknown): T[]
   return single ? [single] : [];
 }
 
-export function pickStrapiSection<T extends StrapiRecord>(source: StrapiRecord, keys: string[]): T | null {
+export function pickStrapiSection<T extends StrapiRecord>(source: StrapiRecord, keys: string[]): T {
   for (const key of keys) {
     const section = normalizeStrapiItem<T>(source[key]);
     if (section) return section;

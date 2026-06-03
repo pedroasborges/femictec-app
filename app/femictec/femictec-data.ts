@@ -84,7 +84,7 @@ const fallbackContent: FemictecContent = {
   menuItemInicioLabel: "Apresentacao",
   menuItemQuemRealizaLabel: "Quem Realiza",
   menuItemHistoricoLabel: "Historico",
-  tituloPrincipal: "XII FEMICTEC",
+  tituloPrincipal: "FEMICTEC",
   subtituloPrincipal: "Feira Municipal de Iniciacao Cientifica e Tecnologica",
 
   bannerTitulo: "Banner",
@@ -133,18 +133,18 @@ const fallbackContent: FemictecContent = {
   trajetoriaImagemUrl: null,
   trajetoriaImagemAlt: "Trajetoria da FEMICTEC",
   edicoesCards: [
-    { titulo: "Imagem da edicao de 2022", subtitulo: "Comunicacao", imagemUrl: null },
-    { titulo: "Imagem da edicao de 2023", subtitulo: "Comunicacao", imagemUrl: null },
-    { titulo: "Imagem da edicao de 2024", subtitulo: "Comunicacao", imagemUrl: null },
-    { titulo: "Imagem da edicao de 2025", subtitulo: "Comunicacao", imagemUrl: null },
+    { titulo: "Imagem da edicao de 2022", subtitulo: "Em edição", imagemUrl: null },
+    { titulo: "Imagem da edicao de 2023", subtitulo: "Em edição", imagemUrl: null },
+    { titulo: "Imagem da edicao de 2024", subtitulo: "Em edição", imagemUrl: null },
+    { titulo: "Imagem da edicao de 2025", subtitulo: "Em edição", imagemUrl: null },
   ],
   galeriaLabel: "Abrir galeria",
   galeriaUrl: "/galeria",
   historicoTabelaTitulo: "Tabela com dados historicos especificos",
   historicoTabelaLinhas: [
-    { label: "Projetos apresentados", valor: "120" },
-    { label: "Escolas participantes", valor: "32" },
-    { label: "Municipios envolvidos", valor: "14" },
+    { label: "Projetos apresentados", valor: "Em atualização" },
+    { label: "Escolas participantes", valor: "Em atualização" },
+    { label: "Municipios envolvidos", valor: "Em atualização" },
   ],
 };
 
