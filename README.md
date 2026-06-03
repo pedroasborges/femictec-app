@@ -135,6 +135,7 @@ npm run dev
 
 ## Documentacao complementar
 
+- Documento mestre do projeto: `DOCUMENTACAO_GERAL_FEMICTEC_APP.md`
 - `SITE_MAINTENANCE_SETUP.md`
 - `STRAPI_DYNAMIC_CONTENT_AUDIT.md`
 - `STRAPI_HOME_DATAS_SETUP.md`
